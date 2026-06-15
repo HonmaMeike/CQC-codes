@@ -1,0 +1,13 @@
+[
+  {
+    "code": "ASD666",
+    "name": "端午节大礼包",
+    "desc": "金币+20000、抽奖石+20、体力+100",
+    "reward": {
+      "gold": 20000,
+      "stamina": 100,
+      "lotteryStone": 20
+    },
+    "maxUse": 1
+  }
+]
