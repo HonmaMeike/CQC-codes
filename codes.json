@@ -1,13 +1,14 @@
 [
   {
-    "code": "CC110",
-    "name": "一个礼包",
-    "desc": "一个礼包",
+    "code": "KF001",
+    "name": "开服大礼包",
+    "desc": "金币+5000，体力+60，抽奖石+20，重铸石+100",
     "reward": {
-      "gold": 1000,
-      "lotteryStone": 10,
-      "reforgestone": 10,
-      "forgeDust": 100
+      "gold": 5000,
+      "stamina": 60,
+      "lotteryStone": 20,
+      "reforgestone": 100,
+      "forgeDust": 2000
     },
     "maxUse": 1
   }
