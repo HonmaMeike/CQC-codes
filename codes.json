@@ -1,12 +1,11 @@
 [
   {
-    "code": "666888",
-    "name": "666888",
-    "desc": "CES",
+    "code": "ASD",
+    "name": "ASDA",
+    "desc": "ADSASDA",
     "reward": {
-      "gold": 100
+      "gold": 200
     },
-    "maxUse": 1,
-    "expiry": 1786798380000
+    "maxUse": 1
   }
 ]
