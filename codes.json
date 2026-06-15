@@ -1,19 +1,10 @@
 [
   {
-    "code": "ASD",
-    "name": "ASDA",
-    "desc": "ADSASDA",
+    "code": "DSADASD",
+    "name": "ASDADSAS",
+    "desc": "DSADA",
     "reward": {
-      "gold": 200
-    },
-    "maxUse": 1
-  },
-  {
-    "code": "SDA",
-    "name": "DSA",
-    "desc": "ADAD",
-    "reward": {
-      "gold": 200
+      "gold": 300
     },
     "maxUse": 1
   }
