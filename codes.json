@@ -1,1 +1,14 @@
-
+[
+  {
+    "code": "LUSUN666",
+    "name": "开发者大礼包",
+    "desc": "金币+5000、体力+100、抽奖石+100",
+    "reward": {
+      "gold": 5000,
+      "stamina": 100,
+      "lotteryStone": 100
+    },
+    "maxUse": 1,
+    "expiry": 1788948660000
+  }
+]
