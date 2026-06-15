@@ -7,5 +7,14 @@
       "gold": 200
     },
     "maxUse": 1
+  },
+  {
+    "code": "SDA",
+    "name": "DSA",
+    "desc": "ADAD",
+    "reward": {
+      "gold": 200
+    },
+    "maxUse": 1
   }
 ]
