@@ -1,15 +1,14 @@
 [
   {
-    "code": "LUSUN666",
-    "name": "端午节大礼包",
-    "desc": "金币+5000、抽奖石+20、体力+60、重铸石+200",
+    "code": "CC110",
+    "name": "一个礼包",
+    "desc": "一个礼包",
     "reward": {
-      "gold": 5000,
-      "stamina": 60,
-      "lotteryStone": 20,
-      "reforgestone": 200
+      "gold": 1000,
+      "lotteryStone": 10,
+      "reforgestone": 10,
+      "forgeDust": 100
     },
-    "maxUse": 1,
-    "expiry": 1789426800000
+    "maxUse": 1
   }
 ]
