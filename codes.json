@@ -1,1 +1,14 @@
-
+[
+  {
+    "code": "JF6688",
+    "name": "护肝大礼包",
+    "desc": "金币+200000、抽奖石+50、蛋石+50",
+    "reward": {
+      "gold": 200000,
+      "lotteryStone": 50,
+      "petEggStones": 50
+    },
+    "maxUse": 1,
+    "uploaded": false
+  }
+]
