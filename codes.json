@@ -1,14 +1,117 @@
 [
   {
-    "code": "JF6688",
-    "name": "护肝大礼包",
-    "desc": "金币+200000、抽奖石+50、蛋石+50",
+    "code": "BOSSLUSU",
+    "name": "世界之主",
+    "desc": "创世大礼包",
     "reward": {
-      "gold": 200000,
-      "lotteryStone": 50,
-      "petEggStones": 50
+      "gold": 100000,
+      "lotteryStone": 100,
+      "reforgestone": 100,
+      "forgeDust": 100000,
+      "petFood": 999,
+      "petEggStones": 100,
+      "equip": [
+        {
+          "slot": "weapon",
+          "quality": 5,
+          "level": 1,
+          "baseStats": [
+            {
+              "stat": "atk",
+              "value": 1000
+            },
+            {
+              "stat": "atk",
+              "value": 1000
+            }
+          ],
+          "affixes": [
+            {
+              "id": "atk_flat",
+              "name": "atk_flat",
+              "value": 1000,
+              "stat": "atk",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "atk_pct",
+              "name": "atk_pct",
+              "value": 50,
+              "stat": "atk",
+              "type": "pct",
+              "affixQuality": 5
+            },
+            {
+              "id": "crit",
+              "name": "crit",
+              "value": 50,
+              "stat": "crit",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "critDmg",
+              "name": "critDmg",
+              "value": 100,
+              "stat": "critDmg",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "hp_flat",
+              "name": "hp_flat",
+              "value": 5000,
+              "stat": "hp",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "def_flat",
+              "name": "def_flat",
+              "value": 500,
+              "stat": "def",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "def_pct",
+              "name": "def_pct",
+              "value": 50,
+              "stat": "def",
+              "type": "pct",
+              "affixQuality": 5
+            },
+            {
+              "id": "hp_pct",
+              "name": "hp_pct",
+              "value": 50,
+              "stat": "hp",
+              "type": "pct",
+              "affixQuality": 5
+            },
+            {
+              "id": "spd_flat",
+              "name": "spd_flat",
+              "value": 200,
+              "stat": "spd",
+              "type": "flat",
+              "affixQuality": 5
+            },
+            {
+              "id": "elemMastery",
+              "name": "elemMastery",
+              "value": 5000,
+              "stat": "elemMastery",
+              "type": "flat",
+              "affixQuality": 5
+            }
+          ]
+        }
+      ]
     },
     "maxUse": 1,
-    "uploaded": false
+    "uploaded": false,
+    "hidden": true
   }
 ]
