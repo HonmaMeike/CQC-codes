@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CQC 兑换码工具 v4</title>
+<style>
+/* ====== RESET & BASE ====== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+    color:#e8e6f0;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:#08061a;
+}
+
+/* ====== ANIMATED COSMIC BACKGROUND ====== */
+.cosmic-bg{
+    position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;
+    background:
+        radial-gradient(ellipse at 20% 10%, rgba(120,60,200,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 90%, rgba(30,80,180,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 40%, rgba(180,130,50,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 70%, rgba(200,50,100,0.06) 0%, transparent 50%);
+    animation:bgShift 20s ease-in-out infinite;
+}
+@keyframes bgShift{
+    0%,100%{transform:scale(1) rotate(0deg);}
+    25%{transform:scale(1.05) rotate(1deg);}
+    50%{transform:scale(1.02) rotate(-0.5deg);}
+    75%{transform:scale(1.06) rotate(0.5deg);}
+}
+
+/* ====== STAR PARTICLES (CSS-only) ====== */
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.star-layer{position:absolute;top:0;left:0;width:100%;height:100%}
+.star-layer::before,.star-layer::after{
+    content:'';position:absolute;border-radius:50%;background:white;
+    animation:twinkle var(--dur) ease-in-out infinite;
+    animation-delay:var(--delay);
+    opacity:0;
+}
+/* layer 1 - slow bright stars */
+.star-layer:nth-child(1)::before{width:2px;height:2px;top:8%;left:12%;--dur:3s;--delay:0s;box-shadow:0 0 3px 1px rgba(255,255,255,0.8)}
+.star-layer:nth-child(1)::after{width:1.5px;height:1.5px;top:15%;left:78%;--dur:2.8s;--delay:0.6s;box-shadow:0 0 2px 1px rgba(255,255,255,0.6)}
+/* layer 2 */
+.star-layer:nth-child(2)::before{width:1px;height:1px;top:25%;left:35%;--dur:4s;--delay:1.2s}
+.star-layer:nth-child(2)::after{width:2px;height:2px;top:42%;left:62%;--dur:3.5s;--delay:0.3s;box-shadow:0 0 4px 2px rgba(255,215,0,0.5)}
+/* layer 3 */
+.star-layer:nth-child(3)::before{width:1.5px;height:1.5px;top:55%;left:18%;--dur:3.2s;--delay:2s;box-shadow:0 0 2px 1px rgba(180,130,255,0.6)}
+.star-layer:nth-child(3)::after{width:1px;height:1px;top:68%;left:85%;--dur:4.5s;--delay:0.9s}
+/* layer 4 */
+.star-layer:nth-child(4)::before{width:2px;height:2px;top:72%;left:42%;--dur:2.5s;--delay:1.8s;box-shadow:0 0 4px 2px rgba(100,180,255,0.7)}
+.star-layer:nth-child(4)::after{width:1px;height:1px;top:88%;left:55%;--dur:3.8s;--delay:0.4s}
+@keyframes twinkle{
+    0%,100%{opacity:0}
+    30%{opacity:0.7}
+    60%{opacity:1}
+    80%{opacity:0.3}
+}
+
+/* ====== FLOATING PARTICLES ====== */
+.float-particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.float-particle{
+    position:absolute;border-radius:50%;
+    animation:floatUp var(--dur2) ease-in infinite;
+    animation-delay:var(--delay2);
+    opacity:0;
+}
+@keyframes floatUp{
+    0%{transform:translateY(110vh) scale(0);opacity:0}
+    10%{opacity:1}
+    90%{opacity:0.6}
+    100%{transform:translateY(-10vh) scale(1.5);opacity:0}
+}
+
+/* ====== MAIN CONTAINER ====== */
+.app-container{
+    position:relative;z-index:10;
+    max-width:500px;margin:0 auto;padding:14px 14px 30px;
+}
+
+/* ====== HEADER ====== */
+.header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;margin-bottom:14px;
+    background:rgba(15,12,40,0.7);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,215,0,0.12);
+    border-radius:16px;
+    position:relative;overflow:hidden;
+}
+.header::before{
+    content:'';position:absolute;top:-1px;left:-1px;right:-1px;bottom:-1px;
+    border-radius:16px;z-index:-1;
+    background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,140,0,0.1),rgba(200,100,255,0.2),rgba(255,215,0,0.3));
+    background-size:300% 300%;
+    animation:borderShine 4s ease-in-out infinite;
+    opacity:0.5;
+}
+@keyframes borderShine{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+}
+.header-title{
+    font-size:22px;font-weight:900;letter-spacing:1px;
+    background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);
+    background-size:200% auto;
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:shimmer 3s linear infinite;
+    text-shadow:none;
+}
+@keyframes shimmer{
+    to{background-position:200% center}
+}
+.header-badge{
+    font-size:9px;padding:5px 10px;border-radius:20px;
+    cursor:pointer;font-weight:bold;letter-spacing:0.5px;
+    transition:all 0.3s ease;
+    border:1px solid rgba(255,255,255,0.1);
+    background:rgba(255,255,255,0.03);
+    color:#666;
+}
+.header-badge.configured{
+    background:rgba(76,175,80,0.12);
+    border-color:rgba(76,175,80,0.3);
+    color:#4caf50;
+}
+.header-badge:hover{transform:scale(1.05);}  
+
+/* ====== TAB BAR ====== */
+.tab-bar{
+    display:flex;gap:6px;margin-bottom:14px;
+    background:rgba(15,12,40,0.6);
+    backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:14px;padding:5px;
+}
+.tab-btn{
+    flex:1;padding:10px 6px;text-align:center;border-radius:10px;
+    font-size:12px;font-weight:700;cursor:pointer;
+    background:transparent;color:#666;
+    border:none;position:relative;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+    letter-spacing:0.5px;
+}
+.tab-btn:hover{color:#999;}
+.tab-btn.active{
+    color:#ffd700;
+    background:rgba(255,215,0,0.08);
+    box-shadow:0 0 20px rgba(255,215,0,0.1);
+}
+.tab-btn .tab-count{
+    font-size:9px;margin-left:2px;opacity:0.6;
+    transition:opacity 0.3s;
+}
+.tab-btn.active .tab-count{opacity:1}
+
+/* ====== TAB CONTENT ====== */
+.tab-content{display:none;animation:fadeSlideIn 0.4s ease}
+.tab-content.active{display:block}
+@keyframes fadeSlideIn{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* ====== GLASS CARD ====== */
+.card{
+    background:rgba(15,12,40,0.65);
+    backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:16px;padding:18px;margin-bottom:12px;
+    position:relative;overflow:hidden;
+    transition:all 0.3s ease;
+}
+.card::after{
+    content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);
+    transition:left 0.8s ease;
+}
+.card:hover::after{left:100%}
+.card-title{
+    font-size:15px;font-weight:800;margin-bottom:14px;
+    color:#ffd700;letter-spacing:0.5px;
+    display:flex;align-items:center;gap:8px;
+}
+.card-title .title-icon{
+    width:32px;height:32px;border-radius:10px;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:16px;
+    background:rgba(255,215,0,0.1);
+    border:1px solid rgba(255,215,0,0.2);
+}
+
+/* ====== FORM ELEMENTS ====== */
+label{
+    display:block;font-size:11px;color:#8a8a9a;
+    margin-bottom:5px;margin-top:10px;font-weight:600;
+    letter-spacing:0.3px;transition:color 0.3s;
+}
+input:focus + label,label:has(+input:focus){color:#ffd700}
+input,select{
+    width:100%;padding:11px 14px;border-radius:10px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(10,8,30,0.7);
+    color:#e8e6f0;font-size:13px;outline:none;
+    font-family:inherit;
+    transition:all 0.3s ease;
+}
+input:hover,select:hover{border-color:rgba(255,255,255,0.15)}
+input:focus,select:focus{
+    border-color:rgba(255,215,0,0.5);
+    background:rgba(15,12,40,0.9);
+    box-shadow:0 0 0 3px rgba(255,215,0,0.06),0 0 20px rgba(255,215,0,0.08);
+}
+input[type="number"]{-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:#ffd700}
+::placeholder{color:rgba(255,255,255,0.15)}
+
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grid-3 input,.grid-3 select{padding:8px 10px;font-size:12px}
+.grid-3 label{font-size:9px;margin-top:0}
+
+/* ====== SECTION LABEL ====== */
+.section-label{
+    font-size:12px;color:#ffaa00;margin-top:16px;margin-bottom:8px;
+    font-weight:800;letter-spacing:1px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(255,170,0,0.15);
+    display:flex;align-items:center;gap:6px;
+    text-transform:uppercase;
+}
+.section-label::after{
+    content:'';flex:1;height:1px;
+    background:linear-gradient(90deg,rgba(255,170,0,0.2),transparent);
+}
+
+/* ====== BUTTONS ====== */
+.btn{
+    padding:12px 24px;border-radius:12px;border:none;
+    font-size:13px;font-weight:700;cursor:pointer;text-align:center;
+    font-family:inherit;letter-spacing:0.5px;
+    transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+    position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(0.96)}
+.btn::after{
+    content:'';position:absolute;top:50%;left:50%;width:0;height:0;
+    border-radius:50%;background:rgba(255,255,255,0.2);
+    transform:translate(-50%,-50%);transition:width 0.6s,height 0.6s;
+}
+.btn:active::after{width:300px;height:300px}
+.btn-gold{
+    background:linear-gradient(135deg,#ffd700,#ff8f00);
+    color:#1a1a2e;width:100%;margin-top:12px;
+    box-shadow:0 4px 20px rgba(255,140,0,0.25);
+    font-size:14px;
+}
+.btn-gold:hover{
+    box-shadow:0 6px 30px rgba(255,140,0,0.4);
+    transform:translateY(-1px);
+}
+.btn-sm{padding:7px 14px;font-size:11px;border-radius:8px}
+.btn-outline{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.12);color:#aaa;
+}
+.btn-outline:hover{
+    background:rgba(255,255,255,0.06);
+    border-color:rgba(255,255,255,0.2);color:#ddd;
+}
+.btn-green{
+    background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;
+    box-shadow:0 4px 15px rgba(46,125,50,0.2);
+}
+.btn-green:hover{box-shadow:0 6px 25px rgba(46,125,50,0.35)}
+.btn-blue{
+    background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;
+    box-shadow:0 4px 15px rgba(21,101,192,0.2);
+}
+.btn-blue:hover{box-shadow:0 6px 25px rgba(21,101,192,0.35)}
+.btn-danger{
+    background:transparent;border:1px solid rgba(244,67,54,0.4);color:#f44336;
+}
+.btn-danger:hover{background:rgba(244,67,54,0.08);border-color:#f44336}
+
+/* ====== TOAST ====== */
+.toast-container{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    z-index:9999;pointer-events:none;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.toast{
+    padding:10px 24px;border-radius:24px;font-size:13px;font-weight:700;
+    background:rgba(20,15,50,0.95);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,215,0,0.3);
+    color:#ffd700;letter-spacing:0.3px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 20px rgba(255,215,0,0.1);
+    animation:toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    pointer-events:auto;
+}
+.toast.error{border-color:rgba(244,67,54,0.5);color:#f44336;box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 20px rgba(244,67,54,0.15)}
+.toast.success{border-color:rgba(76,175,80,0.5);color:#69f0ae}
+@keyframes toastIn{
+    0%{opacity:0;transform:translateY(-30px) scale(0.8)}
+    100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ====== MESSAGE ====== */
+.msg{text-align:center;font-size:11px;min-height:22px;margin-top:8px;color:#ffd700;font-weight:600}
+
+/* ====== CODE ITEMS (manage/upload) ====== */
+.code-item{
+    display:flex;align-items:center;gap:10px;padding:12px;
+    margin-bottom:8px;
+    background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.04);
+    border-radius:12px;font-size:11px;
+    transition:all 0.3s ease;
+    animation:itemSlideIn 0.35s ease backwards;
+}
+@keyframes itemSlideIn{
+    from{opacity:0;transform:translateX(-20px)}
+    to{opacity:1;transform:translateX(0)}
+}
+.code-item:hover{
+    background:rgba(255,255,255,0.04);
+    border-color:rgba(255,215,0,0.1);
+    transform:translateX(2px);
+}
+.code-item .name{font-weight:700;color:#ffd700;min-width:72px;font-size:12px}
+.code-item .desc{flex:1;color:#999}
+.code-item .del-btn{
+    background:transparent;border:1px solid rgba(244,67,54,0.3);
+    color:#f44336;font-size:10px;padding:4px 8px;border-radius:6px;
+    cursor:pointer;transition:all 0.2s;
+}
+.code-item .del-btn:hover{
+    background:rgba(244,67,54,0.1);border-color:#f44336;
+}
+
+/* ====== EMPTY STATE ====== */
+.empty-state{
+    text-align:center;padding:40px 20px;color:#333;
+    animation:fadeSlideIn 0.5s ease;
+}
+.empty-state .icon{font-size:48px;margin-bottom:12px;opacity:0.4}
+.empty-state .text{font-size:13px;opacity:0.5}
+
+/* ====== EQUIP WRAP ====== */
+.equip-wrap{
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:12px;padding:12px;margin-bottom:8px;
+    background:rgba(255,255,255,0.015);
+    animation:equipSlideIn 0.35s ease;
+    transition:all 0.3s ease;
+}
+.equip-wrap:hover{
+    border-color:rgba(255,215,0,0.15);
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+@keyframes equipSlideIn{
+    from{opacity:0;transform:translateY(-10px);max-height:0}
+    to{opacity:1;transform:translateY(0);max-height:500px}
+}
+
+/* ====== AFFIX ROW ====== */
+.affix-row{
+    display:flex;gap:4px;margin-bottom:3px;align-items:center;
+    animation:affixIn 0.25s ease;
+}
+@keyframes affixIn{
+    from{opacity:0;transform:scale(0.9)}
+    to{opacity:1;transform:scale(1)}
+}
+
+/* ====== SPINNER ====== */
+.spinner{
+    display:inline-block;width:18px;height:18px;
+    border:2px solid rgba(255,255,255,0.2);
+    border-top-color:#ffd700;border-radius:50%;
+    animation:spin 0.7s linear infinite;
+    vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ====== MODAL ====== */
+.modal-overlay{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    display:flex;align-items:flex-end;justify-content:center;
+    z-index:9999;animation:fadeIn 0.25s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{
+    background:linear-gradient(180deg,rgba(20,15,50,0.98),rgba(15,12,35,0.98));
+    border:1px solid rgba(255,215,0,0.15);
+    border-radius:20px 20px 0 0;padding:24px 20px 30px;
+    width:100%;max-width:440px;max-height:85vh;overflow-y:auto;
+    box-shadow:0 -10px 40px rgba(0,0,0,0.5);
+    animation:slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp{
+    from{transform:translateY(100%)}
+    to{transform:translateY(0)}
+}
+
+/* ====== CODE DETAIL CARD ====== */
+.detail-card{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;
+    z-index:9999;animation:fadeIn 0.2s ease;
+}
+.detail-card-inner{
+    background:linear-gradient(180deg,#1a1530,#0f0c20);
+    border:2px solid rgba(255,215,0,0.2);
+    border-radius:20px;padding:24px 20px;
+    width:88vw;max-width:380px;
+    box-shadow:0 0 60px rgba(255,215,0,0.1),0 20px 60px rgba(0,0,0,0.5);
+    animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    position:relative;
+}
+@keyframes popIn{
+    0%{opacity:0;transform:scale(0.7) translateY(30px)}
+    100%{opacity:1;transform:scale(1) translateY(0)}
+}
+.detail-close{
+    position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+    color:#888;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all 0.2s;
+}
+.detail-close:hover{background:rgba(244,67,54,0.15);border-color:rgba(244,67,54,0.3);color:#f44336}
+.detail-badge{
+    display:inline-block;padding:3px 10px;border-radius:20px;
+    font-size:10px;font-weight:700;margin:4px 2px;
+}
+.detail-item-row{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;margin:4px 0;
+    background:rgba(255,255,255,0.03);border-radius:10px;
+}
+.detail-item-icon{font-size:18px;width:28px;text-align:center}
+.detail-item-name{flex:1;font-size:13px;color:#ccc}
+.detail-item-count{font-size:13px;font-weight:bold;color:#ffd700}
+
+/* ====== PULSE RING (for important actions) ====== */
+.pulse-ring{
+    position:absolute;inset:-3px;border-radius:14px;
+    border:2px solid rgba(255,215,0,0.4);
+    animation:pulseRing 2s ease-out infinite;
+    pointer-events:none;
+}
+@keyframes pulseRing{
+    0%{opacity:1;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.08)}
+}
+
+/* ====== SCROLLBAR ====== */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.15)}
+
+/* ====== CATEGORY HEADER ====== */
+.cat-header{
+    font-size:11px;font-weight:700;margin-bottom:8px;margin-top:4px;
+    padding:6px 10px;border-radius:8px;
+    display:flex;align-items:center;gap:6px;
+}
+.cat-header.normal{color:#69f0ae;background:rgba(105,240,174,0.06)}
+.cat-header.hidden{color:#ffab40;background:rgba(255,171,64,0.06)}
+.cat-header.pending{color:#ff8a65;background:rgba(255,138,101,0.06)}
+.cat-header.uploaded{color:#81d4fa;background:rgba(129,212,250,0.06)}
+
+/* ====== RESPONSIVE ====== */
+@media(max-width:400px){
+    .app-container{padding:10px 10px 24px}
+    .header{padding:12px 14px}
+    .header-title{font-size:18px}
+    .card{padding:14px;border-radius:14px}
+    .tab-btn{font-size:10px;padding:8px 3px}
+}
+</style>
+</head>
+<body>
+
+<!-- COSMIC BACKGROUND -->
+<div class="cosmic-bg"></div>
+<div class="stars">
+    <div class="star-layer"></div>
+    <div class="star-layer"></div>
+    <div class="star-layer"></div>
+    <div class="star-layer"></div>
+</div>
+<div class="float-particles" id="float-particles"></div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- APP -->
+<div class="app-container">
+
+<!-- HEADER -->
+<div class="header">
+    <span class="header-title">🎁 永恒兑换码</span>
+    <span class="header-badge" id="cfg-status" onclick="openSettings()">⚙ 未配置</span>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+    <div class="tab-btn active" id="tab-create" onclick="switchTab('create')">
+        🛠 创建
+    </div>
+    <div class="tab-btn" id="tab-manage" onclick="switchTab('manage')">
+        📋 管理 <span class="tab-count" id="tab-manage-count">(0)</span>
+    </div>
+    <div class="tab-btn" id="tab-upload" onclick="switchTab('upload')">
+        ☁ 上传
+    </div>
+</div>
+
+<!-- CREATE TAB -->
+<div class="tab-content active" id="panel-create">
+<div class="card">
+    <div class="card-title">
+        <span class="title-icon">🛠</span>创建兑换码
+    </div>
+    <label>🎫 兑换码</label>
+    <input id="code" placeholder="如: PETFOOD20" maxlength="16" autocomplete="off">
+    <label>📦 礼包名称</label>
+    <input id="name" placeholder="如: 宠物食粮大礼包" maxlength="20">
+    <label>📝 奖励描述</label>
+    <input id="desc" placeholder="如: 宠物食物+20、金币+500" maxlength="40">
+
+    <div class="section-label">💰 常规奖励</div>
+    <div class="grid-3">
+        <div><label>💰 金币</label><input id="gold" type="number" value="0" min="0"></div>
+        <div><label>💎 钻石</label><input id="gem" type="number" value="0" min="0"></div>
+        <div><label>⚡ 体力</label><input id="stamina" type="number" value="0" min="0"></div>
+        <div><label>🎲 抽奖石</label><input id="lottery" type="number" value="0" min="0"></div>
+        <div><label>💠 重铸石</label><input id="reforge" type="number" value="0" min="0"></div>
+        <div><label>🔧 锻造粉</label><input id="dust" type="number" value="0" min="0"></div>
+        <div><label>🌿 草药</label><input id="herb" type="number" value="0" min="0"></div>
+        <div><label>🪨 矿石</label><input id="ore" type="number" value="0" min="0"></div>
+        <div><label>🍖 宠物食物</label><input id="petfood" type="number" value="0" min="0"></div>
+        <div><label>🥚 蛋石</label><input id="eggstone" type="number" value="0" min="0"></div>
+    </div>
+
+    <div class="section-label">🛡 装备发放</div>
+    <div id="equip-fields"></div>
+    <button class="btn btn-sm btn-outline" style="width:100%;margin-top:8px" onclick="addEquipField()">+ 添加装备</button>
+
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:10px">
+        <div style="width:110px"><label>🔢 可领次数</label><input id="maxUse" type="number" value="1" min="0"></div>
+        <div style="flex:1"><label>📅 过期时间</label><input id="expiry" type="datetime-local"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="hidden" style="width:auto">
+        <label style="margin:0;font-size:11px;color:#ffab40;font-weight:600">🔒 隐藏码（不在列表显示，仅输入兑换）</label>
+    </div>
+    <div class="msg" id="create-msg"></div>
+    <button class="btn btn-gold" onclick="createCode()">
+        ✨ 生成兑换码
+    </button>
+</div>
+</div>
+
+<!-- MANAGE TAB -->
+<div class="tab-content" id="panel-manage">
+<div class="card">
+    <div class="card-title">
+        <span class="title-icon">📋</span>兑换码管理
+        <span style="font-size:10px;color:#888;font-weight:normal;margin-left:auto" id="manage-count">(0 个)</span>
+    </div>
+    <div id="manage-list"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-sm btn-outline" style="flex:1" onclick="exportJSON()">📄 导出JSON</button>
+        <button class="btn btn-sm btn-outline" style="flex:1" onclick="copyAll()">📋 复制列表</button>
+        <button class="btn btn-sm btn-danger" style="flex:0.5" onclick="if(confirm('确定清空所有兑换码？此操作不可恢复！')){codes=[];save();showToast('已清空','success')}">🗑 清空</button>
+    </div>
+</div>
+</div>
+
+<!-- UPLOAD TAB -->
+<div class="tab-content" id="panel-upload">
+<div class="card" style="border-color:rgba(79,195,247,0.12)">
+    <div class="card-title" style="color:#4fc3f7">
+        <span class="title-icon" style="background:rgba(79,195,247,0.1);border-color:rgba(79,195,247,0.2)">☁</span>上传到GitHub
+        <span style="font-size:10px;color:#888;font-weight:normal;margin-left:auto" id="upload-target">未配置</span>
+    </div>
+    <div id="upload-list"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-green btn-sm" style="flex:2" onclick="uploadAll()">📤 一键上传全部</button>
+        <button class="btn btn-sm" style="flex:1;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer" onclick="fetchRemoteCodes()">⬇ 远程刷新</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="openSettings()">⚙ 配置</button>
+    </div>
+    <div class="msg" id="upload-msg"></div>
+</div>
+</div>
+
+</div><!-- .app-container -->
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+// ====== FLOATING PARTICLES GENERATION ======
+(function(){
+    var container=document.getElementById('float-particles');
+    var colors=['rgba(255,215,0,0.4)','rgba(255,140,0,0.3)','rgba(180,130,255,0.35)','rgba(100,180,255,0.3)','rgba(255,255,255,0.25)'];
+    for(var i=0;i<25;i++){
+        var p=document.createElement('div');
+        p.className='float-particle';
+        var size=Math.random()*3+1.5;
+        p.style.width=size+'px';p.style.height=size+'px';
+        p.style.left=(Math.random()*95)+'%';
+        p.style.background=colors[Math.floor(Math.random()*colors.length)];
+        p.style.setProperty('--dur2',(Math.random()*12+8)+'s');
+        p.style.setProperty('--delay2',(Math.random()*10)+'s');
+        p.style.boxShadow='0 0 '+ (size*2) +'px '+ (size) +'px ' + colors[Math.floor(Math.random()*colors.length)];
+        container.appendChild(p);
+    }
+})();
+
+// ====== DATA ======
+var codes=[],equipFieldCount=0;
+var SK='cqc_redeem_codes',CK='cqc_redeem_config';
+
+function load(){
+    try{var s=localStorage.getItem(SK);if(s)codes=JSON.parse(s)}catch(e){codes=[]}
+    if(!Array.isArray(codes))codes=[];
+    for(var i=0;i<codes.length;i++)if(!codes[i].hasOwnProperty('uploaded'))codes[i].uploaded=false;
+    renderAll();
+}
+function save(){localStorage.setItem(SK,JSON.stringify(codes));renderAll()}
+function renderAll(){
+    renderManage();renderUpload();
+    document.getElementById('tab-manage-count').textContent='('+codes.length+')';
+    document.getElementById('manage-count').textContent='('+codes.length+' 个)';
+    updateStatus();
+}
+
+function switchTab(id){
+    var tabs=['create','manage','upload'];
+    for(var i=0;i<tabs.length;i++){
+        var t=tabs[i];
+        var tb=document.getElementById('tab-'+t);
+        var pn=document.getElementById('panel-'+t);
+        if(tb){
+            if(t===id)tb.classList.add('active');
+            else tb.classList.remove('active');
+        }
+        if(pn){
+            if(t===id){pn.classList.add('active');pn.style.animation='none';pn.offsetHeight;pn.style.animation=''}
+            else pn.classList.remove('active');
+        }
+    }
+}
+
+// ====== TOAST SYSTEM ======
+function showToast(t,type){
+    type=type||'';
+    var container=document.getElementById('toast-container');
+    var el=document.createElement('div');
+    el.className='toast'+(type?' '+type:'');
+    el.textContent=t;
+    container.appendChild(el);
+    setTimeout(function(){
+        el.style.opacity='0';el.style.transform='translateY(-20px) scale(0.9)';
+        el.style.transition='all 0.3s ease';
+        setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},300);
+    },2000);
+}
+
+function getVal(id){
+    var e=document.getElementById(id);
+    return e?(parseInt(e.value)||0):0;
+}
+
+// ====== CONFIG ======
+function cfg(){try{var c=localStorage.getItem(CK);return c?JSON.parse(c):{}}catch(e){return{}}}
+function setCfg(c){localStorage.setItem(CK,JSON.stringify(c));updateStatus()}
+function updateStatus(){
+    var c=cfg(),e=document.getElementById('cfg-status');
+    if(c.ghOwner&&c.ghRepo){
+        e.textContent='☁ '+c.ghOwner+'/'+c.ghRepo;
+        e.style.color='#4caf50';
+        e.classList.add('configured');
+    }else{
+        e.textContent='⚙ 未配置';
+        e.style.color='#666';
+        e.classList.remove('configured');
+    }
+    var t=document.getElementById('upload-target');
+    if(t)t.textContent=(c.ghOwner&&c.ghRepo)?c.ghOwner+'/'+c.ghRepo:'未配置';
+}
+
+// ====== EQUIP FIELDS ======
+var EQUIP_SLOTS_HTML='<option value="">— 槽位 —</option><option value="weapon">⚔ 武器</option><option value="offhand">📖 副手</option><option value="helmet">⛑ 头盔</option><option value="armor">🛡 护甲</option><option value="boots">👢 鞋子</option>';
+var QUALITY_HTML='<option value="0">⚪ 白1</option><option value="1">🟢 绿2</option><option value="2">🔵 蓝4</option><option value="3" selected>🟣 紫6</option><option value="4">🟠 橙8</option><option value="5">🟡 金10</option>';
+var AFFIX_HTML='<option value="">— 不添加 —</option><optgroup label="── 数值型 ──"><option value="atk_flat">⚔ 攻击力</option><option value="def_flat">🛡 防御力</option><option value="hp_flat">❤ 生命值</option><option value="spd_flat">💨 速度</option><option value="healBonus">💚 治疗加成</option><option value="phyMastery">💪 物理精通</option><option value="elemMastery">🔮 元素精通</option></optgroup><optgroup label="── 百分比型 ──"><option value="atk_pct">⚔ 攻击%</option><option value="def_pct">🛡 防御%</option><option value="hp_pct">❤ 生命%</option><option value="crit">💥 暴击率</option><option value="critDmg">💢 暴击伤害</option></optgroup>';
+
+function addEquipField(){
+    var n=equipFieldCount++;
+    var h='<div class="equip-wrap" id="equip-wrap-'+n+'">'+
+        '<div style="display:flex;gap:5px;align-items:flex-end">'+
+        '<select id="equip-slot-'+n+'" style="flex:1;padding:7px 8px;font-size:12px">'+EQUIP_SLOTS_HTML+'</select>'+
+        '<select id="equip-quality-'+n+'" style="width:78px;padding:7px 6px;font-size:11px" onchange="updateBtn(\''+n+'\')">'+QUALITY_HTML+'</select>'+
+        '<input id="equip-level-'+n+'" type="number" value="1" min="1" max="100" style="width:52px;padding:7px 6px;font-size:12px" placeholder="Lv">'+
+        '<button style="background:transparent;border:1px solid rgba(244,67,54,0.4);color:#f44336;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:11px;transition:all 0.2s" onmouseover="this.style.background=\'rgba(244,67,54,0.1)\'" onmouseout="this.style.background=\'transparent\'" onclick="var w=document.getElementById(\'equip-wrap-'+n+'\');if(w){w.style.opacity=\'0\';w.style.transform=\'scale(0.95)\';w.style.transition=\'all 0.25s ease\';setTimeout(function(){if(w.parentNode)w.parentNode.removeChild(w)},250)}">✕</button></div>'+
+        '<div style="margin-top:8px"><input id="equip-name-'+n+'" placeholder="装备名（留空随机生成）" style="font-size:11px;padding:8px"></div>'+
+        '<div style="display:flex;gap:6px;margin-top:8px;align-items:center"><span style="font-size:10px;color:#8a8a9a;width:34px;font-weight:600">基础1</span>'+
+        '<select id="equip-bs1-'+n+'" style="flex:1;font-size:11px;padding:6px"><option value="">随机</option><option value="atk">⚔ 攻击</option><option value="def">🛡 防御</option><option value="hp">❤ 生命</option><option value="spd">💨 速度</option></select>'+
+        '<input id="equip-bs1v-'+n+'" type="number" value="0" min="0" style="width:58px;font-size:11px;padding:6px" placeholder="值"></div>'+
+        '<div style="display:flex;gap:6px;margin-top:4px;align-items:center"><span style="font-size:10px;color:#8a8a9a;width:34px;font-weight:600">基础2</span>'+
+        '<select id="equip-bs2-'+n+'" style="flex:1;font-size:11px;padding:6px"><option value="">随机</option><option value="atk">⚔ 攻击</option><option value="def">🛡 防御</option><option value="hp">❤ 生命</option><option value="spd">💨 速度</option></select>'+
+        '<input id="equip-bs2v-'+n+'" type="number" value="0" min="0" style="width:58px;font-size:11px;padding:6px" placeholder="值"></div>'+
+        '<div style="font-size:10px;color:#8a8a9a;margin-top:10px;font-weight:600">📜 词条</div>'+
+        '<div id="affix-list-'+n+'"></div>'+
+        '<button class="btn btn-sm btn-outline" style="width:100%;font-size:10px;padding:6px;margin-top:4px" id="add-affix-btn-'+n+'" onclick="addAffix(\''+n+'\')">+ 添加词条（最多6）</button></div>';
+    document.getElementById('equip-fields').insertAdjacentHTML('beforeend',h);
+    // 自动滚动到新装备
+    var wrap=document.getElementById('equip-wrap-'+n);
+    if(wrap)wrap.scrollIntoView({behavior:'smooth',block:'center'});
+    addAffix(n);
+}
+
+function updateBtn(n){
+    var MAX=[1,2,4,6,8,10];
+    var q=parseInt((document.getElementById('equip-quality-'+n)||{}).value);if(isNaN(q))q=3;
+    var max=MAX[q];
+    var btn=document.getElementById('add-affix-btn-'+n);
+    if(btn)btn.textContent='+ 添加词条（最多'+max+'）';
+    // 品质降级时裁剪多余空行
+    var rows=document.querySelectorAll('#affix-list-'+n+' .affix-row');
+    if(rows.length>max){
+        for(var i=rows.length-1;i>=max;i--){
+            if(rows[i].parentNode)rows[i].parentNode.removeChild(rows[i]);
+        }
+    }
+}
+
+function addAffix(n){
+    var MAX=[1,2,4,6,8,10];
+    var q=parseInt((document.getElementById('equip-quality-'+n)||{}).value);if(isNaN(q))q=3;
+    var max=MAX[q]||6;
+    var cnt=document.querySelectorAll('#affix-list-'+n+' .affix-row').length;
+    if(cnt>=max){showToast('⚠ 该品质最多'+max+'条词条','error');return}
+    var row='<div class="affix-row"><select class="affix-id" style="flex:1;font-size:10px;padding:5px">'+AFFIX_HTML+'</select>'+
+        '<input class="affix-val" type="number" value="10" min="1" style="width:52px;font-size:10px;padding:5px" placeholder="值">'+
+        '<select class="affix-q" style="width:60px;font-size:10px;padding:5px">'+QUALITY_HTML+'</select>'+
+        '<button style="background:transparent;border:1px solid rgba(244,67,54,0.4);color:#f44336;font-size:9px;padding:3px 5px;border-radius:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background=\'rgba(244,67,54,0.1)\'" onmouseout="this.style.background=\'transparent\'" onclick="var r=this.parentNode;r.style.opacity=\'0\';r.style.transform=\'scale(0.9)\';r.style.transition=\'all 0.2s ease\';setTimeout(function(){if(r.parentNode)r.parentNode.removeChild(r)},200)">✕</button></div>';
+    document.getElementById('affix-list-'+n).insertAdjacentHTML('beforeend',row);
+}
+
+// ====== CREATE CODE ======
+function createCode(){
+    var code=document.getElementById('code').value.trim().toUpperCase();
+    var name=document.getElementById('name').value.trim();
+    var desc=document.getElementById('desc').value.trim();
+    if(!code){showToast('⚠ 请输入兑换码','error');return}
+    if(!name){showToast('⚠ 请输入礼包名称','error');return}
+    for(var i=0;i<codes.length;i++)if(codes[i].code===code){showToast('⚠ 该兑换码已存在','error');return}
+    var r={};
+    var gold=getVal('gold'),gem=getVal('gem'),sta=getVal('stamina'),lot=getVal('lottery');
+    var ref=getVal('reforge'),dust=getVal('dust'),herb=getVal('herb'),ore=getVal('ore');
+    var pfood=getVal('petfood'),egg=getVal('eggstone');
+    if(gold)r.gold=gold;if(gem)r.gem=gem;if(sta)r.stamina=sta;if(lot)r.lotteryStone=lot;
+    if(ref)r.reforgestone=ref;if(dust)r.forgeDust=dust;if(herb)r.herb=herb;if(ore)r.ore=ore;
+    if(pfood)r.petFood=pfood;if(egg)r.petEggStones=egg;
+
+    var equips=[];
+    for(var ei=0;ei<equipFieldCount;ei++){
+        var slot=(document.getElementById('equip-slot-'+ei)||{}).value;
+        if(!slot)continue;
+        var q=parseInt((document.getElementById('equip-quality-'+ei)||{}).value);if(isNaN(q))q=3;
+        var lv=parseInt((document.getElementById('equip-level-'+ei)||{}).value)||1;
+        var en=(document.getElementById('equip-name-'+ei)||{}).value||'';
+        var eq={slot:slot,quality:q,level:lv};
+        if(en)eq.name=en;
+        var bs1=(document.getElementById('equip-bs1-'+ei)||{}).value||'';
+        var bs1v=parseInt((document.getElementById('equip-bs1v-'+ei)||{}).value)||0;
+        var bs2=(document.getElementById('equip-bs2-'+ei)||{}).value||'';
+        var bs2v=parseInt((document.getElementById('equip-bs2v-'+ei)||{}).value)||0;
+        if(bs1&&bs1v>0){eq.baseStats=[{stat:bs1,value:bs1v}];if(bs2&&bs2v>0)eq.baseStats.push({stat:bs2,value:bs2v})}
+        var rows=document.querySelectorAll('#affix-list-'+ei+' .affix-row');
+        var affs=[];
+        for(var ai=0;ai<rows.length;ai++){
+            var aid=(rows[ai].querySelector('.affix-id')||{}).value||'';
+            var av=parseInt((rows[ai].querySelector('.affix-val')||{}).value)||0;
+            var aq=parseInt((rows[ai].querySelector('.affix-q')||{}).value);if(isNaN(aq))aq=3;
+            if(aid&&av>0)affs.push({id:aid,name:aid,value:av,stat:aid.replace('_flat','').replace('_pct',''),type:aid.indexOf('_pct')>=0?'pct':'flat',affixQuality:aq});
+        }
+        if(affs.length>0)eq.affixes=affs;
+        equips.push(eq);
+    }
+    if(equips.length>0)r.equip=equips;
+    if(!Object.keys(r).length){showToast('⚠ 至少设置一项奖励','error');return}
+
+    var maxUse=getVal('maxUse');
+    var expVal=document.getElementById('expiry').value;
+    if(expVal)expVal=new Date(expVal).getTime();
+    var hidden=!!document.getElementById('hidden').checked;
+    var entry={code:code,name:name,desc:desc||name,reward:r,maxUse:maxUse||1,uploaded:false,hidden:hidden};
+    if(expVal)entry.expiry=expVal;
+    codes.push(entry);save();
+    showToast('✅ '+code+' 已成功生成！','success');
+    // 重置表单
+    document.getElementById('code').value='';document.getElementById('name').value='';document.getElementById('desc').value='';
+    document.getElementById('equip-fields').innerHTML='';equipFieldCount=0;
+    setTimeout(function(){addEquipField()},100);
+    switchTab('manage');
+}
+
+// ====== MANAGE LIST ======
+function renderManage(){
+    var list=document.getElementById('manage-list');
+    if(!codes.length){list.innerHTML='<div class="empty-state"><div class="icon">📭</div><div class="text">暂无兑换码</div></div>';return}
+    var normal=[],hidden=[];
+    for(var i=0;i<codes.length;i++){if(codes[i].hidden)hidden.push(i);else normal.push(i)}
+    var h='';
+    if(normal.length){
+        h+='<div class="cat-header normal">🎁 正常礼包 <span style="opacity:0.6">('+normal.length+')</span></div>';
+        for(var n=normal.length-1;n>=0;n--){
+            var ni=normal[n],c=codes[ni];
+            var exp=c.expiry?(new Date(c.expiry).toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'})):'永久';
+            if(c.expiry&&Date.now()>c.expiry)exp='<span style="color:#f44336">已过期</span>';
+            h+='<div class="code-item" style="animation-delay:'+(n*0.03)+'s" onclick="showCodeDetail('+ni+')">'+
+                '<span class="name">'+c.name+'</span>'+
+                '<span class="desc">'+c.desc+'</span>'+
+                '<span style="font-size:9px;color:#666">'+exp+' ×'+(c.maxUse||'∞')+'</span>'+
+                '<button class="del-btn" onclick="event.stopPropagation();delCode('+ni+')">✕</button></div>';
+        }
+    }
+    if(hidden.length){
+        h+='<div class="cat-header hidden" style="margin-top:14px">🔒 隐藏礼包 <span style="opacity:0.6">('+hidden.length+')</span></div>';
+        for(var m=hidden.length-1;m>=0;m--){
+            var hi=hidden[m],c=codes[hi];
+            var exp=c.expiry?(new Date(c.expiry).toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'})):'永久';
+            if(c.expiry&&Date.now()>c.expiry)exp='<span style="color:#f44336">已过期</span>';
+            h+='<div class="code-item" style="border-color:rgba(255,171,64,0.15);animation-delay:'+(m*0.03)+'s" onclick="showCodeDetail('+hi+')">'+
+                '<span class="name" style="color:#ffab40;">'+c.name+' 🔒</span>'+
+                '<span class="desc">'+c.desc+'</span>'+
+                '<span style="font-size:9px;color:#666">'+exp+' ×'+(c.maxUse||'∞')+'</span>'+
+                '<button class="del-btn" onclick="event.stopPropagation();delCode('+hi+')">✕</button></div>';
+        }
+    }
+    list.innerHTML=h;
+}
+
+function renderUpload(){
+    var list=document.getElementById('upload-list');
+    var c=cfg(),ok=!!(c.ghOwner&&c.ghRepo);
+    if(!codes.length){list.innerHTML='<div class="empty-state"><div class="icon">📭</div><div class="text">暂无兑换码</div></div>';return}
+    var pNormal=[],pHidden=[],dNormal=[],dHidden=[];
+    for(var i=0;i<codes.length;i++){
+        if(codes[i].uploaded){if(codes[i].hidden)dHidden.push(i);else dNormal.push(i)}
+        else{if(codes[i].hidden)pHidden.push(i);else pNormal.push(i)}
+    }
+    var h='';
+    if(pNormal.length){
+        h+='<div class="cat-header pending">⏳ 待上传 · 正常 <span style="opacity:0.6">('+pNormal.length+')</span></div>';
+        for(var i=0;i<pNormal.length;i++){
+            var ci=pNormal[i],cc=codes[ci];
+            h+='<div class="code-item" style="animation-delay:'+(i*0.03)+'s"><span class="name">'+cc.name+'</span><span class="desc">'+cc.desc+'</span>'+
+                (ok?'<button class="btn btn-blue btn-sm" style="padding:5px 12px;font-size:10px" onclick="uploadOne('+ci+')">上传</button>':'<span style="font-size:9px;color:#555">需配置</span>')+'</div>';
+        }
+    }
+    if(pHidden.length){
+        h+='<div class="cat-header pending" style="margin-top:12px">🔒 待上传 · 隐藏 <span style="opacity:0.6">('+pHidden.length+')</span></div>';
+        for(var j=0;j<pHidden.length;j++){
+            var hi=pHidden[j],hc=codes[hi];
+            h+='<div class="code-item" style="border-color:rgba(255,171,64,0.15);animation-delay:'+(j*0.03)+'s"><span class="name" style="color:#ffab40;">'+hc.name+' 🔒</span><span class="desc">'+hc.desc+'</span>'+
+                (ok?'<button class="btn btn-blue btn-sm" style="padding:5px 12px;font-size:10px" onclick="uploadOne('+hi+')">上传</button>':'<span style="font-size:9px;color:#555">需配置</span>')+'</div>';
+        }
+    }
+    if(dNormal.length){
+        h+='<div class="cat-header uploaded" style="margin-top:12px">✅ 已上传 · 正常 <span style="opacity:0.6">('+dNormal.length+')</span></div>';
+        for(var k=0;k<dNormal.length;k++){
+            var di=dNormal[k],dc=codes[di];
+            h+='<div class="code-item" style="opacity:0.55;animation-delay:'+(k*0.03)+'s"><span class="name" style="color:#888">'+dc.name+'</span><span class="desc" style="color:#666">'+dc.desc+'</span><span style="font-size:9px;color:#4fc3f7">✅</span></div>';
+        }
+    }
+    if(dHidden.length){
+        h+='<div class="cat-header uploaded" style="margin-top:12px">🔒 已上传 · 隐藏 <span style="opacity:0.6">('+dHidden.length+')</span></div>';
+        for(var m=0;m<dHidden.length;m++){
+            var di2=dHidden[m],dc2=codes[di2];
+            h+='<div class="code-item" style="opacity:0.55;border-color:rgba(255,171,64,0.15);animation-delay:'+(m*0.03)+'s"><span class="name" style="color:#888">'+dc2.name+'</span><span class="desc" style="color:#666">'+dc2.desc+'</span><span style="font-size:9px;color:#4fc3f7">✅</span></div>';
+        }
+    }
+    list.innerHTML=h;
+}
+
+// ====== 详情卡片、导出、复制 ======
+function showCodeDetail(idx){
+    var c=codes[idx];
+    if(!c)return;
+
+    // 物品图标映射
+    var itemIcons={
+        'gold':'💰','forgeDust':'💠','reforgestone':'◇','lotteryStone':'🎫','upgradeStone':'🔷',
+        'petEggStones':'🥚','gems':'💎','stamina':'⚡','petFood':'🍖','exp':'⭐','petExp':'🌟',
+        'reforge':'🔄','upgrade':'🔨','skillPoint':'📖','talentPoint':'🧬','equipChest':'👘'
+    };
+
+    // 构建物品列表
+    var items=c.items||[];
+    var rewardsHtml='';
+    if(items.length){
+        for(var ii=0;ii<items.length;ii++){
+            var it=items[ii];
+            if(!it)continue;
+            var icon=itemIcons[it.id]||'📦';
+            var name=it.id.charAt(0).toUpperCase()+it.id.slice(1);
+            var cnt=it.count||1;
+            rewardsHtml+='<div class="detail-item-row">'+
+                '<span class="detail-item-icon">'+icon+'</span>'+
+                '<span class="detail-item-name">'+name+'</span>'+
+                '<span class="detail-item-count">×'+cnt+'</span></div>';
+        }
+    } else {
+        rewardsHtml='<div style="padding:12px;text-align:center;color:#888;font-size:12px">无奖励物品</div>';
+    }
+
+    // 有效期
+    var expStr='永久有效';
+    if(c.expiry){
+        var d=new Date(c.expiry);
+        if(!isNaN(d.getTime())){
+            expStr=d.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
+            if(Date.now()>c.expiry)expStr='<span style="color:#f44336">已过期 · '+expStr+'</span>';
+        }
+    }
+
+    // 创建时间
+    var createdStr='未知';
+    if(c.createdAt) createdStr=c.createdAt;
+
+    // 标签
+    var tagsHtml='';
+    if(c.hidden) tagsHtml+='<span class="detail-badge" style="background:rgba(255,171,64,0.15);color:#ffab40;border:1px solid rgba(255,171,64,0.3)">🔒 隐藏</span>';
+    if(c.maxUse&&c.maxUse>0) tagsHtml+='<span class="detail-badge" style="background:rgba(79,195,247,0.1);color:#4fc3f7;border:1px solid rgba(79,195,247,0.2)">×'+c.maxUse+'次</span>';
+    else tagsHtml+='<span class="detail-badge" style="background:rgba(76,175,80,0.1);color:#69f0ae;border:1px solid rgba(76,175,80,0.2)">∞ 无限次</span>';
+
+    // 使用方式
+    var typeHint='输入兑换码自动发放';
+    if(c.type==='item') typeHint='直接获得物品';
+    else if(c.type==='equip') typeHint='获得随机装备';
+
+    var card=document.createElement('div');
+    card.className='detail-card';
+    card.onclick=function(e){if(e.target===this)this.remove()};
+    card.innerHTML=
+        '<div class="detail-card-inner" onclick="event.stopPropagation()">'+
+            '<button class="detail-close" onclick="this.closest(\'.detail-card\').remove()">✕</button>'+
+
+            // 标题
+            '<div style="text-align:center;margin-bottom:12px">'+
+                '<div style="font-size:36px;margin-bottom:4px">'+(c.img||'🎁')+'</div>'+
+                '<div style="font-size:19px;font-weight:900;color:#ffd700">'+c.name+'</div>'+
+                '<div style="font-size:12px;color:#aaa;margin-top:2px">'+c.desc+'</div>'+
+            '</div>'+
+
+            // 标签
+            '<div style="text-align:center;margin-bottom:12px">'+tagsHtml+'</div>'+
+
+            // 兑换码
+            (c.code ? '<div style="text-align:center;margin-bottom:10px;padding:6px 10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,215,0,0.15);font-family:monospace;font-size:15px;font-weight:bold;letter-spacing:2px;color:#ffd700;">' + c.code + '</div>' : '') +
+
+            // 奖励列表
+            '<div style="margin:10px 0">'+
+                '<div style="font-size:12px;color:#888;margin-bottom:6px">🎁 奖励内容</div>'+
+                rewardsHtml+
+            '</div>'+
+
+            // 元信息
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">'+
+                '<div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px">'+
+                    '<span>📅 创建: '+createdStr+'</span>'+
+                    '<span>⏳ '+expStr+'</span>'+
+                '</div>'+
+                '<div style="font-size:11px;color:#555">📌 '+typeHint+'</div>'+
+            '</div>'+
+
+            // 关闭按钮
+            '<button style="width:100%;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffd700,#ff8f00);color:#1a1a2e;font-size:14px;font-weight:bold;cursor:pointer;margin-top:14px;box-shadow:0 4px 20px rgba(255,140,0,0.25)" onclick="this.closest(\'.detail-card\').remove()">✅ 关闭</button>'+
+        '</div>';
+    document.body.appendChild(card);
+}
+
+function exportJSON(){var d=JSON.stringify(codes,null,2);if(navigator.clipboard){navigator.clipboard.writeText(d);showToast('📄 JSON已复制到剪贴板','success')}else{showToast('📄 复制失败，请手动复制','error')}}
+function copyAll(){var l=[];for(var i=0;i<codes.length;i++)l.push(codes[i].name+' — '+codes[i].desc);if(navigator.clipboard){navigator.clipboard.writeText(l.join('\n'));showToast('📋 列表已复制','success')}else{showToast('📋 复制失败','error')}}
+
+// ====== UPLOAD ======
+function uploadOne(i){doUploadFull(function(){codes[i].uploaded=true;save();showToast('✅ 上传成功','success')})}
+function uploadAll(){
+    var pCount=0;
+    for(var ui=0;ui<codes.length;ui++)if(!codes[ui].uploaded)pCount++;
+    if(!pCount){showToast('⚠ 全部已上传','error');return}
+    doUploadFull(function(){
+        for(var uj=0;uj<codes.length;uj++)codes[uj].uploaded=true;
+        save();
+        showToast('✅ 已同步 '+codes.length+' 个兑换码','success');
+    });
+}
+function doUploadFull(cb){
+    var c=cfg();if(!c.ghOwner||!c.ghRepo){showToast('⚠ 请先配置GitHub信息','error');return}
+    var normalCodes=[],hiddenCodes=[];
+    for(var si=0;si<codes.length;si++){
+        if(codes[si].hidden)hiddenCodes.push(codes[si]);
+        else normalCodes.push(codes[si]);
+    }
+    var msg=document.getElementById('upload-msg');
+    msg.innerHTML='<span class="spinner"></span>正在同步...';
+
+    // 分别上传到两个文件
+    var pending=0,errCount=0;
+
+    function doUploadOne(fileData,filePath,cb2){
+        var api='https://api.github.com/repos/'+c.ghOwner+'/'+c.ghRepo+'/contents/'+filePath;
+        var hd={'Authorization':'token '+(c.ghToken||''),'Accept':'application/vnd.github.v3+json'};
+        fetch(api+'?ref='+(c.ghBranch||'main'),{headers:hd})
+            .then(function(r){return r.json().then(function(j){return{status:r.status,body:j}})})
+            .then(function(r){
+                var b={message:'同步兑换码 '+new Date().toISOString().slice(0,16),content:btoa(unescape(encodeURIComponent(fileData))),branch:c.ghBranch||'main'};
+                if(r.body&&r.body.sha)b.sha=r.body.sha;
+                return fetch(api,{method:'PUT',headers:Object.assign({},hd,{'Content-Type':'application/json'}),body:JSON.stringify(b)});
+            })
+            .then(function(r){return r.json().then(function(j){return{status:r.status,body:j}})})
+            .then(function(r){
+                if(r.status>=200&&r.status<300){if(cb2)cb2()}
+                else errCount++;
+                pending--;
+                if(pending<=0){
+                    var st=errCount>0?'⚠ 部分失败('+errCount+')':'✅ 同步成功！共 '+codes.length+' 个兑换码';
+                    msg.innerHTML=st;
+                    if(cb&&errCount===0)cb();
+                }
+            })
+            .catch(function(e){errCount++;pending--;if(pending<=0)msg.innerHTML='❌ 网络错误: '+e.message});
+    }
+
+    var normalPath=c.ghPath||'codes.json';
+    var hiddenPath=c.ghHiddenPath||'hidden-codes.json';
+
+    if(normalCodes.length){pending++;doUploadOne(JSON.stringify(normalCodes,null,2),normalPath)}
+    if(hiddenCodes.length){pending++;doUploadOne(JSON.stringify(hiddenCodes,null,2),hiddenPath)}
+    if(pending===0){msg.innerHTML='⚠ 无可同步的兑换码';return}
+}
+// 单条删除后同步到GitHub
+function delCode(i){
+    var deleted=codes[i];
+    codes.splice(i,1);
+    save();
+    showToast('已删除','success');
+    var c=cfg();
+    if(c.ghOwner&&c.ghRepo){
+        showToast('🔄 正在同步删除到GitHub...','info');
+        doUploadFull(function(){showToast('✅ 已同步删除','success')});
+    }
+}
+
+// ====== 远程刷新 ======
+function fetchRemoteCodes(){
+    var c=cfg();
+    var msg=document.getElementById('upload-msg');
+    if(!msg)return;
+    msg.innerHTML='<span class="spinner"></span>正在获取最新兑换码...';
+
+    // 尝试多个源（普通+隐藏分开获取）
+    var urls=[];
+    // 1) 用户配置的 GitHub raw - 普通码
+    if(c.ghOwner&&c.ghRepo) urls.push({url:'https://raw.githubusercontent.com/'+c.ghOwner+'/'+c.ghRepo+'/'+(c.ghBranch||'main')+'/'+(c.ghPath||'codes.json'),hidden:false});
+    // 2) 用户配置的 GitHub raw - 隐藏码
+    if(c.ghOwner&&c.ghRepo) urls.push({url:'https://raw.githubusercontent.com/'+c.ghOwner+'/'+c.ghRepo+'/'+(c.ghBranch||'main')+'/'+(c.ghHiddenPath||'hidden-codes.json'),hidden:true});
+    // 3) 用户自定义远程URL（视为普通码）
+    if(c.remoteUrl) urls.push({url:c.remoteUrl,hidden:false});
+
+    if(!urls.length){
+        msg.innerHTML='⚠ 未配置远程源，请先在⚙配置中添加GitHub信息或远程URL';
+        return;
+    }
+
+    var totalMerged=0;
+    var fetchNext=function(idx){
+        if(idx>=urls.length){
+            msg.innerHTML='✅ 刷新成功！共 '+totalMerged+' 个兑换码';
+            showToast('✅ 获取到 '+totalMerged+' 个可用兑换码','success');
+            return;
+        }
+        var entry=urls[idx];
+        fetch(entry.url)
+            .then(function(r){
+                if(!r.ok) throw new Error('HTTP '+r.status);
+                return r.json();
+            })
+            .then(function(data){
+                var arr=Array.isArray(data)?data:(data.codes||data.data||[]);
+                for(var fi=0;fi<arr.length;fi++){
+                    var rc=arr[fi];
+                    if(!rc||!rc.name) continue;
+                    // 如果是隐藏码源，强制打上hidden标记
+                    if(entry.hidden) rc.hidden=true;
+                    // 去重: 按name+desc去重
+                    var dup=false;
+                    for(var ci=0;ci<codes.length;ci++){
+                        if(codes[ci].name===rc.name&&codes[ci].desc===rc.desc){
+                            if(rc.expiry) codes[ci].expiry=rc.expiry;
+                            codes[ci].uploaded=false;
+                            totalMerged++;
+                            dup=true;
+                            break;
+                        }
+                    }
+                    if(!dup){
+                        var entry2={
+                            name:rc.name,
+                            desc:rc.desc||'',
+                            type:rc.type||'item',
+                            items:rc.items||[{id:'gold',count:100}],
+                            expiry:rc.expiry||'永久有效',
+                            img:rc.img||'',
+                            hidden:!!rc.hidden,
+                            code:rc.code||'',
+                            createdAt:new Date().toISOString().slice(0,10),
+                            uploaded:false
+                        };
+                        codes.push(entry2);
+                        totalMerged++;
+                    }
+                }
+                save();
+                if(typeof renderManage==='function') renderManage();
+                if(typeof renderUpload==='function') renderUpload();
+                fetchNext(idx+1);
+            })
+            .catch(function(e){
+                fetchNext(idx+1);
+            });
+    };
+    fetchNext(0);
+}
+function openSettings(){
+    var c=cfg();
+    var h='<div class="modal-overlay" onclick="if(event.target===this)this.remove()">'+
+        '<div class="modal-sheet" onclick="event.stopPropagation()">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">'+
+        '<div style="font-size:17px;font-weight:800;color:#ffd700">⚙ GitHub 配置</div>'+
+        '<button style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#aaa;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'rgba(244,67,54,0.1)\';this.style.borderColor=\'rgba(244,67,54,0.3)\';this.style.color=\'#f44336\'" onmouseout="this.style.background=\'rgba(255,255,255,0.05)\';this.style.borderColor=\'rgba(255,255,255,0.1)\';this.style.color=\'#aaa\'" onclick="var m=this.closest(\'.modal-overlay\');if(m)m.remove()">✕</button>'+
+        '</div>'+
+        '<label>👤 GitHub 用户名</label><input id="s-owner" value="'+(c.ghOwner||'')+'" placeholder="如: HonmaMeike">'+
+        '<label>📦 仓库名</label><input id="s-repo" value="'+(c.ghRepo||'')+'" placeholder="如: CQC-codes">'+
+        '<label>🔑 Personal Access Token</label><input id="s-token" type="password" value="'+(c.ghToken||'')+'" placeholder="ghp_...">'+
+        '<label>📁 文件路径</label><input id="s-path" value="'+(c.ghPath||'codes.json')+'" placeholder="codes.json">'+
+        '<label style="margin-top:6px">🔒 隐藏码文件路径</label><input id="s-hpath" value="'+(c.ghHiddenPath||'hidden-codes.json')+'" placeholder="hidden-codes.json">'+
+        '<label>🌿 分支</label><input id="s-branch" value="'+(c.ghBranch||'main')+'" placeholder="main">'+
+        '<label style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)">🌐 远程刷新URL（备用）</label><input id="s-remoteUrl" value="'+(c.remoteUrl||'')+'" placeholder="https://example.com/codes.json">'+
+        '<div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-outline" style="flex:1" onclick="var m=this.closest(\'.modal-overlay\');if(m)m.remove()">取消</button>'+
+        '<button class="btn btn-gold" style="flex:2;margin-top:0" onclick="saveSettings()">💾 保存配置</button></div></div></div>';
+    document.body.insertAdjacentHTML('beforeend',h);
+}
+function saveSettings(){
+    function g(id){var e=document.getElementById(id);return e?e.value:''}
+    setCfg({ghOwner:g('s-owner'),ghRepo:g('s-repo'),ghToken:g('s-token'),ghPath:g('s-path'),ghHiddenPath:g('s-hpath'),ghBranch:g('s-branch'),remoteUrl:g('s-remoteUrl')});
+    var modals=document.querySelectorAll('.modal-overlay');
+    for(var i=0;i<modals.length;i++)modals[i].remove();
+    showToast('✅ 配置已保存','success');
+}
+
+// ====== INIT ======
+addEquipField();
+load();
+</script>
+</body>
+</html>

@@ -4967,7 +4967,7 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
                 '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;margin:8px 0;text-align:left;">' +
                     rows +
                 '</div>' +
-                '<button onclick="var c=document.getElementById(\'dk-reward-card\');if(c)c.remove();if(typeof closeDungeonBattleModal===\'function\')try{closeDungeonBattleModal()}catch(e) { /* systems/battle.js */ console.warn("⚠ [catch]",e&&e.message); }" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,' + (type === 'gold' ? '#ff8f00,#ff6f00' : type === 'stone' ? '#7b1fa2,#6a1b9a' : type === 'gem' ? '#1565c0,#0d47a1' : '#2e7d32,#1b5e20') + ');color:#fff;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;">✅ 确认领取</button>' +
+                '<button onclick="closeDungeonRewardCard()" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,' + (type === 'gold' ? '#ff8f00,#ff6f00' : type === 'stone' ? '#7b1fa2,#6a1b9a' : type === 'gem' ? '#1565c0,#0d47a1' : '#2e7d32,#1b5e20') + ');color:#fff;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;">✅ 确认领取</button>' +
             '</div>';
 
         // 覆盖 dungeon-battle-modal 自动关闭的行为：先不关 modal，等用户点确认
@@ -6031,3 +6031,14 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
         // 启动战斗循环
     }
 };
+
+// 全局：关闭副本奖励卡片
+function closeDungeonRewardCard() {
+    var c = document.getElementById('dk-reward-card');
+    if (c) c.remove();
+    if (typeof closeDungeonBattleModal === 'function') {
+        try { closeDungeonBattleModal(); } catch(e) {
+            console.warn('[catch]', e && e.message);
+        }
+    }
+}
