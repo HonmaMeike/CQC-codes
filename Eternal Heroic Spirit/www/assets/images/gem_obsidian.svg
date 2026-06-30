@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 黑曜石 obsidian: 不规则火山碎玻璃 (不是宝石切工), 锋利碎片 + 彩虹 sheen -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="obsidianG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#424242"/>
+      <stop offset="50%" stop-color="#0d0d0d"/>
+      <stop offset="100%" stop-color="#000"/>
+    </linearGradient>
+    <linearGradient id="obsidianSheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff0080" stop-opacity="0"/>
+      <stop offset="35%" stop-color="#ff0080" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#7c4dff" stop-opacity="0.7"/>
+      <stop offset="65%" stop-color="#00bcd4" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#00bcd4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- 不规则火山碎玻璃形状 (尖锐不规则, 不是菱形切工) -->
+  <path d="M 32 4 L 56 22 L 48 38 L 56 56 L 28 50 L 14 36 L 8 18 L 22 6 Z"
+        fill="url(#obsidianG)" stroke="#000" stroke-width="1.2"/>
+  <!-- 彩虹 sheen 边缘高光 (sheen obsidian 标志) -->
+  <path d="M 32 4 L 56 22 L 48 38 L 56 56 L 28 50 L 14 36 L 8 18 L 22 6 Z"
+        fill="none" stroke="url(#obsidianSheen)" stroke-width="2"/>
+  <!-- 内部裂纹 (碎玻璃) -->
+  <path d="M 22 12 L 30 22 L 24 30 L 32 40 L 28 48" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.3"/>
+  <path d="M 42 16 L 38 26 L 44 32" fill="none" stroke="#fff" stroke-width="0.4" opacity="0.25"/>
+  <!-- 锋利反光 -->
+  <polygon points="22,8 28,14 24,16" fill="#90caf9" opacity="0.5"/>
+  <polygon points="14,18 20,18 16,22" fill="#ce93d8" opacity="0.5"/>
+  <polygon points="50,52 46,56 42,52" fill="#80deea" opacity="0.5"/>
+  <!-- 中央星星 sparkle (锋利攻击感) -->
+  <path d="M 32 28 L 33 32 L 37 33 L 33 34 L 32 38 L 31 34 L 27 33 L 31 32 Z"
+        fill="#90caf9" opacity="0.7"/>
+  <circle cx="32" cy="33" r="1" fill="#fff"/>
+</svg>

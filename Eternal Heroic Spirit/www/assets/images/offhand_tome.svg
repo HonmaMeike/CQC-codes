@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="otCover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#26a69a"/>
+      <stop offset="100%" stop-color="#004d40"/>
+    </linearGradient>
+    <linearGradient id="otPage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8e1"/>
+      <stop offset="100%" stop-color="#ffe0b2"/>
+    </linearGradient>
+  </defs>
+  <path d="M 12,16 Q 12,12 16,12 L 30,12 L 32,16 L 34,12 L 48,12 Q 52,12 52,16 L 52,50 Q 52,54 48,54 L 16,54 Q 12,54 12,50 Z" fill="url(#otCover)" stroke="#1a0a0a" stroke-width="1"/>
+  <path d="M 15,18 L 30,18 L 32,22 L 34,18 L 49,18 L 49,48 L 15,48 Z" fill="url(#otPage)" stroke="#a07000" stroke-width="0.5"/>
+  <line x1="20" y1="24" x2="44" y2="24" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="28" x2="42" y2="28" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="32" x2="44" y2="32" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="36" x2="40" y2="36" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="40" x2="42" y2="40" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <path d="M 32,16 L 32,20" stroke="#1a0a0a" stroke-width="0.6"/>
+  <circle cx="22" cy="44" r="1.2" fill="#26a69a"/>
+  <circle cx="32" cy="44" r="1.2" fill="#26a69a"/>
+  <circle cx="42" cy="44" r="1.2" fill="#26a69a"/>
+  <path d="M 8,30 L 12,28 L 12,32 Z" fill="url(#otCover)" stroke="#1a0a0a" stroke-width="0.5"/>
+  <path d="M 56,30 L 52,28 L 52,32 Z" fill="url(#otCover)" stroke="#1a0a0a" stroke-width="0.5"/>
+</svg>

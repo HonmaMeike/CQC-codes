@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 琥珀 amber: 有机圆润形 (非切工), 蜜橙 + 内含气泡/虫 (树脂化石标志) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="amberG" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0%" stop-color="#fff3e0"/>
+      <stop offset="35%" stop-color="#ffb74d"/>
+      <stop offset="75%" stop-color="#e65100"/>
+      <stop offset="100%" stop-color="#7f2a00"/>
+    </radialGradient>
+    <radialGradient id="amberGlow" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0%" stop-color="#ffecb3" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffecb3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 有机圆润轮廓 (不规则椭圆, 不是宝石切工) -->
+  <path d="M 18 8 Q 40 4 52 18 Q 60 32 52 48 Q 40 60 18 56 Q 4 44 8 24 Q 14 12 18 8 Z"
+        fill="url(#amberG)" stroke="#7f2a00" stroke-width="1.5"/>
+  <!-- 内部气泡群 (树脂气泡, 标志特征) -->
+  <ellipse cx="38" cy="38" rx="3.5" ry="2.5" fill="#3e1a04" opacity="0.6"/>
+  <ellipse cx="42" cy="44" rx="2" ry="1.5" fill="#3e1a04" opacity="0.5"/>
+  <ellipse cx="24" cy="46" rx="2.5" ry="2" fill="#3e1a04" opacity="0.55"/>
+  <ellipse cx="46" cy="32" rx="1.5" ry="1.2" fill="#3e1a04" opacity="0.5"/>
+  <circle cx="20" cy="40" r="1" fill="#3e1a04" opacity="0.5"/>
+  <circle cx="34" cy="30" r="0.8" fill="#3e1a04" opacity="0.6"/>
+  <!-- 中心小型"昆虫剪影" (经典琥珀包含物) -->
+  <ellipse cx="36" cy="22" rx="2" ry="0.8" fill="#1a0700" opacity="0.85"/>
+  <path d="M 34 22 L 33 21 M 38 22 L 39 21" stroke="#1a0700" stroke-width="0.5" opacity="0.85"/>
+  <circle cx="35" cy="22" r="0.4" fill="#1a0700"/>
+  <!-- 温暖光晕 -->
+  <ellipse cx="32" cy="32" rx="22" ry="20" fill="url(#amberGlow)"/>
+  <!-- 顶部高光 (光泽) -->
+  <ellipse cx="22" cy="18" rx="6" ry="4" fill="#fff3e0" opacity="0.7"/>
+  <ellipse cx="22" cy="18" rx="3" ry="2" fill="#ffffff" opacity="0.85"/>
+  <!-- 边缘 sparkle (温暖感) -->
+  <circle cx="14" cy="20" r="1" fill="#fff3e0" opacity="0.8"/>
+  <circle cx="50" cy="46" r="1" fill="#fff3e0" opacity="0.8"/>
+</svg>

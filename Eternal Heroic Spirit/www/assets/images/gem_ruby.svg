@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 红宝石 ruby: 垫形 cushion cut (圆角方), 鲜红 + 火光 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="rubyG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff5252"/>
+      <stop offset="55%" stop-color="#d32f2f"/>
+      <stop offset="100%" stop-color="#7f0000"/>
+    </linearGradient>
+    <radialGradient id="rubyCore" cx="0.5" cy="0.4" r="0.5">
+      <stop offset="0%" stop-color="#ffcdd2" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffcdd2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 垫形外轮廓 (圆角方8边) -->
+  <path d="M 18 10 L 46 10 L 56 22 L 56 42 L 46 54 L 18 54 L 8 42 L 8 22 Z"
+        fill="url(#rubyG)" stroke="#5d0000" stroke-width="1.5"/>
+  <!-- 冠部切面 (顶部表) -->
+  <path d="M 18 10 L 46 10 L 56 22 L 32 32 Z" fill="#ff8a80" opacity="0.55"/>
+  <path d="M 18 10 L 32 32 L 8 22 Z" fill="#ffcdd2" opacity="0.45"/>
+  <!-- 亭部切面 (底部) -->
+  <path d="M 8 22 L 32 32 L 8 42 L 18 54 Z" fill="#b71c1c" opacity="0.5"/>
+  <path d="M 56 22 L 32 32 L 56 42 L 46 54 Z" fill="#b71c1c" opacity="0.5"/>
+  <path d="M 18 54 L 32 32 L 46 54 Z" fill="#7f0000" opacity="0.6"/>
+  <!-- 中央高光 (主表反光) -->
+  <ellipse cx="26" cy="20" rx="6" ry="4" fill="url(#rubyCore)"/>
+  <!-- 火光十字 sparkle (切工标志) -->
+  <path d="M 24 17 L 24 23 M 21 20 L 27 20" stroke="#fff" stroke-width="1" opacity="0.9"/>
+  <!-- 4 个方向火光颗粒 (攻击力暗示) -->
+  <circle cx="32" cy="4" r="1.2" fill="#ffeb3b" opacity="0.95"/>
+  <circle cx="32" cy="60" r="1.2" fill="#ffeb3b" opacity="0.95"/>
+  <circle cx="4" cy="32" r="1.2" fill="#ff9800" opacity="0.9"/>
+  <circle cx="60" cy="32" r="1.2" fill="#ff9800" opacity="0.9"/>
+</svg>

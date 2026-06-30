@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="laG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8d6e63"/>
+      <stop offset="100%" stop-color="#3e2723"/>
+    </linearGradient>
+    <linearGradient id="laTrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d4037"/>
+      <stop offset="100%" stop-color="#1b0000"/>
+    </linearGradient>
+  </defs>
+  <path d="M 16,18 L 48,18 L 52,28 L 48,52 L 38,58 L 32,60 L 26,58 L 16,52 L 12,28 Z" fill="url(#laG)" stroke="#1b0000" stroke-width="1.2"/>
+  <path d="M 20,22 L 44,22 L 46,32 L 42,48 L 32,54 L 22,48 L 18,32 Z" fill="#a1887f" stroke="#1b0000" stroke-width="0.6" opacity="0.6"/>
+  <line x1="32" y1="22" x2="32" y2="54" stroke="url(#laTrim)" stroke-width="1" opacity="0.7"/>
+  <line x1="22" y1="30" x2="42" y2="30" stroke="url(#laTrim)" stroke-width="0.7" opacity="0.6"/>
+  <line x1="22" y1="40" x2="42" y2="40" stroke="url(#laTrim)" stroke-width="0.7" opacity="0.6"/>
+  <rect x="22" y="46" width="20" height="4" fill="url(#laTrim)" stroke="#1b0000" stroke-width="0.4"/>
+  <rect x="29" y="45" width="6" height="6" fill="#bcaaa4" stroke="#3e2723" stroke-width="0.4"/>
+  <path d="M 14,24 Q 12,28 14,32" fill="url(#laG)" stroke="#1b0000" stroke-width="0.5"/>
+  <path d="M 50,24 Q 52,28 50,32" fill="url(#laG)" stroke="#1b0000" stroke-width="0.5"/>
+  <path d="M 22,22 L 26,18 L 28,22 Z" fill="url(#laTrim)" stroke="#1b0000" stroke-width="0.4"/>
+  <path d="M 36,22 L 40,18 L 42,22 Z" fill="url(#laTrim)" stroke="#1b0000" stroke-width="0.4"/>
+  <path d="M 20,24 L 24,22 L 22,38 L 20,36 Z" fill="#ffffff" opacity="0.2"/>
+  <circle cx="16" cy="22" r="0.8" fill="#1b0000"/>
+  <circle cx="48" cy="22" r="0.8" fill="#1b0000"/>
+  <line x1="24" y1="30" x2="24" y2="38" stroke="#3e2723" stroke-width="0.4" opacity="0.5"/>
+  <line x1="40" y1="30" x2="40" y2="38" stroke="#3e2723" stroke-width="0.4" opacity="0.5"/>
+</svg>

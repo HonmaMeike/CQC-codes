@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="tmCover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7e57c2"/>
+      <stop offset="100%" stop-color="#311b92"/>
+    </linearGradient>
+    <linearGradient id="tmPage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8e1"/>
+      <stop offset="100%" stop-color="#ffe0b2"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="14" width="40" height="38" rx="2" fill="url(#tmCover)" stroke="#1a0a5c" stroke-width="1"/>
+  <rect x="15" y="17" width="34" height="32" rx="1" fill="url(#tmPage)" stroke="#a07000" stroke-width="0.5"/>
+  <line x1="20" y1="24" x2="44" y2="24" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="29" x2="40" y2="29" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="34" x2="42" y2="34" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="39" x2="38" y2="39" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <line x1="20" y1="44" x2="40" y2="44" stroke="#5d4037" stroke-width="0.5" opacity="0.6"/>
+  <circle cx="32" cy="12" r="4" fill="#ffd700" stroke="#a07000" stroke-width="0.6"/>
+  <path d="M 32,8 L 32,4 M 30,5 L 34,5 M 30,9 L 34,9" stroke="#ffd700" stroke-width="0.8" stroke-linecap="round"/>
+  <circle cx="32" cy="12" r="1.5" fill="#e53935"/>
+  <path d="M 12,30 L 8,28 L 8,32 Z" fill="url(#tmCover)" stroke="#1a0a5c" stroke-width="0.6"/>
+  <path d="M 52,30 L 56,28 L 56,32 Z" fill="url(#tmCover)" stroke="#1a0a5c" stroke-width="0.6"/>
+  <circle cx="32" cy="25" r="2" fill="none" stroke="#9c27b0" stroke-width="0.6" opacity="0.6"/>
+  <polygon points="32,22 33,24 35,24 33.5,25.5 34,28 32,26.5 30,28 30.5,25.5 29,24 31,24" fill="#9c27b0" opacity="0.5"/>
+</svg>

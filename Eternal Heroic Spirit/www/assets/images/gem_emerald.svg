@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 绿宝石 emerald: 长方阶梯切 (emerald cut), 深绿 + 平行阶面 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="emeraldG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#66bb6a"/>
+      <stop offset="50%" stop-color="#2e7d32"/>
+      <stop offset="100%" stop-color="#0a3d0a"/>
+    </linearGradient>
+    <linearGradient id="emeraldTable" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a5d6a7"/>
+      <stop offset="100%" stop-color="#43a047"/>
+    </linearGradient>
+    <radialGradient id="emeraldCore" cx="0.4" cy="0.3" r="0.4">
+      <stop offset="0%" stop-color="#c8e6c9" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#c8e6c9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 长方阶梯切外轮廓 (矩形 + 切角) -->
+  <path d="M 14 8 L 50 8 L 56 14 L 56 50 L 50 56 L 14 56 L 8 50 L 8 14 Z"
+        fill="url(#emeraldG)" stroke="#0a3d0a" stroke-width="1.5"/>
+  <!-- 阶梯切 顶部表 (水平长条) -->
+  <rect x="14" y="8" width="36" height="14" fill="url(#emeraldTable)" opacity="0.65"/>
+  <!-- 8 个内部阶面 (经典 emerald cut 标志: 平行长条) -->
+  <rect x="14" y="22" width="36" height="3" fill="#1b5e20" opacity="0.55"/>
+  <rect x="14" y="25" width="36" height="3" fill="#43a047" opacity="0.4"/>
+  <rect x="14" y="28" width="36" height="3" fill="#1b5e20" opacity="0.55"/>
+  <rect x="14" y="31" width="36" height="3" fill="#43a047" opacity="0.4"/>
+  <rect x="14" y="34" width="36" height="3" fill="#1b5e20" opacity="0.55"/>
+  <!-- 底部收口 (三角形) -->
+  <polygon points="14,56 50,56 32,44" fill="#0a3d0a" opacity="0.6"/>
+  <polygon points="8,14 14,8 14,22" fill="#1b5e20" opacity="0.5"/>
+  <polygon points="56,14 50,8 50,22" fill="#1b5e20" opacity="0.5"/>
+  <polygon points="8,50 14,56 14,42" fill="#0a3d0a" opacity="0.55"/>
+  <polygon points="56,50 50,56 50,42" fill="#0a3d0a" opacity="0.55"/>
+  <!-- 中央高光 -->
+  <ellipse cx="22" cy="14" rx="5" ry="3" fill="url(#emeraldCore)"/>
+  <!-- 切角处白色 sparkles -->
+  <circle cx="14" cy="14" r="1" fill="#c8e6c9" opacity="0.85"/>
+  <circle cx="50" cy="14" r="1" fill="#c8e6c9" opacity="0.85"/>
+  <circle cx="14" cy="50" r="1" fill="#c8e6c9" opacity="0.85"/>
+  <circle cx="50" cy="50" r="1" fill="#c8e6c9" opacity="0.85"/>
+</svg>

@@ -1,0 +1,617 @@
+/* ========== 战斗区域 ========== */
+#battle-area {
+    flex: 0 0 40%;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+}
+#battle-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ========== 波次信息 ========== */
+#wave-info {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    pointer-events: none;
+}
+#wave-status {
+    color: #4fc3f7;
+    font-weight: bold;
+}
+
+/* ========== 掉落物动画 ========== */
+.loot-drop {
+    position: absolute;
+    font-size: 20px;
+    pointer-events: none;
+    animation: lootFloat 1.5s ease-out forwards;
+    z-index: 20;
+}
+@keyframes lootFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    50% { opacity: 1; transform: translateY(-40px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-80px) scale(0.8); }
+}
+
+/* ========== 伤害数字 ========== */
+.dmg-number {
+    position: absolute;
+    font-size: 16px;
+    font-weight: bold;
+    pointer-events: none;
+    animation: dmgFloat 0.8s ease-out forwards;
+    z-index: 20;
+}
+.dmg-number.critical {
+    font-size: 22px;
+    color: #ff5722;
+    text-shadow: 0 0 8px rgba(255,87,34,0.8);
+}
+.dmg-number.heal {
+    color: #4caf50;
+    font-size: 16px;
+    text-shadow: 0 0 6px rgba(76,175,80,0.6);
+}
+.dmg-number.shield {
+    color: #4fc3f7;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(79,195,247,0.6);
+}
+@keyframes dmgFloat {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-50px); }
+}
+
+/* ========== 战斗单位样式 ========== */
+.battle-unit {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: left 0.3s, top 0.3s;
+    z-index: 5;
+}
+.battle-unit.ally {
+    background: rgba(79,195,247,0.3);
+    border: 2px solid #4fc3f7;
+}
+.battle-unit.enemy {
+    background: rgba(244,67,54,0.3);
+    border: 2px solid #f44336;
+}
+.battle-unit .hp-bar {
+    position: absolute;
+    bottom: -6px;
+    left: -2px;
+    right: -2px;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.battle-unit .hp-bar-fill {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 2px;
+    transition: width 0.2s;
+}
+.battle-unit .hp-bar-fill.low { background: #f44336; }
+.battle-unit .hp-bar-fill.medium { background: #ff9800; }
+
+/* ========== 技能名称浮动 ========== */
+.skill-name {
+    position: absolute;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+    pointer-events: none;
+    animation: skillFloat 1s ease-out forwards;
+    z-index: 25;
+    text-shadow: 0 0 6px rgba(255,215,0,0.8);
+}
+@keyframes skillFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+}
+
+/* ========== 战斗速度按钮 ========== */
+.battle-speed-btn {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #4fc3f7;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 100;
+    pointer-events: auto;
+    /* 最小可点击区域 */
+    min-width: 44px;
+    min-height: 28px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#btn-battle-speed {
+    right: 4px;
+    bottom: 30px;
+    top: auto;
+}
+#btn-auto-battle {
+    right: 4px;
+    bottom: 4px;
+    top: auto;
+    left: auto;
+}
+.battle-speed-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+.battle-speed-btn:active {
+    background: rgba(79,195,247,0.3);
+    transform: scale(0.95);
+}
+
+/* ========== 下一章按钮 ========== */
+#btn-next-chapter {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: 2px solid #ffd700;
+    color: #1a1a2e;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 200;
+    pointer-events: auto;
+    min-width: 120px;
+    min-height: 44px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    animation: nextChapterPulse 1.5s ease-in-out infinite;
+}
+#btn-next-chapter:active {
+    transform: translate(-50%, 50%) scale(0.95);
+}
+@keyframes nextChapterPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+    50% { box-shadow: 0 0 40px rgba(255,215,0,0.9); }
+}
+
+/* 小屏手机：重新定位按钮避免与关卡条重叠 */
+@media (max-width: 360px) {
+    .battle-speed-btn {
+        font-size: 9px;
+        padding: 3px 6px;
+        min-width: 38px;
+        min-height: 24px;
+    }
+    #btn-battle-speed {
+        bottom: 24px;
+    }
+}
+
+/* 横屏小高度：调整布局 */
+@media (orientation: landscape) and (max-height: 500px) {
+    #battle-area {
+        flex: 0 0 60%;
+    }
+    .battle-speed-btn {
+        font-size: 9px;
+        padding: 2px 5px;
+    }
+}
+
+#battle-log-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+/* ★ v2.6.4 Round 12: 战斗日志 header 重设计
+   - 紧凑布局: 标题 + 统计 + 搜索框 + 复制/清空按钮
+   - 搜索框 + 按钮常驻, 不再点击展开, 一键操作 */
+#battle-log-header {
+    padding: 5px 8px;
+    font-size: 11px;
+    color: #888;
+    background: linear-gradient(180deg, rgba(20,18,32,0.95), rgba(10,8,16,0.95));
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(180,140,80,0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.log-header-title {
+    color: #a8d8ea;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+.log-header-stats {
+    color: #6a8090;
+    font-size: 10px;
+    flex-shrink: 0;
+    min-width: 40px;
+}
+.log-search-input {
+    flex: 1;
+    min-width: 0;
+    height: 24px;
+    padding: 0 8px;
+    font-size: 11px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(180,140,80,0.2);
+    border-radius: 12px;
+    color: #c8c0d0;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+.log-search-input:focus {
+    border-color: rgba(79,195,247,0.6);
+    background: rgba(0,0,0,0.6);
+    box-shadow: 0 0 6px rgba(79,195,247,0.2);
+}
+.log-search-input::placeholder { color: #555; }
+.log-header-btn {
+    flex-shrink: 0;
+    width: 26px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    background: rgba(79,195,247,0.1);
+    border: 1px solid rgba(79,195,247,0.3);
+    border-radius: 12px;
+    color: #4fc3f7;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.log-header-btn:hover {
+    background: rgba(79,195,247,0.25);
+    transform: translateY(-1px);
+}
+.log-header-btn:active { transform: scale(0.92); }
+#log-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.35);
+    border-bottom: 1px solid rgba(180,140,80,0.15);
+    flex-shrink: 0;
+    max-height: 32px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+#log-filter-bar::-webkit-scrollbar { height: 3px; }
+#log-filter-bar::-webkit-scrollbar-thumb { background: rgba(180,140,80,0.3); border-radius: 2px; }
+.log-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    font-size: 11px;
+    border-radius: 11px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+}
+.log-filter-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+}
+.log-filter-btn.active {
+    background: rgba(79,195,247,0.18);
+    border-color: rgba(79,195,247,0.5);
+    color: #4fc3f7;
+    box-shadow: 0 0 6px rgba(79,195,247,0.3);
+}
+.log-filter-btn.active.all-active {
+    background: rgba(255,215,0,0.18);
+    border-color: rgba(255,215,0,0.5);
+    color: #ffd700;
+    box-shadow: 0 0 6px rgba(255,215,0,0.3);
+}
+/* "关键" tab 用橙色高亮, 区别于普通类型 */
+.log-filter-btn[data-type="key"].active {
+    background: rgba(255,111,0,0.18);
+    border-color: rgba(255,111,0,0.5);
+    color: #ffab40;
+    box-shadow: 0 0 6px rgba(255,111,0,0.3);
+}
+/* 被筛选隐藏的日志条目 */
+#battle-log .log-item.log-hidden {
+    display: none;
+}
+#battle-log {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(180,140,80,0.6) transparent;
+}
+#battle-log::-webkit-scrollbar { width: 6px; }
+#battle-log::-webkit-scrollbar-track { background: transparent; }
+#battle-log::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(180,140,80,0.6), rgba(120,90,40,0.4));
+    border-radius: 3px;
+}
+#battle-log::-webkit-scrollbar-thumb:hover { background: rgba(200,160,100,0.8); }
+
+/* 日志项卡片（精致显示：时间戳 + 图标 + 消息） */
+#battle-log .log-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid rgba(255,255,255,0.1);
+    animation: logFadeIn 0.3s ease-out;
+}
+#battle-log .log-item:hover { background: rgba(255,255,255,0.06); }
+#battle-log .log-item .log-time {
+    flex-shrink: 0;
+    color: #666;
+    font-size: 9px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    min-width: 46px;
+}
+#battle-log .log-item .log-icon {
+    flex-shrink: 0;
+    font-size: 13px;
+    width: 16px;
+    text-align: center;
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
+}
+#battle-log .log-item .log-msg {
+    flex: 1;
+    color: #c8c8c8;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+@keyframes logFadeIn {
+    0% { opacity: 0; transform: translateX(-8px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* 14种日志类型颜色 + 左边框 */
+#battle-log .log-item.log-info    { border-left-color: #888; }
+#battle-log .log-item.log-info    .log-icon { color: #888; }
+#battle-log .log-item.log-attack  { border-left-color: #ff5252; background: rgba(255,82,82,0.08); }
+#battle-log .log-item.log-attack  .log-icon { color: #ff5252; }
+#battle-log .log-item.log-attack  .log-msg  { color: #ffcdd2; }
+#battle-log .log-item.log-skill   { border-left-color: #aa66ff; background: rgba(170,102,255,0.08); }
+#battle-log .log-item.log-skill   .log-icon { color: #aa66ff; }
+#battle-log .log-item.log-skill   .log-msg  { color: #e1bee7; }
+#battle-log .log-item.log-crit    { border-left-color: #ff6f00; background: rgba(255,111,0,0.10); }
+#battle-log .log-item.log-crit    .log-icon { color: #ffab40; }
+#battle-log .log-item.log-crit    .log-msg  { color: #ffcc80; font-weight: 600; }
+#battle-log .log-item.log-heal    { border-left-color: #66ff66; background: rgba(102,255,102,0.08); }
+#battle-log .log-item.log-heal    .log-icon { color: #66ff66; }
+#battle-log .log-item.log-heal    .log-msg  { color: #b9f6ca; }
+#battle-log .log-item.log-shield  { border-left-color: #4fc3f7; background: rgba(79,195,247,0.08); }
+#battle-log .log-item.log-shield  .log-icon { color: #4fc3f7; }
+#battle-log .log-item.log-shield  .log-msg  { color: #b3e5fc; }
+#battle-log .log-item.log-buff    { border-left-color: #ffd700; background: rgba(255,215,0,0.08); }
+#battle-log .log-item.log-buff    .log-icon { color: #ffd700; }
+#battle-log .log-item.log-buff    .log-msg  { color: #fff59d; }
+#battle-log .log-item.log-debuff  { border-left-color: #b388ff; background: rgba(179,136,255,0.08); }
+#battle-log .log-item.log-debuff  .log-icon { color: #b388ff; }
+#battle-log .log-item.log-debuff  .log-msg  { color: #d1c4e9; }
+#battle-log .log-item.log-death   { border-left-color: #d32f2f; background: rgba(211,47,47,0.10); }
+#battle-log .log-item.log-death   .log-icon { color: #ef5350; }
+#battle-log .log-item.log-death   .log-msg  { color: #ef9a9a; font-weight: 500; }
+#battle-log .log-item.log-boss    { border-left-color: #ff6f00; background: rgba(255,111,0,0.12); }
+#battle-log .log-item.log-boss    .log-icon { color: #ffab40; animation: bossPulse 1.5s infinite; }
+#battle-log .log-item.log-boss    .log-msg  { color: #ffe082; font-weight: 700; }
+#battle-log .log-item.log-loot    { border-left-color: #ce93d8; background: rgba(206,147,216,0.08); }
+#battle-log .log-item.log-loot    .log-icon { color: #ce93d8; }
+#battle-log .log-item.log-loot    .log-msg  { color: #f8bbd0; }
+#battle-log .log-item.log-level   { border-left-color: #76ff03; background: rgba(118,255,3,0.10); }
+#battle-log .log-item.log-level   .log-icon { color: #76ff03; }
+#battle-log .log-item.log-level   .log-msg  { color: #ccff90; font-weight: 600; }
+#battle-log .log-item.log-victory { border-left-color: #ffd700; background: rgba(255,215,0,0.15); }
+#battle-log .log-item.log-victory .log-icon { color: #ffd700; }
+#battle-log .log-item.log-victory .log-msg  { color: #fff59d; font-weight: 700; }
+#battle-log .log-item.log-defeat  { border-left-color: #b71c1c; background: rgba(183,28,28,0.12); }
+#battle-log .log-item.log-defeat  .log-icon { color: #e57373; }
+#battle-log .log-item.log-defeat  .log-msg  { color: #ef9a9a; font-weight: 600; }
+#battle-log .log-item.log-revive  { border-left-color: #fff176; background: rgba(255,241,118,0.10); }
+#battle-log .log-item.log-revive  .log-icon { color: #fff176; }
+#battle-log .log-item.log-revive  .log-msg  { color: #fff9c4; font-weight: 500; }
+
+@keyframes bossPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* ========== 怪物出场横幅（从 battle.js 内联 CSS 提取） ========== */
+.monster-banner {
+    position: fixed;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%) translateY(-60px);
+    z-index: 300;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    min-width: 240px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+.monster-banner.banner-show {
+    animation: bannerSlideIn 0.45s ease-out forwards;
+}
+.monster-banner.banner-hide {
+    animation: bannerSlideOut 0.45s ease-in forwards;
+}
+.monster-banner .banner-tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.monster-banner .banner-name { font-size: 22px; font-weight: bold; margin: 4px 0; }
+.monster-banner .banner-icon { font-size: 36px; display: block; margin: 0 auto 6px; }
+.monster-banner .banner-desc { font-size: 12px; opacity: 0.85; max-width: 260px; margin: 0 auto; line-height: 1.4; }
+.monster-banner.is-boss {
+    background: linear-gradient(135deg,#7a0808 0%,#1a0000 100%);
+    border: 2px solid #ffd700;
+    color: #ffd700;
+}
+.monster-banner.is-boss .banner-tag { background: #ffd700; color: #1a0000; }
+.monster-banner.is-boss .banner-icon { filter: drop-shadow(0 0 8px #ffd700); }
+.monster-banner.is-elite {
+    background: linear-gradient(135deg,#3a006a 0%,#0d0019 100%);
+    border: 2px solid #b388ff;
+    color: #e1c8ff;
+}
+.monster-banner.is-elite .banner-tag { background: #b388ff; color: #0d0019; }
+.monster-banner.is-elite .banner-icon { filter: drop-shadow(0 0 8px #b388ff); }
+@keyframes bannerSlideIn {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(-60px) scale(0.7); }
+    60%  { opacity: 1; transform: translateX(-50%) translateY(10px) scale(1.05); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+@keyframes bannerSlideOut {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-80px) scale(0.6); }
+}
+
+/* ========== 楼层入场横幅（爬塔 BOSS） ========== */
+.floor-banner.banner-show { animation: floorBannerIn 0.5s ease-out forwards; }
+.floor-banner.banner-hide { animation: floorBannerOut 0.4s ease-in forwards; }
+
+/* ========== 楼层横幅完整样式（从 battle.js 内联 CSS 提取） ========== */
+.floor-banner {
+    position: fixed;
+    left: 50%;
+    bottom: 18%;
+    transform: translateX(-50%) translateY(60px);
+    z-index: 300;
+    padding: 16px 36px;
+    border-radius: 14px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    min-width: 240px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%);
+    border: 2px solid #ffd700;
+    color: #fff;
+}
+.floor-banner .fb-floor { font-size: 13px; color: #aaa; letter-spacing: 1px; margin-bottom: 4px; }
+.floor-banner .fb-type {
+    font-size: 11px; font-weight: bold; letter-spacing: 2px;
+    margin-bottom: 4px; padding: 3px 14px; border-radius: 12px; display: inline-block;
+}
+.floor-banner .fb-num { font-size: 36px; font-weight: bold; letter-spacing: 2px; }
+.floor-banner.is-elite { background: linear-gradient(135deg,#3a006a 0%,#0d0019 100%); border-color: #b388ff; }
+.floor-banner.is-elite .fb-type { background: #b388ff; color: #0d0019; }
+.floor-banner.is-boss { background: linear-gradient(135deg,#7a0808 0%,#1a0000 100%); border-color: #ff5722; }
+.floor-banner.is-boss .fb-type { background: #ff5722; color: #1a0000; }
+@keyframes floorBannerIn {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(60px) scale(0.6); }
+    60%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.05); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+@keyframes floorBannerOut {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(60px) scale(0.6); }
+}
+
+/* ========== 战斗统计弹窗（从 battle.js 内联样式提取） ========== */
+#battle-stats-overlay {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 250;
+    background: rgba(0,0,0,0.85);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    min-width: 220px;
+    text-align: center;
+    pointer-events: auto;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+/* ========== 屏幕闪色效果（从 battle.js flashScreen 提取） ========== */
+.battle-flash {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 250;
+    pointer-events: none;
+}
+
+/* ========== 层完成闪光（从 battle.js _showFloorComplete 提取） ========== */
+.floor-complete-flash {
+    position: fixed;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%,-50%);
+    z-index: 300;
+    padding: 18px 36px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#0d4d0d,#1a1a1a);
+    border: 2px solid #4caf50;
+    color: #4caf50;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 0 30px rgba(76,175,80,0.6);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ========== 离屏文本域（复制后备） ========== */
+.copy-textarea {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+}

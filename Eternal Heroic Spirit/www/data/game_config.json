@@ -1,0 +1,260 @@
+{
+    "_meta": {
+        "_comment": "游戏数值配置文件 v1.0 — 抽离自 monsters.js / equipment.js。修改此文件即可调整游戏数值，无需改动代码逻辑。修改后开发模式下会自动热重载。",
+        "version": "1.0.0",
+        "lastModified": "2026-06-03",
+        "author": "idle-rpg config system"
+    },
+
+    "monsterStageScaling": {
+        "_comment": "章节基础系数：第1-4章线性递增(1.0/1.4/1.8/2.2)，第5章起加速增长 Ch5=5/Ch6=10/Ch7=15...",
+        "earlyStageMultiplierPerChapter": 0.4,
+        "lateStageBase": 5,
+        "lateStageThreshold": 5
+    },
+
+    "monsterLevelScaling": {
+        "_comment": "单章内1-20关平滑增长。L1:hpGrowth=1.0, L20:hpGrowth=3.18",
+        "hpGrowthPerLevel": 0.12,
+        "atkGrowthPerLevel": 0.12,
+        "defGrowthPerLevel": 0.10
+    },
+
+    "monsterBase": {
+        "_comment": "怪物基础数值（会被 stageBaseMult × hpGrowth 等缩放）",
+        "baseHP": 180,
+        "baseATK": 2,
+        "baseDEF": 3,
+        "normalSpeed": 80,
+        "eliteSpeed": 70,
+        "bossSpeed": 60
+    },
+
+    "monsterElite": {
+        "_comment": "精英怪倍率。HP×6, ATK×3, DEF×2.5",
+        "hpMultiplier": 6,
+        "atkMultiplier": 3,
+        "defMultiplier": 2.5,
+        "expBase": 60,
+        "expGrowth": 0.15,
+        "goldBase": 35,
+        "goldGrowth": 0.15
+    },
+
+    "monsterBoss": {
+        "_comment": "BOSS倍率。HP×30, ATK×3.5, DEF×3。EXP/GOLD = (8 + levelIdx/5) × 系数",
+        "hpMultiplier": 30,
+        "atkMultiplier": 3.5,
+        "defMultiplier": 3,
+        "expBase": 150,
+        "goldBase": 80,
+        "expGoldBonusPerFiveLevels": 1
+    },
+
+    "monsterPool": {
+        "_comment": "怪物基础池。hp/atk/def/spd/exp/gold 为基础值；minStage 为最小出现章节；elite: true 标记精英型；friend: true 标记网友定制怪（全章节随机刷新 + 可作BOSS登场）",
+        "monsters": [
+            { "id": "slime", "name": "史莱姆", "icon": "🧟", "hp": 30, "atk": 2, "def": 1, "spd": 50, "exp": 5, "gold": 3, "minStage": 1 },
+            { "id": "goblin", "name": "哥布林", "icon": "👹", "hp": 28, "atk": 3, "def": 0, "spd": 80, "exp": 7, "gold": 5, "minStage": 1 },
+            { "id": "skeleton", "name": "骷髅兵", "icon": "💀", "hp": 35, "atk": 4, "def": 2, "spd": 60, "exp": 10, "gold": 6, "minStage": 2 },
+            { "id": "wolf", "name": "荒野狼", "icon": "🐺", "hp": 32, "atk": 5, "def": 1, "spd": 100, "exp": 12, "gold": 7, "minStage": 2 },
+            { "id": "bat", "name": "吸血蝙蝠", "icon": "🦇", "hp": 25, "atk": 6, "def": 0, "spd": 120, "exp": 8, "gold": 4, "minStage": 3 },
+            { "id": "slime_king", "name": "史莱姆王", "icon": "🧟", "hp": 50, "atk": 8, "def": 3, "spd": 40, "exp": 25, "gold": 15, "minStage": 3, "elite": true },
+            { "id": "orc", "name": "兽人战士", "icon": "👺", "hp": 45, "atk": 7, "def": 4, "spd": 70, "exp": 18, "gold": 10, "minStage": 4 },
+            { "id": "dark_mage", "name": "暗黑法师", "icon": "🧙", "hp": 30, "atk": 9, "def": 1, "spd": 90, "exp": 20, "gold": 12, "minStage": 4 },
+            { "id": "golem", "name": "石魔像", "icon": "🪾", "hp": 60, "atk": 6, "def": 6, "spd": 30, "exp": 30, "gold": 18, "minStage": 5 },
+            { "id": "dragon_whelp", "name": "幼龙", "icon": "🐉", "hp": 55, "atk": 10, "def": 4, "spd": 75, "exp": 40, "gold": 25, "minStage": 5, "elite": true },
+            { "id": "wraith", "name": "幽魂", "icon": "👻", "hp": 35, "atk": 10, "def": 0, "spd": 110, "exp": 22, "gold": 14, "minStage": 6 },
+            { "id": "minotaur", "name": "牛头人", "icon": "🐄", "hp": 55, "atk": 8, "def": 5, "spd": 65, "exp": 28, "gold": 16, "minStage": 6 },
+            { "id": "lich", "name": "巫妖", "icon": "☠", "hp": 40, "atk": 12, "def": 2, "spd": 85, "exp": 35, "gold": 22, "minStage": 7, "elite": true },
+            { "id": "demon", "name": "恶魔", "icon": "😈", "hp": 55, "atk": 11, "def": 4, "spd": 75, "exp": 40, "gold": 28, "minStage": 8 },
+            { "id": "elder_dragon", "name": "上古巨龙", "icon": "🐲", "hp": 70, "atk": 14, "def": 6, "spd": 60, "exp": 80, "gold": 50, "minStage": 9, "elite": true },
+            { "id": "frost_giant", "name": "冰霜巨人", "icon": "🧌", "hp": 80, "atk": 15, "def": 8, "spd": 40, "exp": 100, "gold": 60, "minStage": 10, "elite": true },
+            { "id": "hell_hound", "name": "地狱犬", "icon": "🐶", "hp": 60, "atk": 18, "def": 4, "spd": 110, "exp": 85, "gold": 45, "minStage": 11 },
+            { "id": "harpy", "name": "鹰身女妖", "icon": "🦅", "hp": 50, "atk": 20, "def": 2, "spd": 130, "exp": 75, "gold": 40, "minStage": 12 },
+            { "id": "stone_giant", "name": "山岭巨人", "icon": "🧟", "hp": 90, "atk": 14, "def": 10, "spd": 25, "exp": 120, "gold": 70, "minStage": 13, "elite": true },
+            { "id": "phantom", "name": "幻影刺客", "icon": "🥸", "hp": 55, "atk": 22, "def": 2, "spd": 140, "exp": 90, "gold": 55, "minStage": 14 },
+            { "id": "basilisk", "name": "石化蛇妖", "icon": "🐍", "hp": 75, "atk": 17, "def": 6, "spd": 60, "exp": 110, "gold": 65, "minStage": 15, "elite": true },
+            { "id": "vampire", "name": "血族伯爵", "icon": "🧛", "hp": 65, "atk": 24, "def": 4, "spd": 95, "exp": 130, "gold": 80, "minStage": 16 },
+            { "id": "void_walker", "name": "虚空行者", "icon": "👾", "hp": 60, "atk": 26, "def": 3, "spd": 100, "exp": 140, "gold": 85, "minStage": 17 },
+            { "id": "chimera", "name": "奇美拉", "icon": "🦖", "hp": 85, "atk": 20, "def": 7, "spd": 70, "exp": 160, "gold": 90, "minStage": 18, "elite": true },
+            { "id": "behemoth", "name": "贝希摩斯", "icon": "🦛", "hp": 100, "atk": 18, "def": 12, "spd": 35, "exp": 180, "gold": 100, "minStage": 20, "elite": true },
+            { "id": "phoenix", "name": "凤凰", "icon": "🐦", "hp": 75, "atk": 30, "def": 5, "spd": 105, "exp": 200, "gold": 110, "minStage": 22, "elite": true },
+            { "id": "titan", "name": "泰坦巨人", "icon": "🧶", "hp": 110, "atk": 25, "def": 14, "spd": 30, "exp": 250, "gold": 130, "minStage": 25, "elite": true },
+            { "id": "shadow_lord", "name": "暗影领主", "icon": "👽", "hp": 80, "atk": 32, "def": 6, "spd": 90, "exp": 260, "gold": 140, "minStage": 28 },
+            { "id": "hydra", "name": "九头蛇", "icon": "🐉", "hp": 100, "atk": 24, "def": 9, "spd": 55, "exp": 300, "gold": 150, "minStage": 30, "elite": true },
+            { "id": "void_devourer", "name": "虚空吞噬者", "icon": "🟢", "hp": 95, "atk": 35, "def": 10, "spd": 75, "exp": 350, "gold": 170, "minStage": 35, "elite": true },
+            { "id": "archangel", "name": "天使统帅", "icon": "😇", "hp": 90, "atk": 40, "def": 8, "spd": 100, "exp": 400, "gold": 200, "minStage": 40, "elite": true },
+            { "id": "chaos_origin", "name": "混沌之源", "icon": "☢", "hp": 120, "atk": 45, "def": 15, "spd": 80, "exp": 500, "gold": 250, "minStage": 45, "elite": true },
+            { "id": "abyss_god", "name": "深渊之主", "icon": "👑", "hp": 130, "atk": 50, "def": 16, "spd": 70, "exp": 600, "gold": 300, "minStage": 48 },
+            { "id": "eternal_dragon", "name": "永恒之龙", "icon": "🐲", "hp": 120, "atk": 55, "def": 18, "spd": 90, "exp": 800, "gold": 400, "minStage": 50, "elite": true },
+            { "id": "friend_xiaoyang", "name": "小羊角", "icon": "🐑", "hp": 35, "atk": 6, "def": 2, "spd": 70, "exp": 15, "gold": 8, "minStage": 1, "friend": true, "desc": "芙门的羊秘书，不过若是撒点孜然应该会很香吧！" },
+            { "id": "friend_dapan", "name": "大盘鱼", "icon": "🐟", "hp": 40, "atk": 7, "def": 3, "spd": 55, "exp": 18, "gold": 10, "minStage": 1, "friend": true, "desc": "身形巨大如盘的神秘古鱼，潜伏在深水中，一口吞天噬地的传说令无数冒险者闻风丧胆。" },
+            { "id": "friend_wusheng", "name": "无声乐章", "icon": "🎵", "hp": 30, "atk": 9, "def": 1, "spd": 90, "exp": 20, "gold": 12, "minStage": 1, "friend": true, "desc": "由失落乐章幻化而成的音符精灵，在寂静中奏响毁灭之曲，每一个音符都带着致命的魔力。" },
+            { "id": "friend_keda", "name": "可达鸭煲汤", "icon": "🦆", "hp": 38, "atk": 8, "def": 2, "spd": 65, "exp": 22, "gold": 14, "minStage": 1, "friend": true, "desc": "一只总在发呆的可达鸭意外掉入汤锅，获得了烈火烹煮之力，喷出的滚汤能灼穿最厚的铠甲。" },
+            { "id": "friend_zanmei", "name": "赞美魔法之神", "icon": "✨", "hp": 28, "atk": 10, "def": 0, "spd": 100, "exp": 25, "gold": 15, "minStage": 1, "friend": true, "desc": "黑奴" },
+            { "id": "friend_huaqing", "name": "花轻影", "icon": "🌸", "hp": 32, "atk": 9, "def": 1, "spd": 95, "exp": 24, "gold": 13, "minStage": 1, "friend": true, "desc": "花间幻化出的轻盈精灵，身形飘忽如影，花瓣飞舞间暗藏致命杀机，美艳而危险。" },
+            { "id": "friend_juebie", "name": "诀别诗", "icon": "📝", "hp": 36, "atk": 10, "def": 2, "spd": 80, "exp": 28, "gold": 16, "minStage": 1, "friend": true, "desc": "以离别之诗为躯的幽魂诗人，吟唱的诗句化作利刃，每一字都是一段未了的遗憾。" },
+            { "id": "friend_neige", "name": "内阁", "icon": "🏛", "hp": 42, "atk": 8, "def": 4, "spd": 60, "exp": 30, "gold": 18, "minStage": 1, "friend": true, "desc": "古老王朝遗留下的机关造物，精密齿轮驱动，算无遗策，攻防兼备，冷静如机械。" },
+            { "id": "friend_xueying", "name": "雪映梅", "icon": "❄", "hp": 30, "atk": 11, "def": 1, "spd": 85, "exp": 32, "gold": 20, "minStage": 1, "friend": true, "desc": "寒雪中绽放的梅花精怪，冰晶为骨、花瓣为刃，凛冽寒风即是它的怒吼，美丽而刺骨。" },
+            { "id": "friend_weiduo", "name": "维多喵", "icon": "🐱", "hp": 28, "atk": 12, "def": 0, "spd": 110, "exp": 35, "gold": 22, "minStage": 1, "friend": true, "desc": "来自维多利亚的神秘猫妖，优雅而狡黠，九条尾巴各藏一种秘术，速度冠绝群怪。" },
+            { "id": "friend_echo", "name": "Echo", "icon": "🔊", "hp": 35, "atk": 11, "def": 2, "spd": 95, "exp": 38, "gold": 24, "minStage": 1, "friend": true, "desc": "峡谷深处的声音化身，能完美复制敌人的攻击并以双倍力量回敬，以彼之道还施彼身。" },
+            { "id": "friend_qiuyu", "name": "秋语", "icon": "🍂", "hp": 33, "atk": 12, "def": 1, "spd": 90, "exp": 40, "gold": 25, "minStage": 1, "friend": true, "desc": "秋日落叶堆积而成的精灵，低语着季节的哀愁，触碰到的生灵都会被凋零之力侵蚀。" },
+            { "id": "friend_ju", "name": "菊", "icon": "🌻", "hp": 30, "atk": 13, "def": 2, "spd": 85, "exp": 42, "gold": 26, "minStage": 1, "friend": true, "desc": "傲霜秋菊修炼成精，花瓣如金针般锋利，散发出的幽香能令人陷入沉睡，温柔而致命。" },
+            { "id": "friend_xingyundan", "name": "幸运蛋", "icon": "🥚", "hp": 25, "atk": 14, "def": 0, "spd": 100, "exp": 45, "gold": 28, "minStage": 1, "friend": true, "desc": "一枚来历不明的巨大彩蛋，看似人畜无害，但撞到它的人总会遭遇意想不到的霉运。" },
+            { "id": "friend_fengyuan", "name": "枫原万叶", "icon": "🍁", "hp": 38, "atk": 13, "def": 2, "spd": 105, "exp": 48, "gold": 30, "minStage": 1, "friend": true, "desc": "手持红叶的流浪武士，剑法如秋风扫落叶般迅捷，万叶飞舞之处无人可挡其锋。" },
+            { "id": "friend_xingyunfj", "name": "幸运风见", "icon": "💨", "hp": 32, "atk": 15, "def": 1, "spd": 110, "exp": 50, "gold": 32, "minStage": 1, "friend": true, "desc": "随风而行的幸运精灵，身形缥缈不可捉摸，所过之处留下祝福之风，带来好运与生机。" },
+            { "id": "friend_xingyunmj", "name": "幸运魔角", "icon": "👑", "hp": 40, "atk": 14, "def": 3, "spd": 75, "exp": 55, "gold": 35, "minStage": 1, "friend": true, "desc": "头顶魔法尖角的祥瑞之兽，角尖凝聚星辰之力，能为追随者带来无尽的好运与庇护。" },
+            { "id": "friend_xingyunlj", "name": "幸运鹿角", "icon": "🦌", "hp": 42, "atk": 15, "def": 3, "spd": 80, "exp": 58, "gold": 38, "minStage": 1, "friend": true, "desc": "林中圣鹿化形的守护者，鹿角如珊瑚般璀璨璀璨，踏过之处草木逢春，生机盎然。" },
+            { "id": "friend_laodeng", "name": "老登看雷", "icon": "⚡", "hp": 36, "atk": 17, "def": 2, "spd": 95, "exp": 65, "gold": 40, "minStage": 1, "friend": true, "desc": "背着我偷偷退坑，太坏了！！！" },
+            { "id": "friend_yaltor", "name": "亚尔托莉", "icon": "🛡", "hp": 45, "atk": 16, "def": 5, "spd": 70, "exp": 70, "gold": 45, "minStage": 1, "friend": true, "desc": "传说中的圣剑骑士，金发碧眼身披铠甲，手持誓约之剑，为守护信念而战，正气凛然。" },
+            { "id": "friend_baiju", "name": "白菊", "icon": "🌼", "hp": 35, "atk": 18, "def": 2, "spd": 90, "exp": 75, "gold": 48, "minStage": 1, "friend": true, "desc": "月光下绽放的纯白菊花精灵，圣洁而不可侵犯，花瓣飘落之处万物归于永恒的宁静。" },
+            { "id": "friend_xingyunhm", "name": "幸运黑妹", "icon": "👸", "hp": 38, "atk": 19, "def": 2, "spd": 100, "exp": 80, "gold": 50, "minStage": 1, "friend": true, "desc": "黑肤如夜的幸运女神化身，笑容灿烂夺目，身上的幸运符能逆转一切厄运，带来奇迹。" },
+            { "id": "friend_huaqingz", "name": "花轻斋", "icon": "🌺", "hp": 40, "atk": 20, "def": 3, "spd": 85, "exp": 90, "gold": 55, "minStage": 1, "friend": true, "desc": "隐居花斋的植物大师，能操控百花百草，花园即是它的战场，一草一木皆为致命利器。" },
+
+            { "id": "friend_zhaohua", "name": "朝花夕拾", "icon": "🌸", "hp": 32, "atk": 7, "def": 1, "spd": 60, "exp": 14, "gold": 7, "minStage": 1, "friend": true, "desc": "朝开暮落的花朵精怪，每次绽放都在追忆昨日的自己——或许正因为短暂才格外珍贵。" },
+            { "id": "friend_dingshi", "name": "定时说说", "icon": "⏰", "hp": 30, "atk": 8, "def": 1, "spd": 95, "exp": 16, "gold": 9, "minStage": 1, "friend": true, "desc": "永远在整点报时却从不说自己想说的话的钟表精灵。它把真心话都藏在了秒针的第 60 次跳动里。" },
+            { "id": "friend_qic", "name": "弃C", "icon": "💻", "hp": 28, "atk": 11, "def": 0, "spd": 88, "exp": 20, "gold": 12, "minStage": 1, "friend": true, "desc": "曾深爱 C++ 如今却抛弃它的程序员怨灵，一边掉头发一边朝你扔出 segmentation fault。" },
+            { "id": "friend_wodemignzi", "name": "我的名字", "icon": "❓", "hp": 33, "atk": 6, "def": 2, "spd": 75, "exp": 18, "gold": 10, "minStage": 1, "friend": true, "desc": "失去了自己名字的存在，连自我介绍都变得支支吾吾。或许它唯一的真名早就被岁月遗忘。" },
+            { "id": "friend_litals", "name": "LitALS", "icon": "🕯️", "hp": 26, "atk": 14, "def": 1, "spd": 100, "exp": 22, "gold": 13, "minStage": 1, "friend": true, "desc": "诗歌之火与冰桶之寒的奇异结合体。读它的诗句你会先冷后热——据说这就是\u201c刺骨入魂\u201d。" },
+            { "id": "friend_xuanji", "name": "宣姬", "icon": "👸", "hp": 38, "atk": 9, "def": 3, "spd": 70, "exp": 24, "gold": 14, "minStage": 1, "friend": true, "desc": "古代宣姓公主的转世碎片，手中的团扇一摇就扇起三丈红尘。说起来，她的宫斗段位比战斗段位还高。" },
+            { "id": "friend_aobatian", "name": "奥霸天", "icon": "👹", "hp": 55, "atk": 18, "def": 5, "spd": 50, "exp": 60, "gold": 35, "minStage": 1, "friend": true, "desc": "号称霸天无敌的机甲狂战士，扬言要把所有\u201c草根玩家\u201d都踩在脚下——可至今没人见到过它的脚。" },
+            { "id": "friend_dabaie", "name": "大白鹅", "icon": "🦢", "hp": 30, "atk": 10, "def": 2, "spd": 85, "exp": 18, "gold": 11, "minStage": 1, "friend": true, "desc": "鹅鹅鹅，曲项向天歌！被它啄一口的冒险者，从此再也不敢吃烧鹅了。" },
+            { "id": "friend_xiaoyu", "name": "热心网友小余", "icon": "🧚", "hp": 27, "atk": 7, "def": 1, "spd": 90, "exp": 28, "gold": 18, "minStage": 1, "friend": true, "desc": "永远在评论区抢沙发和前排的模范网友。打它一下它先说\u201c没事吧？\u201d再还手，搞得你都不好意思继续。" },
+            { "id": "friend_wls", "name": "WLS", "icon": "🎭", "hp": 36, "atk": 12, "def": 3, "spd": 80, "exp": 30, "gold": 20, "minStage": 1, "friend": true, "desc": "只露出三个字母的神秘人，据说从没有人见过它的真面目。有人说它就是下一个你。" },
+            { "id": "friend_wujiu", "name": "无咎", "icon": "📿", "hp": 50, "atk": 6, "def": 6, "spd": 50, "exp": 35, "gold": 25, "minStage": 1, "friend": true, "desc": "心如止水的修行者，据说它从不犯错也不怨天尤人。可惜它的存在本身就是对所有玩家的讽刺。" },
+            { "id": "friend_zide", "name": "活得自在🧸", "icon": "🧸", "hp": 45, "atk": 5, "def": 4, "spd": 40, "exp": 22, "gold": 16, "minStage": 1, "friend": true, "desc": "一只长不大的泰迪熊精怪，活得比任何人都自在。抱紧它的人据说都忘记了自己在玩放置手游。" },
+            { "id": "friend_linyoude", "name": "林有德", "icon": "🌳", "hp": 42, "atk": 9, "def": 4, "spd": 60, "exp": 26, "gold": 15, "minStage": 1, "friend": true, "desc": "百年老树的化身，眉宇间总带着几分书卷气。据说它每年秋天都会结出写满诗句的果实。" },
+            { "id": "friend_shejishi", "name": "设计师", "icon": "🎨", "hp": 32, "atk": 10, "def": 2, "spd": 75, "exp": 24, "gold": 16, "minStage": 1, "friend": true, "desc": "永远在加班改稿的平面设计精怪。它的笔触能重塑现实——但经常把队友 P 得亲妈都认不出来。" },
+            { "id": "friend_feifei", "name": "气急败坏的妃妃", "icon": "😾", "hp": 34, "atk": 13, "def": 1, "spd": 95, "exp": 26, "gold": 18, "minStage": 1, "friend": true, "desc": "一口一个\u201c气死偶咧\u201d的暴躁郡主。一言不合就跺脚，但跺着跺着你就忍不住笑了出来。" }
+        ]
+    },
+
+    "equipSlots": {
+        "_comment": "装备5大部位。每个部位有 baseStat（基础属性），basePerLvl 表示每升1级基础属性增长量。",
+        "slots": [
+            { "id": "weapon", "name": "武器", "icon": "⚔", "baseStat": { "id": "atk_flat", "stat": "atk", "name": "攻击力", "icon": "⚔️", "basePerLvl": 2 } },
+            { "id": "offhand", "name": "副手", "icon": "🛡", "baseStat": { "id": "def_flat", "stat": "def", "name": "防御力", "icon": "🛡", "basePerLvl": 2 } },
+            { "id": "helmet", "name": "头盔", "icon": "🎩", "baseStat": { "id": "hp_flat", "stat": "hp", "name": "生命", "icon": "❤️", "basePerLvl": 8 } },
+            { "id": "armor", "name": "护甲", "icon": "🧥", "baseStat": { "id": "def_flat", "stat": "def", "name": "防御力", "icon": "🛡", "basePerLvl": 2 } },
+            { "id": "boots", "name": "鞋子", "icon": "👟", "baseStat": { "id": "spd", "stat": "spd", "name": "速度", "icon": "💨", "basePerLvl": 1 } }
+        ]
+    },
+
+    "equipQualityMultiplier": {
+        "_comment": "品质倍率 v3.x 平衡调整：白/绿/蓝/紫/橙/金 = 1.0/1.15/1.3/1.5/1.75/2.0。索引对应品质等级0-5。原 1.0/1.2/1.5/1.8/2.2/2.7 → 跨度 2.7× 收敛到 2.0×",
+        "common": 1.0,
+        "uncommon": 1.15,
+        "rare": 1.3,
+        "epic": 1.5,
+        "legendary": 1.75,
+        "immortal": 2.0
+    },
+
+    "equipAffixPool": {
+        "_comment": "装备词条池 v3.x 平衡调整：min/max 范围按品质收窄，让金装只比白装强 5-6× 而非 9-15×。weight 为出现权重；type: flat(数值) / pct(百分比)",
+        "affixes": [
+            { "id": "atk_flat", "name": "攻击力", "stat": "atk", "type": "flat", "weight": 10, "min": [3, 5, 7, 10, 14, 18], "max": [5, 8, 11, 15, 20, 26] },
+            { "id": "atk_pct", "name": "攻击%", "stat": "atk", "type": "pct", "weight": 8, "min": [1, 2, 3, 4, 5, 6], "max": [2, 3, 4, 5, 6, 8] },
+            { "id": "def_flat", "name": "防御力", "stat": "def", "type": "flat", "weight": 10, "min": [3, 4, 6, 9, 13, 17], "max": [5, 7, 10, 14, 19, 25] },
+            { "id": "def_pct", "name": "防御%", "stat": "def", "type": "pct", "weight": 8, "min": [1, 2, 3, 4, 5, 6], "max": [2, 3, 4, 5, 6, 8] },
+            { "id": "hp_flat", "name": "生命", "stat": "hp", "type": "flat", "weight": 10, "min": [10, 15, 22, 32, 45, 60], "max": [18, 26, 36, 50, 70, 95] },
+            { "id": "hp_pct", "name": "生命%", "stat": "hp", "type": "pct", "weight": 8, "min": [1, 2, 3, 4, 5, 6], "max": [2, 3, 4, 5, 6, 8] },
+            { "id": "spd", "name": "速度", "stat": "spd", "type": "flat", "weight": 6, "min": [1, 2, 3, 4, 6, 8], "max": [3, 4, 5, 7, 10, 14] },
+            { "id": "crit", "name": "暴击率", "stat": "crit", "type": "flat", "weight": 5, "min": [1, 1, 2, 3, 4, 5], "max": [2, 2, 3, 4, 5, 7] },
+            { "id": "crit_dmg", "name": "暴击伤害", "stat": "critDmg", "type": "flat", "weight": 5, "min": [2, 3, 5, 7, 10, 14], "max": [4, 6, 8, 11, 15, 22] },
+            { "id": "elem_mastery", "name": "元素精通", "stat": "elemMastery", "type": "flat", "weight": 4, "min": [1, 2, 3, 4, 6, 8], "max": [3, 4, 5, 7, 10, 14] },
+            { "id": "phys_mastery", "name": "物理精通", "stat": "physMastery", "type": "flat", "weight": 4, "min": [1, 2, 3, 4, 6, 8], "max": [3, 4, 5, 7, 10, 14] },
+            { "id": "heal_bonus", "name": "治疗加成", "stat": "healBonus", "type": "flat", "weight": 3, "min": [1, 1, 2, 3, 4, 6], "max": [2, 2, 3, 4, 6, 9] },
+            { "id": "effect_hit", "name": "效果命中", "stat": "effectHit", "type": "flat", "weight": 3, "min": [1, 2, 3, 4, 5, 7], "max": [2, 3, 4, 5, 7, 10] },
+            { "id": "effect_res", "name": "效果抵抗", "stat": "effectRes", "type": "flat", "weight": 3, "min": [1, 2, 3, 4, 5, 7], "max": [2, 3, 4, 5, 7, 10] },
+            { "id": "exp_bonus", "name": "经验加成", "stat": "expBonus", "type": "flat", "weight": 2, "min": [1, 2, 3, 4, 5, 7], "max": [3, 4, 5, 6, 8, 12] },
+            { "id": "loot_bonus", "name": "掉落加成", "stat": "lootBonus", "type": "flat", "weight": 1, "min": [1, 1, 2, 3, 4, 5], "max": [2, 2, 3, 4, 5, 8] }
+        ]
+    },
+
+    "equipWeaponTypes": {
+        "_comment": "武器/副手类型。每个槽位可有多种类型，slot 决定可在哪些职业身上出现。",
+        "bySlot": {
+            "weapon": ["sword", "staff", "dagger", "tome", "axe", "scythe", "katana"],
+            "offhand": ["shield", "tome", "orb", "dagger", "katana"]
+        },
+        "names": {
+            "sword": "剑",
+            "staff": "法杖/魔杖",
+            "dagger": "匕首",
+            "tome": "法书/秘典",
+            "axe": "战斧",
+            "scythe": "镰刀",
+            "katana": "太刀",
+            "shield": "盾牌",
+            "orb": "法球"
+        }
+    },
+
+    "equipArmorTypes": {
+        "_comment": "防具类型名。heavy=重甲/light=轻甲/mage=法系布甲/universal=通用",
+        "names": {
+            "heavy": "重甲",
+            "mage": "法系布甲",
+            "light": "轻甲",
+            "universal": "通用"
+        }
+    },
+
+    "equipClassArmorMap": {
+        "_comment": "职业 → 可穿戴护甲类型。universal 自动追加到所有职业。",
+        "knight": ["heavy"],
+        "mage": ["mage"],
+        "assassin": ["light"],
+        "summoner": ["mage"],
+        "warrior": ["heavy"],
+        "sage": ["mage"],
+        "necromancer": ["mage"],
+        "swordsman": ["light"]
+    },
+
+    "equipWeaponNames": {
+        "_comment": "武器名称池（按 weaponType 分类）— v4.2 扩充 (主题匹配职业: 骑士→剑, 法师/贤者→法杖, 刺客→匕首, 召唤师/亡灵→法书, 战士→战斧, 亡灵→镰刀, 剑客→太刀)",
+        "sword": ["审判巨剑", "骨剑", "王剑", "勇者之剑", "圣光之剑", "暗影之剑", "龙息之剑", "破晓", "黄昏", "星辰之刃", "霜噬", "龙骨巨剑", "审判之剑", "嗜血魔剑", "冰晶刺剑", "狮王之剑", "苍蓝圣剑", "黎明之刃", "帝国之剑", "风暴之剑", "圣裁者", "铁誓之剑", "太阳王之剑", "胜利之刃", "银月圣剑", "炽焰之刃", "圣印之剑", "守誓者", "净化之剑", "战歌之剑", "永恒誓约", "圣裁之剑"],
+        "staff": ["大天使之杖", "巫师法杖", "秘法之杖", "回想之杖", "元素之杖", "星辰法杖", "虚空法杖", "永恒之杖", "霜冻之杖", "烈焰法杖", "奥术之杖", "时光之杖", "唤星之杖", "龙息法杖", "魔力洪流", "元素调和", "命运之杖", "雷鸣之杖", "智慧之杖", "星界之杖", "苍穹之柱", "末日预言", "凤凰之杖", "时间之杖", "灵魂回响", "创世之杖", "守护之杖", "暴君之怒", "神使之杖", "净焰之杖", "真理之杖", "咒文权杖"],
+        "dagger": ["暗影之牙", "毒刃", "幻影匕首", "割喉者", "夜刃", "血刺", "流影刃", "淬毒匕首", "影袭", "噬心者", "寒蝉", "暗月之吻", "血蔷薇", "午夜凶刃", "冰锥", "暮光之刃", "黑羽", "食魂者", "暮刃", "血宴", "凋零", "断喉", "寂灭", "影绣", "寒刺", "怨灵之匕", "噬魂刃"],
+        "tome": ["奥秘法典", "虚空秘典", "恶魔之书", "时光之书", "死灵之书", "禁忌之书", "贤者之石", "暗影契约", "灵魂之书", "召唤秘典", "异界之门", "死亡之书", "幽冥之书", "暗影圣经", "禁咒", "血之书", "灵界之书", "混沌法典", "死灵秘典", "灵语之书", "远古之书", "失落之书", "末日预言书", "灵魂典籍", "暗黑真经"],
+        "axe": ["雷霆战斧", "裂地战斧", "巨人粉碎者", "狂怒之斧", "霜冻战斧", "炎魔锤", "鲜血战斧", "碎山斧", "战争之斧", "怒斩", "破晓斧", "蛮王之斧", "蛮荒之斧", "碎颅者", "战嚎", "屠龙斧", "嗜血之斧", "山崩", "巨人之握", "战争使者", "断罪者", "劈山斧", "战怒之斧", "狂战斧", "风暴斧", "银斧", "毁灭之斧"],
+        "scythe": ["深渊之镰", "灵魂收割者", "死亡镰刀", "虚空镰刀", "骨镰", "死神之镰", "暗影之镰", "收割者", "末日之镰", "灵魂收割", "凋零之镰", "沉默之镰", "死亡信使", "嗜魂镰", "死灵之镰", "黄昏之镰", "寂灭镰刀", "冥王之镰", "永夜镰刀", "轮回之镰", "寒霜之镰", "暗影死镰", "亡者之镰", "终结之镰", "亡魂收割"],
+        "katana": ["村雨", "鬼切", "天丛云", "斩魔刀", "影月", "风行者", "千本樱", "雪走", "霜月", "雾隐", "红月", "樱花", "寒月", "雷切", "紫电", "龙月", "苍月", "风切", "雷光", "晓", "疾风", "雾雨", "苍岚", "夜叉", "飞燕", "霜刃", "夜鸦", "雪风", "千羽"]
+    },
+
+    "equipOffhandNames": {
+        "_comment": "副手名称池（按 weaponType 分类）— v4.2 扩充 (盾→骑士/战士, 球→法师/贤者, 书→召唤/亡灵, 飞刀→刺客, 短刀→剑客)",
+        "shield": ["圣光之盾", "龙鳞盾", "精灵之盾", "符文之盾", "龙骨盾", "不灭之盾", "荆棘之盾", "远古之盾", "铁壁之盾", "圣旗", "圣盾", "神木盾", "永夜之盾", "寒铁盾", "钻石盾", "银月之盾", "阳炎盾", "钢铁壁垒", "寒冰之盾", "圣光壁垒", "钢之盾", "王者之盾"],
+        "orb": ["灵能球", "暗影宝珠", "星辰法器", "元素之心", "暗月之印", "虚空宝珠", "凤凰之羽", "龙魂宝珠", "混沌之球", "星辉之球", "灵能宝珠", "幽冥宝珠", "月之宝珠", "太阳宝珠", "雷鸣宝珠", "寒冰宝珠", "烈焰宝珠", "紫电宝珠", "圣光宝珠", "星空宝珠", "碧海宝珠", "翠玉宝珠", "苍雷宝珠"],
+        "tome": ["奥秘法典", "元素之书", "恶魔之书", "贤者之石", "光辉圣典", "虚空秘典", "时光之书", "死灵之书", "禁忌之书", "自然之书", "灵魂典籍", "灵语之书", "死亡真经", "恶魔法典", "虚空之书", "元素典籍", "召唤之书", "灵界典籍", "沉默之书", "死灵秘典"],
+        "dagger": ["影刃", "短刃", "手里剑", "苦无", "淬毒短刃", "飞刀", "暗器", "飞刃", "短匕", "飞镖", "袖箭", "毒针", "寒铁小刀", "暗刃", "淬毒飞针", "夜行飞刃"],
+        "katana": ["肋差", "小太刀", "肋差剑", "短刀", "半太刀", "打刀", "怀剑", "短胁", "备用刀", "小肋差", "战斗短刀"]
+    },
+
+    "equipArmorNames": {
+        "_comment": "防具名称池（按 armorType → slot 分类）— v4.2 扩充",
+        "heavy": {
+            "helmet": ["铁盔", "钢盔", "龙首盔", "龙角之盔", "兽王战盔", "无畏战盔", "不朽战盔", "龙骨战盔", "远古铁面", "狮王头盔", "钢之王冠", "银铁头盔", "战王之盔", "圣堂盔", "战神圣盔", "钢铁面甲", "圣光战盔"],
+            "armor": ["锁甲", "板甲", "龙鳞甲", "暗影战甲", "不朽板甲", "圣光板甲", "龙骨战甲", "不朽战铠", "远古板甲", "龙血战甲", "狮心战甲", "钢甲", "银甲", "战王甲", "钢之壁垒", "圣堂甲", "钢铁战衣", "圣光战甲", "龙血圣甲"],
+            "boots": ["铁靴", "钢靴", "龙鳞靴", "龙鳞战靴", "不朽战靴", "龙骨战靴", "远古胫甲", "狮王战靴", "无畏之靴", "战靴", "钢之靴", "战王之靴", "圣堂靴", "钢铁之靴", "龙血战靴"]
+        },
+        "mage": {
+            "helmet": ["法师帽", "智慧之冠", "秘术之冠", "星辰之冕", "精灵王冠", "永恒王冠", "奥术之冠", "召唤师兜帽", "圣光头环", "真理之冠", "大法师之冠", "元素之冠", "仙灵之冠", "灵语兜帽", "智慧星冠"],
+            "armor": ["法袍", "星辰法袍", "深渊法袍", "虚空法袍", "秘法长袍", "大贤者法袍", "奥术编织者", "月光法袍", "仙灵法袍", "真理法袍", "圣光法袍", "大法师法袍", "元素法袍", "灵语法袍", "奥术织法袍", "召唤法袍"],
+            "boots": ["法靴", "星辰之靴", "虚空之靴", "秘法之靴", "奥术之靴", "贤者便鞋", "元素之履", "真理之靴", "圣光之靴", "元素之靴", "仙灵之靴", "灵语之靴", "智慧便鞋", "召唤法鞋"]
+        },
+        "light": {
+            "helmet": ["暗影面具", "刺客面罩", "幽冥鬼面", "深渊面具", "暗影兜帽", "凤凰之冠", "鬼面", "夜行兜帽", "银影面具", "幻影面具", "暗杀者面罩", "暗影冠", "夜鸦面具", "风行者面甲"],
+            "armor": ["暗夜皮甲", "精灵链甲", "霜鳞甲", "炎魔胸甲", "凤凰羽衣", "龙魂战甲", "风行者皮甲", "影袭轻甲", "夜行衣", "银影甲", "幻影甲", "暗杀者甲", "暗影轻甲", "风行者轻甲", "霜月皮甲"],
+            "boots": ["暗影步靴", "霜冻行者", "炎魔之靴", "深渊之靴", "风行者之靴", "影步", "圣光之靴", "银影靴", "幻影靴", "暗杀者靴", "夜行之靴", "霜月步靴", "疾风轻靴", "风行者步靴"]
+        },
+        "universal": {
+            "helmet": ["星辰冠冕", "不朽王冠", "圣光之冠", "王者冠", "圣者之冠", "神使之冠", "星辉冕", "永恒圣冠"],
+            "armor": ["布甲", "精灵链甲", "神使之衣", "圣者之衣", "王者之袍", "星辉法衣", "永恒圣袍"],
+            "boots": ["布靴", "疾风靴", "凤凰之履", "神使之履", "圣者之履", "王者之靴", "星辉便鞋", "永恒圣靴"]
+        }
+    }
+}

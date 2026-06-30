@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CQC放置RPG">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>永恒英灵 · CQC</title>
+<!-- 加载顺序：theme(设计语言) → main(布局) → battle(战斗) → ui(业务)
+     原因：业务界面 ui.css 中的 .btn/卡片等需要继承 theme.css 的变量与基类 -->
+<link rel="stylesheet" href="css/theme.css?v=100050">
+<link rel="stylesheet" href="css/theme-v3.css?v=100050">
+<link rel="stylesheet" href="css/tutorial-cards.css?v=100050">
+<link rel="stylesheet" href="css/main.css?v=100050">
+<link rel="stylesheet" href="css/battle.css?v=100050">
+<link rel="stylesheet" href="css/ui.css?v=100050">
+
+<style>
+@font-face {
+    font-family: 'EmojiFallback';
+    src: local('Noto Color Emoji'), local('Android Emoji'), local('Segoe UI Emoji');
+    font-display: swap;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, sans-serif, EmojiFallback;
+}
+</style>
+</head>
+<body>
+<div id="app">
+    <!-- 主界面（战斗屏） -->
+    <div id="screen-main" class="screen">
+        <!-- 顶部信息栏 -->
+        <div id="top-bar">
+            <div id="stage-info" onclick="showStageSelect()">第 1 章 - 新手草原</div>
+            <div id="team-power-main">战力: 0</div>
+            <div id="resource-bar">
+                <div class="resource gold"><span class="icon">&#9733;</span><span id="gold-display">0</span></div>
+                <div class="resource gem"><span class="icon">&#9670;</span><span id="gem-display">0</span></div>
+            </div>
+        </div>
+
+        <!-- 战斗区域 -->
+        <button id="btn-return-home" class="return-home-btn" onclick="returnToHome()" title="返回家园（关卡会被重置）">🏕 返回家园</button>
+        <div id="battle-area">
+            <canvas id="battle-canvas"></canvas>
+            <canvas id="pixi-overlay-canvas"></canvas>
+            <div id="wave-info">
+                <span id="wave-number">第 1 波</span>
+                <span id="wave-status">准备中...</span>
+                <span id="monster-count">怪物: 0</span>
+            </div>
+            <button class="battle-speed-btn" id="btn-battle-speed" onclick="toggleBattleSpeed()">1x</button>
+            <button class="battle-speed-btn" id="btn-auto-battle" onclick="toggleAutoBattle()">自动</button>
+            
+            <button class="next-chapter-btn" id="btn-next-chapter" onclick="BattleManager.advanceToNextChapter()" style="display:none;">进入下一章</button>
+            <!-- ★ BUG#1 终极修复：退出副本后主战场暂停，玩家主动点此按钮才继续 -->
+            <button id="btn-resume-main-battle" onclick="BattleManager.resumeMainBattle()">▶ 继续战斗</button>
+        </div>
+
+        <!-- 战斗日志 (重设计: 顶部固定搜索 + 类型快速 tab + 复制全部 + 不再点击展开筛选) -->
+        <div id="battle-log-container">
+            <div id="battle-log-header">
+                <span class="log-header-title">⚔ 战斗日志</span>
+                <span class="log-header-stats" id="log-stats">0 条</span>
+                <input type="text" id="log-search-input" class="log-search-input" placeholder="🔍 搜索关键词..." oninput="BattleManager.filterLogByKeyword(this.value)">
+                <span class="log-header-btn" onclick="BattleManager.copyBattleLog()" title="复制全部日志到剪贴板">📋</span>
+                <span class="log-header-btn" onclick="BattleManager.clearBattleLog()" title="清空日志">🗑</span>
+                <span class="log-header-btn" onclick="BattleManager.showDetailedBattleStats()" title="详细战斗统计">📊</span>
+            </div>
+            <div id="log-filter-bar">
+                <span class="log-filter-btn active" data-type="all" onclick="BattleManager.toggleLogFilter('all')">📋 全部</span>
+                <span class="log-filter-btn active" data-type="key" onclick="BattleManager.toggleLogFilter('key')" title="只看关键事件 (战斗/掉落/BOSS/升级)">⭐ 关键</span>
+                <span class="log-filter-btn" data-type="attack" onclick="BattleManager.toggleLogFilter('attack')" title="攻击">⚔️</span>
+                <span class="log-filter-btn" data-type="skill" onclick="BattleManager.toggleLogFilter('skill')" title="技能">✨</span>
+                <span class="log-filter-btn" data-type="crit" onclick="BattleManager.toggleLogFilter('crit')" title="暴击">💥</span>
+                <span class="log-filter-btn" data-type="heal" onclick="BattleManager.toggleLogFilter('heal')" title="治疗">💚</span>
+                <span class="log-filter-btn" data-type="shield" onclick="BattleManager.toggleLogFilter('shield')" title="护盾">🛡️</span>
+                <span class="log-filter-btn" data-type="buff" onclick="BattleManager.toggleLogFilter('buff')" title="增益">⬆️</span>
+                <span class="log-filter-btn" data-type="debuff" onclick="BattleManager.toggleLogFilter('debuff')" title="减益">⬇️</span>
+                <span class="log-filter-btn" data-type="death" onclick="BattleManager.toggleLogFilter('death')" title="死亡">💀</span>
+                <span class="log-filter-btn" data-type="boss" onclick="BattleManager.toggleLogFilter('boss')" title="BOSS">👑</span>
+                <span class="log-filter-btn" data-type="loot" onclick="BattleManager.toggleLogFilter('loot')" title="掉落">🎁</span>
+                <span class="log-filter-btn" data-type="level" onclick="BattleManager.toggleLogFilter('level')" title="升级">🌟</span>
+                <span class="log-filter-btn" data-type="info" onclick="BattleManager.toggleLogFilter('info')" title="信息">💬</span>
+                <span class="log-filter-btn" data-type="victory" onclick="BattleManager.toggleLogFilter('victory')" title="胜利">🏆</span>
+                <span class="log-filter-btn" data-type="defeat" onclick="BattleManager.toggleLogFilter('defeat')" title="失败">💔</span>
+            </div>
+            <div id="battle-log"></div>
+        </div>
+    </div>
+
+    <!-- 家园界面（HOME_1.3 新增：默认进入界面，草原营地 + 自由活动 + 友好怪物） -->
+    <div id="screen-home" class="screen active">
+        <div class="home-header">
+            <div class="home-title-wrap" style="flex:1;min-width:0;">
+                <span class="home-title-icon" style="font-size:16px;">🏕</span>
+                <span id="home-scene-tabs" class="home-scene-tabs" style="flex-shrink:0;"></span>
+            </div>
+            <div class="home-stats" style="display:flex;align-items:center;gap:8px;font-size:11px;flex-shrink:0;">
+                <span class="resource gold" style="font-size:11px;"><span class="icon">★</span><span id="home-gold-display">0</span></span>
+                <span class="resource gem" style="font-size:11px;"><span class="icon">♦</span><span id="home-gem-count">0</span></span>
+                <span class="resource stamina" style="font-size:11px;" title="体力"><span class="icon">⚡</span><span id="home-stamina-display">60</span></span>
+            </div>
+            <button class="btn" style="padding:4px 8px;font-size:12px;border:none;background:none;" onclick="switchScreen('settings')" title="设置">⚙</button>
+            <button id="btn-enter-battle" class="btn btn-gold home-btn-enter" onclick="enterBattleFromHome()">⚔ 战斗</button>
+        </div>
+        <!-- AI 小精灵悬浮按钮（左上天空区域） -->
+        <div style="position:absolute;top:52px;left:12px;z-index:10;display:flex;align-items:center;gap:4px;cursor:pointer;background:rgba(33,150,243,0.15);border:1px solid rgba(33,150,243,0.3);border-radius:16px;padding:4px 10px;backdrop-filter:blur(2px);" onclick="openAIAssistant()" title="AI 小精灵">
+            <span style="font-size:14px;">🧠</span>
+            <span style="font-size:9px;color:#64b5f6;">AI</span>
+        </div>
+        <div class="home-canvas-wrap">
+            <canvas id="home-canvas"></canvas>
+            <div class="home-tip">🌿 家园中所有怪物都是友好的 · 准备好后点击右上角"进入战斗"</div>
+        </div>
+        <!-- 商人 NPC -->
+        <div id="home-merchant" class="home-merchant-btn" onclick="openMerchant()" title="商人">
+            <span>🧑‍🌾</span>
+            <span class="home-merchant-label">商人</span>
+        </div>
+    </div>
+
+    <!-- 底部导航栏（全局常驻，跨屏幕可见） -->
+    <div id="bottom-nav">
+        <div class="nav-btn active" data-screen="main">
+            <span class="nav-icon-wrap"><span class="nav-icon">⚔</span></span>
+            <span class="nav-label">战斗</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="hero">
+            <span class="nav-icon-wrap"><span class="nav-icon">😊</span></span>
+            <span class="nav-label">角色</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="inventory">
+            <span class="nav-icon-wrap"><span class="nav-icon">📦</span></span>
+            <span class="nav-label">仓库</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="talent">
+            <span class="nav-icon-wrap"><span class="nav-icon">📋</span></span>
+            <span class="nav-label">天赋</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="forge">
+            <span class="nav-icon-wrap"><span class="nav-icon">💎</span></span>
+            <span class="nav-label">宝石</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="dungeon">
+            <span class="nav-icon-wrap"><span class="nav-icon">⚜</span></span>
+            <span class="nav-label">副本</span>
+            <span class="nav-underline"></span>
+        </div>
+        <div class="nav-btn" data-screen="pet">
+            <span class="nav-icon-wrap"><span class="nav-icon">🐾</span></span>
+            <span class="nav-label">宠物</span>
+            <span class="nav-underline"></span>
+        </div>
+    </div>
+
+    <!-- 队伍配置界面 -->
+    <div id="screen-team" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>阵容配置</h2>
+            <button class="action-btn" onclick="switchScreen('hero')">角色详情</button>
+            <button class="action-btn" onclick="autoBestTeam()">一键最佳</button>
+        </div>
+        <div id="formation-container">
+            <div class="formation-section" id="section-front">
+                <div class="section-label">前排坦克</div>
+                <div class="team-slot team-slot-front" data-pos="front" onclick="onTeamSlotClick('front')">
+                    <div class="slot-content" id="slot-front">
+                        <div class="slot-placeholder">点击上阵</div>
+                    </div>
+                </div>
+            </div>
+            <div class="formation-section" id="section-back">
+                <div class="section-label">后排输出</div>
+                <div class="formation-back-row">
+                    <div class="team-slot team-slot-back" data-pos="back1" onclick="onTeamSlotClick('back1')">
+                        <div class="slot-content" id="slot-back1">
+                            <div class="slot-placeholder">点击上阵</div>
+                        </div>
+                    </div>
+                    <div class="team-slot team-slot-back" data-pos="back2" onclick="onTeamSlotClick('back2')">
+                        <div class="slot-content" id="slot-back2">
+                            <div class="slot-placeholder">点击上阵</div>
+                        </div>
+                    </div>
+                    <div class="team-slot team-slot-back" data-pos="back3" onclick="onTeamSlotClick('back3')">
+                        <div class="slot-content" id="slot-back3">
+                            <div class="slot-placeholder">点击上阵</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="team-info-card">
+            <div class="team-info-row">
+                <span>综合战力</span>
+                <span id="team-power">0</span>
+            </div>
+            <div class="team-info-row">
+                <span>羁绊效果</span>
+                <span id="team-bonds">无</span>
+            </div>
+        </div>
+        <div id="class-pool-section" style="text-align:center;padding:10px;">
+            <button class="btn btn-gold" onclick="openClassPoolModal()" style="padding:10px 24px;font-size:13px;">📋 全部职业</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- 角色详情界面 -->
+    <div id="screen-hero" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>角色详情</h2>
+            <button class="action-btn" onclick="switchScreen('team')">队伍配置</button>
+            <button class="action-btn" onclick="autoEquipBest()">一键最佳</button>
+        </div>
+        <div id="hero-detail">
+            <div id="hero-select-grid"></div>
+            <!-- 英雄信息卡片 -->
+            <div id="hero-profile-card">
+                <div id="hero-avatar-section">
+                    <div id="hero-avatar-icon">&#9787;</div>
+                    <div id="hero-avatar-info">
+                        <div id="hero-name">未选择</div>
+                        <div id="hero-class">职业: -</div>
+                        <div id="hero-power">战力: 0</div>
+                    </div>
+                </div>
+                <div id="hero-exp-bar">
+                    <div id="hero-exp-fill"></div>
+                    <span id="stat-exp">0/50</span>
+                </div>
+            </div>
+            <!-- 属性面板 -->
+            <div id="hero-stats-panel">
+                <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-val" id="stat-atk">0</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-atk"></div></div></div>
+                <div class="stat-row"><span class="stat-label">防御</span><span class="stat-val" id="stat-def">0</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-def"></div></div></div>
+                <div class="stat-row"><span class="stat-label">生命</span><span class="stat-val" id="stat-hp">0</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-hp"></div></div></div>
+                <div class="stat-row"><span class="stat-label">法力</span><span class="stat-val" id="stat-mp">0</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-mp" style="background:linear-gradient(90deg,#4fc3f7,#29b6f6);"></div></div></div>
+                <div class="stat-row"><span class="stat-label">速度</span><span class="stat-val" id="stat-spd">0</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-spd"></div></div></div>
+                <div class="stat-row"><span class="stat-label">暴击率</span><span class="stat-val" id="stat-crit">0%</span></div>
+                <div class="stat-row"><span class="stat-label">暴击伤害</span><span class="stat-val" id="stat-critdmg">0%</span></div>
+                <div class="stat-row"><span class="stat-label">效果命中</span><span class="stat-val" id="stat-effecthit">0</span></div>
+                <div class="stat-row"><span class="stat-label">效果抵抗</span><span class="stat-val" id="stat-effectres">0</span></div>
+                <div class="stat-row"><span class="stat-label">伤害加成</span><span class="stat-val" id="stat-dmgBonus">0%</span></div>
+                <div class="stat-row"><span class="stat-label">伤害减免</span><span class="stat-val" id="stat-dmgReduction">0%</span></div>
+                <div class="stat-row"><span class="stat-label">治疗加成</span><span class="stat-val" id="stat-healBonus">0</span></div>
+                <div class="stat-row"><span class="stat-label">经验加成</span><span class="stat-val" id="stat-expbonus">0%</span></div>
+                <div class="stat-row"><span class="stat-label">掉落加成</span><span class="stat-val" id="stat-lootbonus">0%</span></div>
+            </div>
+            <div id="hero-equip-panel">
+                <div id="equip-slots-ring">
+                    <div class="equip-slot ring-slot" data-slot="helmet" onclick="showEquipDetail('helmet')"><div class="slot-ring-icon">🎩</div><div class="slot-ring-label">头盔</div><div class="slot-ring-level"></div></div>
+                    <div class="equip-slot ring-slot" data-slot="offhand" onclick="showEquipDetail('offhand')"><div class="slot-ring-icon">🛡</div><div class="slot-ring-label">副手</div><div class="slot-ring-level"></div></div>
+                    <div id="ring-center-avatar"><div id="ring-avatar-icon">&#9787;</div></div>
+                    <div class="equip-slot ring-slot" data-slot="weapon" onclick="showEquipDetail('weapon')"><div class="slot-ring-icon">⚔</div><div class="slot-ring-label">武器</div><div class="slot-ring-level"></div></div>
+                    <div class="equip-slot ring-slot" data-slot="armor" onclick="showEquipDetail('armor')"><div class="slot-ring-icon">🧥</div><div class="slot-ring-label">护甲</div><div class="slot-ring-level"></div></div>
+                    <div class="equip-slot ring-slot" data-slot="boots" onclick="showEquipDetail('boots')"><div class="slot-ring-icon">👟</div><div class="slot-ring-label">鞋子</div><div class="slot-ring-level"></div></div>
+                </div>
+                <div id="hero-set-info" style="margin-top:8px;display:none;text-align:center;"></div>
+            </div>
+            <div id="hero-skills-panel">
+                <div class="skill-header-row">
+                    <h3>技能升级</h3>
+                    <div class="skill-points-display">
+                        <span style="color:#ffd700;">技能点:</span>
+                        <span id="skill-points-display" style="color:#ffd700;font-size:16px;font-weight:bold;">0</span>
+                    </div>
+                </div>
+                <div id="hero-skills"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 仓库界面 -->
+    <div id="screen-inventory" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>仓库</h2>
+            <button class="action-btn" onclick="sortInventory()">整理</button>
+        </div>
+        <div id="inventory-tabs">
+            <button class="tab-btn inv-main-tab active" data-tab="all" onclick="switchInvTab('all')">全部</button>
+            <button class="tab-btn inv-main-tab" data-tab="weapon" onclick="switchInvTab('weapon')">武器</button>
+            <button class="tab-btn inv-main-tab" data-tab="armor" onclick="switchInvTab('armor')">防具</button>
+            <button class="tab-btn inv-main-tab" data-tab="favorites" onclick="switchInvTab('favorites')">⭐ 收藏</button>
+        </div>
+        <div id="inventory-slot-tabs" style="display:none;">
+            <button class="inv-slot-tab active" data-slot="all" onclick="switchSlotFilter('all')">全部部位</button>
+            <button class="inv-slot-tab" data-slot="weapon" onclick="switchSlotFilter('weapon')">⚔ 武器</button>
+            <button class="inv-slot-tab" data-slot="offhand" onclick="switchSlotFilter('offhand')">🛡 副手</button>
+            <button class="inv-slot-tab" data-slot="helmet" onclick="switchSlotFilter('helmet')">⛑ 头</button>
+            <button class="inv-slot-tab" data-slot="armor" onclick="switchSlotFilter('armor')">🎽 衣</button>
+            <button class="inv-slot-tab" data-slot="boots" onclick="switchSlotFilter('boots')">👢 鞋</button>
+        </div>
+                <div class="inv-grid-wrap" id="inv-grid-wrap">
+                    <div id="inventory-grid"></div>
+                </div>
+        <div id="inventory-info">
+            <span id="inv-count">0/200</span>
+            <div id="inv-actions">
+                <button class="inv-action-btn" onclick="sortInventory()">整理</button>
+                <button class="inv-action-btn" onclick="toggleSelectMode()">批量</button>
+                <button class="inv-action-btn" onclick="openSmartAction()">智能</button>
+            </div>
+            <div id="batch-actions" style="display:none;">
+                <span id="batch-sel-count" style="font-size:12px;color:#aaa;">未选择</span>
+                <button class="inv-action-btn sell-btn" id="batch-sell-btn" style="display:none;" onclick="confirmBatchSell()">卖出选中</button>
+                <button class="inv-action-btn danger-btn" id="batch-decompose-btn" style="display:none;" onclick="confirmBatchDecompose()">分解选中</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 天赋页界面 -->
+    <div id="screen-talent" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>天赋星盘</h2>
+            <div class="resource gold"><span class="icon">&#9733;</span><span id="talent-gold">0</span></div>
+        </div>
+        <div id="talent-grid"></div>
+        <div id="talent-info">
+            <div id="talent-points">已激活: 0</div>
+        </div>
+    </div>
+
+    <!-- 宝石工坊界面 -->
+    <div id="screen-forge" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>宝石工坊</h2>
+        </div>
+        <div id="forge-tabs">
+            <button class="tab-btn active" onclick="switchForgeTab('synthesize')">合成</button>
+            <button class="tab-btn" onclick="switchForgeTab('inlay')">镶嵌</button>
+            <button class="tab-btn" onclick="switchForgeTab('resonance')">共鸣</button>
+            <button class="tab-btn" onclick="switchForgeTab('fusion')">升阶</button>
+        </div>
+        <div id="forge-content"></div>
+    </div>
+
+    <!-- 设置界面 -->
+    <div id="screen-settings" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>设置</h2>
+        </div>
+        <div id="settings-content">
+            <!-- 存档管理 -->
+        <div class="settings-section">
+                <h3>存档管理</h3>
+                <div class="settings-row" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title" style="color:#4fc3f7;">☁ 云存档</div>
+                        <div class="settings-row-desc">GitHub 存储 · PIN 码保护</div>
+                    </div>
+                    <button class="btn" style="background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;" onclick="openCloudSaveModal()">打开</button>
+                </div>
+            </div>
+
+            <!-- 战斗设置 -->
+            <div class="settings-section">
+
+                <h3>战斗设置</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">战斗速度</div>
+                        <div class="settings-row-desc">当前: <span id="battle-speed-display">1x</span></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="toggleBattleSpeed()">切换</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">自动战斗</div>
+                        <div class="settings-row-desc">状态: <span id="auto-battle-display">开启</span></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="toggleAutoBattle()">切换</button>
+                </div>
+            </div>
+
+            <!-- 音频设置 -->
+            <div class="settings-section">
+                <h3>音频设置</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">背景音乐 (BGM)</div>
+                        <div class="settings-row-desc">当前: <span id="bgm-status-display">开启</span> · 主题: <span id="bgm-theme-display">peace</span></div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-bgm-toggle" onclick="toggleBGM()">切换</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">BGM 音量</div>
+                        <div class="settings-row-desc"><span id="bgm-volume-display">50%</span></div>
+                    </div>
+                    <div class="settings-slider-group">
+                        <input type="range" id="bgm-volume-slider" min="0" max="100" value="50" class="settings-slider" oninput="changeBGMVolume(this.value)">
+                        <span id="bgm-volume-value" class="settings-slider-label">50</span>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">战斗音效 (SFX)</div>
+                        <div class="settings-row-desc">当前: <span id="sfx-status-display">开启</span></div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-sfx-toggle" onclick="toggleSFX()">切换</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">SFX 音量</div>
+                        <div class="settings-row-desc"><span id="sfx-volume-display">70%</span></div>
+                    </div>
+                    <div class="settings-slider-group">
+                        <input type="range" id="sfx-volume-slider" min="0" max="100" value="70" class="settings-slider" oninput="changeSFXVolume(this.value)">
+                        <span id="sfx-volume-value" class="settings-slider-label">70</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 怪物图鉴 -->
+            <div class="settings-section">
+                <h3>📖 怪物图鉴</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">浏览怪物图鉴</div>
+                        <div class="settings-row-desc">查看所有怪物的属性、外观和介绍</div>
+                    </div>
+                    <button class="btn btn-gold" onclick="showMonsterCodex()">打开图鉴</button>
+                </div>
+            </div>
+
+            <!-- 装备图鉴 -->
+            <div class="settings-section">
+                <h3>🛡 装备图鉴</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">浏览装备图鉴</div>
+                        <div class="settings-row-desc">查看已发现的装备类型和详细信息</div>
+                    </div>
+                    <button class="btn btn-gold" onclick="showEquipCodex()">打开图鉴</button>
+                </div>
+            </div>
+
+            <!-- 成就系统 -->
+            <div class="settings-section">
+                <h3>🏆 成就系统</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">浏览成就</div>
+                        <div class="settings-row-desc">查看已达成和进行中的成就</div>
+                    </div>
+                    <button class="btn btn-gold" onclick="showAchievementUI()">打开成就</button>
+                </div>
+            </div>
+
+            <!-- 游戏操作 -->
+            <div class="settings-section">
+                <h3>游戏操作</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title" style="color:#f44336;">重置游戏</div>
+                        <div class="settings-row-desc">清空所有进度重新开始</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="resetGame()">重置</button>
+            </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title" style="color:#ffd700;">🎁 兑换码</div>
+                        <div class="settings-row-desc">输入兑换码领取福利奖励</div>
+                    </div>
+                    <button class="btn btn-gold" onclick="openRedeemUI()">兑换</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title" style="color:#2196f3;">🧠 AI 小精灵</div>
+                        <div class="settings-row-desc">DeepSeek API 智能问答 · 配置 Key</div>
+                    </div>
+                    <button class="btn" onclick="openAiSettings()">配置</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title" style="color:#e040fb;">♻️ 轮回转生</div>
+                        <div class="settings-row-desc">重置进度获得永久加成</div>
+                    </div>
+                    <button class="btn" style="border-color:#e040fb;color:#e040fb;" onclick="switchScreen('rebirth')">打开</button>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">自动保存间隔</div>
+                        <div class="settings-row-desc">每 <span id="save-interval-display">15</span> 秒自动保存</div>
+                    </div>
+                    <div class="settings-slider-group">
+                        <input type="range" id="save-interval-slider" min="5" max="120" value="15" class="settings-slider" oninput="changeAutoSaveInterval(this.value)">
+                        <span id="save-interval-value" class="settings-slider-label">15s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 自动处理 -->
+            <div class="settings-section">
+                <h3>自动处理装备</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">启用自动处理</div>
+                        <div class="settings-row-desc">战斗结束后自动处理符合条件的装备</div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-auto-process-toggle" onclick="toggleAutoProcess()">关闭</button>
+                </div>
+                <div class="settings-row" style="flex-wrap:wrap;">
+                    <div class="settings-row-info" style="width:100%;margin-bottom:6px;">
+                        <div class="settings-row-title">选择品质</div>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="0" onchange="saveAutoProcessSettings()"> 白
+                        </label>
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="1" onchange="saveAutoProcessSettings()"> 绿
+                        </label>
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="2" onchange="saveAutoProcessSettings()"> 蓝
+                        </label>
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="3" onchange="saveAutoProcessSettings()"> 紫
+                        </label>
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="4" onchange="saveAutoProcessSettings()"> 橙
+                        </label>
+                        <label class="chk-label" style="display:flex;align-items:center;gap:4px;font-size:12px;color:#aaa;cursor:pointer;">
+                            <input type="checkbox" class="auto-process-q" value="5" onchange="saveAutoProcessSettings()"> 金
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">处理方式</div>
+                        <div class="settings-row-desc" id="auto-process-action-desc">当前: 卖出</div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-auto-process-action" onclick="switchAutoProcessAction()">切换</button>
+                </div>
+            </div>
+
+            <!-- 统计数据 -->
+            <div class="settings-section">
+                <h3>游戏统计</h3>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">游戏时间</span>
+                    <span class="settings-stat-value" id="stat-play-time">0小时</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">已击杀怪物</span>
+                    <span class="settings-stat-value" id="stat-monsters-killed">0</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">当前章节</span>
+                    <span class="settings-stat-value" id="stat-stage">第1章</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">英雄数量</span>
+                    <span class="settings-stat-value" id="stat-hero-count">0</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">装备总数</span>
+                    <span class="settings-stat-value" id="stat-equip-count">0</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">金币总量</span>
+                    <span class="settings-stat-value" id="stat-gold-total">0</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">最后保存</span>
+                    <span class="settings-stat-value" id="stat-last-save">未保存</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">游戏版本</span>
+                    <span class="settings-stat-value" id="stat-game-version">v7.0.0</span>
+                </div>
+            </div>
+
+            <!-- 新手教程 -->
+            <div class="settings-section">
+                <h3>新手教程</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">游戏指南</div>
+                        <div class="settings-row-desc">了解游戏核心玩法和系统说明</div>
+                    </div>
+                    <button class="btn btn-gold" onclick="showGameTutorial()">打开教程</button>
+                </div>
+            </div>
+
+            <!-- ★ 史记 -->
+<div class="settings-section">
+ <h3 style=\"color:#ffd700;\">📜 史记 <span style=\"font-size:10px;color:#888;font-weight:normal;\">(开发历程)</span></h3>
+ <div class="settings-row" style=\"flex-wrap:wrap;gap:8px;align-items:center;">
+  <div class="settings-row-info" style=\"flex:1;min-width:160px;\">\n   <div class=\"settings-row-title\" style=\"color:#ffd700;">永恒英灵 · 史记</div>
+    <div class="settings-row-desc">从立项至今的完整开发历程 & 贡献者名单</div>
+  </div>
+  <button class="btn btn-gold" style=\"background:linear-gradient(135deg,#ffd700,#ff8f00);border-color:#ffa000;color:#1a1a2e;font-weight:bold;padding:8px18px;" onclick="openGameHistory()">📜 查看史记</button>
+ </div>
+</div>
+            <!-- ★ 调试工具 (开发用,带密码弹窗) -->
+<div class="settings-section">
+ <h3 style="color:#ff9800;">🔒开发者选项 <span style="font-size:10px;color:#888;font-weight:normal;">(开发用,带密码)</span></h3>
+ <div class="settings-row" style="flex-wrap:wrap;gap:8px;align-items:center;">
+  <div class="settings-row-info" style="flex:1;min-width:160px;">
+   <div class="settings-row-title" style="color:#ff9800;">开发者工具</div>
+    <div class="settings-row-desc">点击打开调试面板 (弹窗卡片样式,需输入密码解锁)</div>
+  </div>
+  <button class="btn btn-gold" style="background:linear-gradient(135deg,#ff9800,#f44336);border-color:#ff5722;color:#fff;font-weight:bold;padding:8px18px;letter-spacing:1px;" onclick="openDebugPasswordModal()">🔓打开工具</button>
+ </div>
+</div>            <!-- 关于 -->
+            <div class="settings-section">
+                <h3>关于</h3>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">游戏名称</span>
+                    <span class="settings-stat-value">永恒英灵 Chronicles · CQC</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">版权所有人</span>
+                    <span class="settings-stat-value" style="color:#ffd700;">芦笋</span>
+                </div>
+                <div class="settings-stat">
+                    <span class="settings-stat-label">著作权声明</span>
+                    <span class="settings-stat-value" style="font-size:11px;color:#888;">&copy; 2026 芦笋. All Rights Reserved.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 副本界面 -->
+    <div id="screen-dungeon" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>副本大厅</h2>
+        </div>
+        <div id="dungeon-container">
+            <!-- 由 dungeonUI.js 渲染 -->
+        </div>
+    </div>
+
+    <!-- 转生界面 -->
+    <div id="screen-rebirth" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>🔄 轮回系统</h2>
+        </div>
+        <div id="rebirth-container" class="rebirth-scroll-area">
+            <!-- 由 rebirthUI.js 渲染 -->
+        </div>
+    </div>
+
+    <!-- 宠物界面 -->
+    <div id="screen-pet" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
+            <h2>🐾 宠物系统</h2>
+        </div>
+        <div id="pet-container" style="padding:10px;overflow-y:auto;flex:1;">
+            <!-- 由 petUI.js 渲染 -->
+        </div>
+    </div>
+</div>
+
+<!-- 隐藏的文件导入input -->
+<input type="file" id="import-file-input" accept=".sav" style="display:none;" onchange="handleImportSave(this)">
+
+<!-- 章节选择弹窗（全局覆盖层） -->
+<div id="stage-select-overlay" class="stage-select-overlay" style="display:none;" onclick="if(event.target===this)hideStageSelect()">
+    <div class="stage-select-content">
+        <h3>选择章节</h3>
+        <div id="stage-list"></div>
+        <button class="btn" style="margin-top:10px;width:100%;" onclick="hideStageSelect()">取消</button>
+    </div>
+</div>
+
+            <script src="js/utils/helpers.js?v=100050"></script>
+<script src="js/utils/random.js?v=100050"></script>
+<!-- 加载顺序：utils → data(配置/职业/技能/装备/宝石/怪物) → systems → view → game
+     原因：data 层内部依赖（monsters/equipment 读取 ConfigLoader），所以 configLoader.js 必须先加载 -->
+<!-- 配置加载器 (3.0.0+ 新增：热重载 + 类型校验，单一数据源) -->
+            <script src="js/data/configLoader.js?v=100050"></script>
+<script src="js/data/classes.js?v=100050"></script>
+<script src="js/data/skills.js?v=100050"></script>
+            <script src="js/data/equipIcons.js?v=100050"></script>
+<script src="js/data/equipment.js?v=100050"></script>
+            <script src="js/data/gems.js?v=100050"></script>
+<script src="js/data/monsters.js?v=100050"></script>
+<script src="js/data/talents.js?v=100050"></script>
+<script src="js/data/bonds.js?v=100050"></script>
+<script src="js/data/statusEffects.js?v=100050"></script>
+<script src="js/data/enemySkills.js?v=100050"></script>
+<script src="js/data/towerConfig.js?v=100050"></script>
+            <script src="js/data/lotteryConfig.js?v=100050"></script>
+<script src="js/data/petLotteryConfig.js?v=100050"></script>
+<!-- 新手教程数据 -->
+<script src="js/data/tutorialSteps.js?v=100050"></script>
+<script src="js/systems/lottery.js?v=100050"></script>
+<script src="lib/vconsole.min.js?v=100050"></script>
+<script src="lib/pixi.min.js?v=100050"></script>
+<script src="js/systems/aiAssistant.js?v=100050"></script>
+<script src="js/systems/pixiFx.js?v=100050"></script>
+<script src="js/systems/skillEffects.js?v=100050"></script>
+<script src="js/systems/skeleton.js?v=100050"></script>
+            <script src="js/systems/classSkeletons.js?v=100050"></script>
+            <script src="js/systems/cartoon.js?v=100050"></script>
+<script src="js/systems/spriteOverrides.js?v=100050"></script>
+<script src="js/systems/sprites.js?v=100050"></script>
+<script src="js/systems/audioManager.js?v=100050"></script>
+<script src="js/systems/iconRenderer.js?v=100050"></script>
+<script src="js/systems/save.js?v=100050"></script>
+            <script src="js/systems/loot.js?v=100050"></script>
+            <script src="js/systems/forge.js?v=100050"></script>
+<script src="js/systems/gemSystem.js?v=100050"></script>
+<script src="js/data/petIconData.js?v=100050"></script>
+<script src="js/ui/petUI.js?v=100050"></script>
+<script src="js/ui/petLotteryUI.js?v=100050"></script>
+<script src="js/systems/cloudSave.js?v=100050"></script>
+<script src="js/systems/GameState.js?v=100050"></script>
+            <script src="js/data/gameHistory.js?v=100050"></script>
+<script src="js/data/dungeonBalance.js?v=100050"></script>
+<script src="js/systems/battle-config.js?v=100050"></script>
+<script src="js/systems/battle-utils.js?v=100050"></script>
+<script src="js/systems/battle-ext.js?v=100050"></script>
+<script src="js/systems/battle.js?v=100050"></script>
+<script src="js/systems/battle-modes.js?v=100050"></script>
+            <script src="js/systems/battleScenes.js?v=100050"></script>
+            <script src="js/systems/battleLog.js?v=100050"></script>
+<script src="js/ui/mainUI.js?v=100050"></script>
+<script src="js/ui/teamUI.js?v=100050"></script>
+            <script src="js/ui/heroUI.js?v=100050"></script>
+            <script src="js/ui/inventoryUI.js?v=100050"></script>
+            <script src="js/ui/reforgeUI.js?v=100050"></script>
+            <script src="js/ui/talentUI.js?v=100050"></script>
+            <script src="js/ui/gemUI.js?v=100050"></script>
+<script src="js/ui/skillUI.js?v=100050"></script>
+            <script src="js/ui/forgeUI.js?v=100050"></script>
+<script src="js/ui/settingsUI.js?v=100050"></script>
+<script src="js/ui/aiAssistantUI.js?v=100050"></script>
+<script src="js/ui/monsterCodexUI.js?v=100050"></script>
+<script src="js/ui/equipCodexUI.js?v=100050"></script>
+<script src="js/ui/achievementUI.js?v=100050"></script>
+            <script src="js/ui/dungeonUI.js?v=100050"></script>
+<script src="js/ui/lotteryUI.js?v=100050"></script>
+<!-- 新手教程系统 -->
+<script src="js/ui/tutorialUI.js?v=100050"></script>
+<script src="js/systems/rebirthManager.js?v=100050"></script>
+<script src="js/ui/rebirthUI.js?v=100050"></script>
+<!-- 家园 + 配置锁定（HOME_1.x 新增：草原营地 + 通用战斗状态拦截工具） -->
+<script src="js/ui/lockHelper.js?v=100050"></script>
+<script src="js/ui/campUI.js?v=100050"></script>
+<script src="js/ui/homeUI.js?v=100050"></script>
+            <!-- 统一体力管理 (2.2.0+ 新增：StaminaManager 单例) -->
+<script src="js/systems/StaminaManager.js?v=100050"></script>
+<script src="js/view/ViewBase.js?v=100050"></script>
+<script src="js/view/HeroView.js?v=100050"></script>
+<script src="js/view/EquipView.js?v=100050"></script>
+<script src="js/view/GemView.js?v=100050"></script>
+<script src="js/view/MonsterView.js?v=100050"></script>
+<script src="js/view/SkillView.js?v=100050"></script>
+<script src="js/view/GameView.js?v=100050"></script>
+<!-- 统一品质数据源 (2.1.0+ 新增：双轨并行，helpers.js 旧函数委托) -->
+<script src="js/data/quality.js?v=100050"></script>
+<!-- 成就系统 (v1.0 新增) -->
+<script src="js/data/achievements.js?v=100050"></script>
+<script src="js/systems/achievementManager.js?v=100050"></script>
+<!-- 统一数据访问器 (2.2.0+ 新增：getXxxData(id) 单例) -->
+<!-- 统一公式中心 (2.1.0+ 新增：双轨并行，旧函数加 @deprecated 注释保留回退) -->
+<script src="js/formulas/Formulas.js?v=100050"></script>
+<script src="js/data/crafting.js?v=100050"></script>
+<script src="js/data/dailyRotation.js?v=100050"></script>
+<script src="js/data/dailyQuests.js?v=100050"></script>
+<script src="js/data/external_codes.js?v=100050"></script>
+<script src="js/systems/updateChecker.js?v=100050"></script>
+    <script src="js/data/redeemCodes.js?v=100050"></script>
+<script src="js/data/storyText.js?v=100050"></script>
+            <script src="js/data/pets.js?v=100050"></script>
+<script src="js/game.js?v=100050"></script>
+</body>
+</html>

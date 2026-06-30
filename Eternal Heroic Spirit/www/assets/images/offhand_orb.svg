@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="ohCore" cx="0.4" cy="0.4" r="0.7">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#ce93d8"/>
+      <stop offset="100%" stop-color="#4a148c"/>
+    </radialGradient>
+    <radialGradient id="ohGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#ce93d8" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ce93d8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="26" fill="url(#ohGlow)"/>
+  <circle cx="32" cy="32" r="18" fill="url(#ohCore)" stroke="#4a148c" stroke-width="1.2"/>
+  <circle cx="32" cy="32" r="18" fill="none" stroke="#7b1fa2" stroke-width="0.5" opacity="0.5"/>
+  <path d="M 24,32 Q 32,22 40,32 Q 32,42 24,32 Z" fill="#f3e5f5" opacity="0.6"/>
+  <circle cx="27" cy="27" r="2" fill="#ffffff" opacity="0.7"/>
+  <path d="M 32,8 L 32,14 M 32,50 L 32,56 M 8,32 L 14,32 M 50,32 L 56,32" stroke="#ce93d8" stroke-width="0.7" opacity="0.6"/>
+  <circle cx="32" cy="8" r="1.2" fill="#ce93d8"/>
+  <circle cx="32" cy="56" r="1.2" fill="#ce93d8"/>
+  <circle cx="8" cy="32" r="1.2" fill="#ce93d8"/>
+  <circle cx="56" cy="32" r="1.2" fill="#ce93d8"/>
+  <circle cx="32" cy="32" r="1.5" fill="#f3e5f5" opacity="0.6"/>
+</svg>

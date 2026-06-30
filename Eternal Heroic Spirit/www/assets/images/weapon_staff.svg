@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="stShaft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a1887f"/>
+      <stop offset="100%" stop-color="#5d4037"/>
+    </linearGradient>
+    <radialGradient id="stOrb" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0%" stop-color="#80d8ff"/>
+      <stop offset="50%" stop-color="#29b6f6"/>
+      <stop offset="100%" stop-color="#01579b"/>
+    </radialGradient>
+  </defs>
+  <rect x="30" y="14" width="4" height="38" fill="url(#stShaft)" stroke="#3e2723" stroke-width="0.6"/>
+  <circle cx="32" cy="14" r="9" fill="url(#stOrb)" stroke="#01579b" stroke-width="1"/>
+  <circle cx="32" cy="14" r="5" fill="#e1f5fe" opacity="0.6"/>
+  <circle cx="30" cy="12" r="1.5" fill="#fff" opacity="0.9"/>
+  <rect x="22" y="50" width="20" height="3" rx="0.5" fill="#ffd700" stroke="#a07000" stroke-width="0.5"/>
+  <path d="M 26,53 L 38,53 L 35,58 L 29,58 Z" fill="#ffd700" stroke="#a07000" stroke-width="0.5"/>
+  <circle cx="32" cy="55" r="1.2" fill="#e53935"/>
+  <g opacity="0.5">
+    <circle cx="22" cy="10" r="0.8" fill="#fff"/>
+    <circle cx="42" cy="20" r="0.8" fill="#fff"/>
+    <circle cx="20" cy="30" r="0.6" fill="#fff"/>
+  </g>
+</svg>

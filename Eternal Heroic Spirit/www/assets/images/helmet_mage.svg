@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="mhG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7b1fa2"/>
+      <stop offset="100%" stop-color="#311b92"/>
+    </linearGradient>
+    <radialGradient id="mhStar" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#fff176"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </radialGradient>
+  </defs>
+  <path d="M 32,4 L 22,18 L 22,52 L 32,58 L 42,52 L 42,18 Z" fill="url(#mhG)" stroke="#1a0a4a" stroke-width="1.2"/>
+  <path d="M 32,4 L 28,12 L 32,16 L 36,12 Z" fill="url(#mhG)" stroke="#1a0a4a" stroke-width="0.6"/>
+  <circle cx="32" cy="4" r="2" fill="url(#mhStar)" stroke="#7c5100" stroke-width="0.5"/>
+  <path d="M 32,4 L 32,8 M 30,6 L 34,6" stroke="#7c5100" stroke-width="0.6"/>
+  <ellipse cx="32" cy="30" rx="9" ry="12" fill="#1a0a4a" opacity="0.5"/>
+  <circle cx="32" cy="28" r="2.5" fill="url(#mhStar)" stroke="#7c5100" stroke-width="0.4"/>
+  <path d="M 32,22 L 32,34 M 27,28 L 37,28" stroke="#1a0a4a" stroke-width="0.5" opacity="0.6"/>
+  <path d="M 22,40 L 42,40" stroke="#1a0a4a" stroke-width="0.4" opacity="0.5"/>
+  <path d="M 24,46 L 40,46" stroke="#1a0a4a" stroke-width="0.4" opacity="0.5"/>
+  <circle cx="24" cy="20" r="1" fill="#e1bee7"/>
+  <circle cx="40" cy="20" r="1" fill="#e1bee7"/>
+  <circle cx="24" cy="50" r="1" fill="#e1bee7"/>
+  <circle cx="40" cy="50" r="1" fill="#e1bee7"/>
+  <polygon points="32,12 33,14 35,14 33.5,15.5 34,18 32,16.5 30,18 30.5,15.5 29,14 31,14" fill="#fff176" opacity="0.7"/>
+</svg>

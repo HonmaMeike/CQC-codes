@@ -1,0 +1,330 @@
+/* ==========================================================================
+   main.css — 主布局、顶部栏、底部导航、品质色
+   (基础变量与组件类见 theme.css)
+   ========================================================================== */
+
+/* ========== 全局重置（兜底） ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;        /* ★ v4.x: 动态视口高度, 避免浏览器 UI 占空间 */
+    overflow: hidden;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-deep, #0a0810);
+    color: var(--text-2, #c8c0d0);
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    /* body 不再加 safe-area padding, #app / #bottom-nav 内部已用变量处理
+       (避免双重 padding 导致内容被推下两次) */
+}
+
+/* ★ v7.4: safe-area-inset 终版方案
+   - 不用 #app padding-top，全部由 .screen { top: var(--safe-top) } 控制
+   - JS 启动时读 StatusBar.getInfo() 真实高度 → setProperty('--safe-top')
+   - CSS 兜底 30px，env() 对有刘海的设备提供实际值 */
+:root {
+    --safe-top: 30px;
+    --safe-bottom: 0px;
+    --safe-left: 0px;
+    --safe-right: 0px;
+}
+@supports (padding-top: env(safe-area-inset-top)) {
+    :root {
+        --safe-top: env(safe-area-inset-top, 30px);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-left: env(safe-area-inset-left, 0px);
+        --safe-right: env(safe-area-inset-right, 0px);
+    }
+}
+
+/* ========== 应用容器 ========== */
+#app {
+    width: 100%;
+    /* ★ v4.x 全屏适配:
+       - 解除 max-width: 480px 限制, 让手机端铺满全宽
+       - 平板/桌面用 @media 重设 max-width + 居中阴影
+       - 用 CSS 变量 --safe-top 集中管理 (旧设备无刘海回退 24px) */
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #16213e 0%, #0f3460 50%, #1a1a2e 100%);
+    /* padding-top 由 .screen 的 top 变量控制，避免与绝对定位冲突 */
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+}
+
+/* ========== 顶部栏（主界面） ========== */
+#top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height, 44px);
+    padding: 0 12px;
+    gap: 8px;
+}
+#stage-info {
+    font-size: 13px;
+    color: var(--accent-blue, #4fc3f7);
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+#stage-info:hover {
+    color: #81d4fa;
+    text-shadow: 0 0 6px rgba(79,195,247,0.5);
+}
+#team-power-main {
+    font-size: 12px;
+    color: var(--gold-2, #ffd700);
+    font-weight: 600;
+    text-shadow: 0 0 4px rgba(255,215,0,0.4);
+    flex: 1;
+    text-align: center;
+}
+#resource-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.resource {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm, 5px);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-soft, rgba(255,255,255,0.08));
+}
+.resource .icon {
+    font-size: 14px;
+    filter: drop-shadow(0 0 3px currentColor);
+}
+.resource.gold { color: #ffd700; border-color: rgba(255,215,0,0.3); }
+.resource.gem  { color: #e040fb; border-color: rgba(224,64,251,0.3); }
+
+/* ========== 底部导航（全局常驻 fixed 定位） ========== */
+#bottom-nav {
+    position: fixed;
+    /* ★ v4.x 全屏适配: 底部 nav 也让出左右安全区 (横屏/全面屏) */
+    left: var(--safe-left, env(safe-area-inset-left, 0));
+    right: var(--safe-right, env(safe-area-inset-right, 0));
+    bottom: 0;
+    height: var(--nav-height, 56px);
+    display: flex;
+    background: linear-gradient(180deg, rgba(20,18,30,0.95), rgba(8,6,12,0.98));
+    border-top: 1px solid rgba(180,140,80,0.25);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.6);
+    z-index: 100;
+    padding-bottom: var(--safe-bottom, max(env(safe-area-inset-bottom, 0px), 0px));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+#bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(180,140,80,0.5) 20%,
+        rgba(220,180,100,0.7) 50%,
+        rgba(180,140,80,0.5) 80%,
+        transparent 100%);
+}
+
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 2px 4px;
+    min-height: 50px;
+    cursor: pointer;
+    color: #6a6a78;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.2s, background 0.2s, transform 0.18s;
+}
+.nav-btn .nav-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    border-radius: 14px;
+    margin-bottom: 1px;
+    transition: background 0.22s, box-shadow 0.22s, transform 0.22s;
+    position: relative;
+}
+.nav-btn .nav-icon {
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.22s, color 0.22s, filter 0.22s;
+    position: relative;
+    z-index: 1;
+}
+.nav-btn .nav-label {
+    font-size: 10px;
+    margin-top: 1px;
+    transition: color 0.22s, font-weight 0.22s;
+    letter-spacing: 0.3px;
+}
+.nav-btn .nav-underline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #ffd700, #ff8c00);
+    transform: translateX(-50%);
+    border-radius: 1px 1px 0 0;
+    transition: width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 6px rgba(255,215,0,0.6);
+}
+.nav-btn:hover { color: #9a9aac; }
+.nav-btn:hover .nav-icon { transform: translateY(-1px) scale(1.05); }
+.nav-btn:active { opacity: 0.7; }
+.nav-btn.active { color: #ffd700; }
+.nav-btn.active .nav-icon-wrap {
+    background: radial-gradient(circle, rgba(255,215,0,0.22), rgba(255,140,0,0.08) 70%, transparent);
+    box-shadow: 0 0 12px rgba(255,215,0,0.35), inset 0 0 8px rgba(255,215,0,0.1);
+    transform: translateY(-1px);
+}
+.nav-btn.active .nav-icon {
+    color: #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,0.7));
+    transform: scale(1.15);
+}
+.nav-btn.active .nav-label {
+    color: #ffd700;
+    font-weight: 700;
+    text-shadow: 0 0 4px rgba(255,215,0,0.5);
+}
+.nav-btn.active .nav-underline { width: 60%; }
+
+/* ========== 品质颜色（文字 + 边框） ========== */
+.q-common   { color: #9e9e9e; border-color: #9e9e9e; }
+.q-rare     { color: #4caf50; border-color: #4caf50; }
+.q-legendary{ color: #2196f3; border-color: #2196f3; }
+.q-miracle  { color: #ce58f5; border-color: #ce58f5; }
+.q-mythic   { color: #ff9800; border-color: #ff9800; }
+.q-immortal {
+    color: #ffd700;
+    border-color: #ffd700;
+    background: linear-gradient(45deg, #ffd700, #ff8f00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ========== 品质背景渐变 ========== */
+.bg-common   { background: linear-gradient(135deg, #424242, #616161); }
+.bg-rare     { background: linear-gradient(135deg, #2e7d32, #43a047); }
+.bg-legendary{ background: linear-gradient(135deg, #1565c0, #1976d2); }
+.bg-miracle  { background: linear-gradient(135deg, #6a1b9a, #8e24aa); }
+.bg-mythic   { background: linear-gradient(135deg, #e65100, #f57c00); }
+.bg-immortal { background: linear-gradient(135deg, #f57f17, #ff8f00); }
+
+/* ========== 工具提示（独有条目） ========== */
+.tooltip {
+    position: absolute;
+    background: linear-gradient(180deg, #2a2434, #1f1a28);
+    color: #e8e8f0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    border: 1px solid rgba(180,140,80,0.4);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    z-index: 200;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 240px;
+    animation: tooltipFadeIn 0.15s ease-out;
+}
+@keyframes tooltipFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== 横屏适配 ========== */
+@media (orientation: landscape) and (max-height: 500px) {
+    #app { max-width: 100%; }
+    #top-bar {
+        padding: 4px 8px;
+        min-height: 32px;
+        font-size: 11px;
+    }
+    #bottom-nav { padding: 1px 0; height: 48px; }
+    .nav-btn {
+        min-height: 44px;
+        padding: 4px 1px 3px;
+    }
+    .nav-btn .nav-icon-wrap { width: 28px; height: 24px; }
+    .nav-btn .nav-icon { font-size: 17px; }
+    .nav-btn .nav-label { font-size: 9px; }
+}
+
+/* ========== 小屏手机适配（iPhone SE 等 360px 以下） ========== */
+@media (max-width: 360px) {
+    #top-bar { padding: 0 8px; min-height: 36px; }
+    #stage-info { font-size: 12px; }
+    .resource { font-size: 11px; }
+    .resource .icon { font-size: 12px; }
+}
+
+/* ========== 标准手机（iPhone 12-15 标准模式 390-430px） ========== */
+@media (min-width: 361px) and (max-width: 480px) {
+    #top-bar { padding: 0 10px; }
+}
+
+/* ========== 大屏手机/小平板（481-768px） ========== */
+@media (min-width: 481px) and (max-width: 768px) {
+    #app { max-width: 100%; }
+    #top-bar { padding: 0 16px; min-height: 50px; }
+    #stage-info { font-size: 15px; }
+    .resource { font-size: 13px; }
+    .resource .icon { font-size: 15px; }
+}
+
+/* ========== 平板/桌面（769px+） ========== */
+@media (min-width: 769px) {
+    /* 平板/桌面: 居中 + 最大宽度 640px (比原来 540 略宽, 给大屏更多空间) */
+    #app { max-width: 640px; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 12px; margin-top: max(0px, calc((100dvh - 100vh) / 2)); }
+}
+
+/* ========== 柔世字体调准 ========== */
+@media (max-height: 600px) {
+    #top-bar { min-height: 36px; }
+    #stage-info { font-size: 12px; }
+}
+
+/* ========== 横屏手机适配 ========== */
+@media (orientation: landscape) and (max-height: 500px) {
+    #top-bar { min-height: 32px; padding: 0 8px; }
+    .resource { font-size: 11px; }
+}
+
+/* ========== 防止 iOS 局部缩放（输入框字号≥16px） ========== */
+input, select, textarea {
+    font-size: max(16px, 1rem);
+}

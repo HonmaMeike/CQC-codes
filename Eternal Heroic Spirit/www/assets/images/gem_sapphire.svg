@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 蓝宝石 sapphire: 六角星切 (hexagonal star cut), 皇家蓝 + 六芒星 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="sapphireG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5c6bc0"/>
+      <stop offset="50%" stop-color="#1a237e"/>
+      <stop offset="100%" stop-color="#0d1842"/>
+    </linearGradient>
+    <radialGradient id="sapphireCore" cx="0.5" cy="0.5" r="0.4">
+      <stop offset="0%" stop-color="#bbdefb" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#bbdefb" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 六角形外轮廓 -->
+  <polygon points="32,8 54,22 54,42 32,56 10,42 10,22"
+           fill="url(#sapphireG)" stroke="#0a1842" stroke-width="1.5"/>
+  <!-- 6 个内部三角面 -->
+  <polygon points="32,8 43,15 32,32 21,15" fill="#7986cb" opacity="0.6"/>
+  <polygon points="54,22 54,42 32,32 43,15" fill="#3949ab" opacity="0.55"/>
+  <polygon points="54,42 32,56 32,32 43,49" fill="#283593" opacity="0.6"/>
+  <polygon points="32,56 10,42 32,32 21,49" fill="#3949ab" opacity="0.55"/>
+  <polygon points="10,42 10,22 32,32 21,49" fill="#283593" opacity="0.6"/>
+  <polygon points="10,22 32,8 32,32 21,15" fill="#3949ab" opacity="0.55"/>
+  <!-- 中央高光 -->
+  <ellipse cx="32" cy="32" rx="8" ry="6" fill="url(#sapphireCore)"/>
+  <!-- 六芒星 (star sapphire 标志) -->
+  <path d="M 32 24 L 33 31 L 40 32 L 33 33 L 32 40 L 31 33 L 24 32 L 31 31 Z"
+        fill="#bbdefb" opacity="0.85"/>
+  <circle cx="32" cy="32" r="1.5" fill="#ffffff"/>
+  <!-- 边缘白色 sparkles -->
+  <circle cx="32" cy="6" r="1" fill="#bbdefb" opacity="0.8"/>
+  <circle cx="56" cy="32" r="1" fill="#bbdefb" opacity="0.8"/>
+  <circle cx="32" cy="58" r="1" fill="#bbdefb" opacity="0.8"/>
+  <circle cx="8" cy="32" r="1" fill="#bbdefb" opacity="0.8"/>
+</svg>

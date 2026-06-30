@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="mbG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7b1fa2"/>
+      <stop offset="100%" stop-color="#4a148c"/>
+    </linearGradient>
+    <linearGradient id="mbTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9c27b0"/>
+      <stop offset="100%" stop-color="#6a1b9a"/>
+    </linearGradient>
+  </defs>
+  <path d="M 10,18 L 24,18 L 24,42 Q 24,48 18,48 L 12,48 Q 8,46 8,42 Z" fill="url(#mbG)" stroke="#1a0a4a" stroke-width="1.1"/>
+  <rect x="10" y="18" width="14" height="5" fill="url(#mbTop)" stroke="#1a0a4a" stroke-width="0.6"/>
+  <path d="M 10,48 L 8,52 L 24,52 L 24,48 Z" fill="url(#mbG)" stroke="#1a0a4a" stroke-width="1"/>
+  <path d="M 40,18 L 54,18 L 56,42 Q 56,48 50,48 L 44,48 Q 40,46 40,42 Z" fill="url(#mbG)" stroke="#1a0a4a" stroke-width="1.1"/>
+  <rect x="40" y="18" width="14" height="5" fill="url(#mbTop)" stroke="#1a0a4a" stroke-width="0.6"/>
+  <path d="M 40,48 L 38,52 L 54,52 L 54,48 Z" fill="url(#mbG)" stroke="#1a0a4a" stroke-width="1"/>
+  <circle cx="17" cy="20" r="1.2" fill="#e1bee7" opacity="0.8"/>
+  <circle cx="47" cy="20" r="1.2" fill="#e1bee7" opacity="0.8"/>
+  <path d="M 12,28 Q 14,26 16,28 M 18,28 Q 20,26 22,28" fill="none" stroke="#ce93d8" stroke-width="0.4" opacity="0.6"/>
+  <path d="M 42,28 Q 44,26 46,28 M 48,28 Q 50,26 52,28" fill="none" stroke="#ce93d8" stroke-width="0.4" opacity="0.6"/>
+  <circle cx="16" cy="36" r="1" fill="#fff176"/>
+  <circle cx="48" cy="36" r="1" fill="#fff176"/>
+  <path d="M 12,40 L 22,40 M 42,40 L 52,40" stroke="#1a0a4a" stroke-width="0.4" opacity="0.5"/>
+</svg>

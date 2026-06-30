@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="dgBlade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#90a4ae"/>
+      <stop offset="100%" stop-color="#37474f"/>
+    </linearGradient>
+  </defs>
+  <path d="M 36,4 L 42,10 L 42,38 L 36,46 L 30,38 L 30,10 Z" fill="url(#dgBlade)" stroke="#263238" stroke-width="0.8"/>
+  <line x1="36" y1="10" x2="36" y2="38" stroke="#fff" stroke-width="0.5" opacity="0.5"/>
+  <rect x="22" y="38" width="20" height="3" fill="#ffd700" stroke="#a07000" stroke-width="0.5"/>
+  <rect x="29" y="41" width="6" height="6" rx="1" fill="#3e2723" stroke="#1b0d0a" stroke-width="0.5"/>
+  <circle cx="32" cy="44" r="1.5" fill="#ffd700"/>
+  <path d="M 36,4 L 34,4 L 34,10 L 36,10 Z" fill="#fff" opacity="0.4"/>
+  <path d="M 30,40 L 27,52 L 26,55 L 38,55 L 37,52 L 34,40 Z" fill="#7b3f00" stroke="#3e2723" stroke-width="0.6" opacity="0.7"/>
+  <circle cx="32" cy="58" r="2" fill="#a1887f" stroke="#5d4037" stroke-width="0.5"/>
+</svg>

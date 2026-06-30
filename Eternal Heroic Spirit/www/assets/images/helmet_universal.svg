@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="uhG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#90a4ae"/>
+      <stop offset="100%" stop-color="#455a64"/>
+    </linearGradient>
+    <linearGradient id="uhBand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd54f"/>
+      <stop offset="100%" stop-color="#f57f17"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="32" cy="34" rx="18" ry="15" fill="url(#uhG)" stroke="#263238" stroke-width="1.1"/>
+  <ellipse cx="32" cy="28" rx="13" ry="9" fill="#78909c" stroke="#37474f" stroke-width="0.7"/>
+  <rect x="20" y="32" width="24" height="3" fill="#1c1c1c" stroke="#000" stroke-width="0.3"/>
+  <rect x="22" y="33" width="6" height="1.5" fill="#000" opacity="0.6"/>
+  <rect x="36" y="33" width="6" height="1.5" fill="#000" opacity="0.6"/>
+  <rect x="26" y="12" width="12" height="3" fill="url(#uhBand)" stroke="#e65100" stroke-width="0.5"/>
+  <circle cx="32" cy="10" r="1.2" fill="#ffd700" stroke="#7c5100" stroke-width="0.3"/>
+  <rect x="13" y="30" width="4" height="10" rx="1" fill="#546e7a" stroke="#263238" stroke-width="0.5"/>
+  <rect x="47" y="30" width="4" height="10" rx="1" fill="#546e7a" stroke="#263238" stroke-width="0.5"/>
+  <ellipse cx="26" cy="28" rx="4" ry="2" fill="#ffffff" opacity="0.2"/>
+  <circle cx="32" cy="42" r="0.8" fill="#37474f"/>
+</svg>

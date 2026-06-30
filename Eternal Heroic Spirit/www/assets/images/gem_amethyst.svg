@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 紫水晶 amethyst: 晶簇 (多个尖头聚生, 紫晶洞标志), 深紫 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="amethystG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e1bee7"/>
+      <stop offset="50%" stop-color="#9c27b0"/>
+      <stop offset="100%" stop-color="#4a148c"/>
+    </linearGradient>
+    <linearGradient id="amethystTip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="40%" stop-color="#ce93d8"/>
+      <stop offset="100%" stop-color="#7b1fa2"/>
+    </linearGradient>
+    <radialGradient id="amethystGlow" cx="0.5" cy="0.4" r="0.45">
+      <stop offset="0%" stop-color="#f3e5f5" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f3e5f5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 底部基岩 (晶簇根部) -->
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="#311b92" opacity="0.85"/>
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="none" stroke="#1a0a4a" stroke-width="1"/>
+  <!-- 主晶柱 (中央最高) -->
+  <polygon points="32,6 26,40 38,40" fill="url(#amethystG)" stroke="#4a148c" stroke-width="1"/>
+  <polygon points="32,6 29,40 32,40 32,6" fill="url(#amethystTip)" opacity="0.5"/>
+  <!-- 左晶柱 (略矮) -->
+  <polygon points="18,18 14,42 22,42" fill="url(#amethystG)" stroke="#4a148c" stroke-width="1"/>
+  <polygon points="18,18 16,42 18,42" fill="url(#amethystTip)" opacity="0.5"/>
+  <!-- 右晶柱 (略矮) -->
+  <polygon points="46,18 42,42 50,42" fill="url(#amethystG)" stroke="#4a148c" stroke-width="1"/>
+  <polygon points="46,18 44,42 46,42" fill="url(#amethystTip)" opacity="0.5"/>
+  <!-- 左小晶柱 -->
+  <polygon points="8,32 6,48 12,48" fill="url(#amethystG)" stroke="#4a148c" stroke-width="0.8" opacity="0.85"/>
+  <!-- 右小晶柱 -->
+  <polygon points="56,32 54,48 60,48" fill="url(#amethystG)" stroke="#4a148c" stroke-width="0.8" opacity="0.85"/>
+  <!-- 中央高光 (顶部光晕) -->
+  <ellipse cx="32" cy="22" rx="6" ry="8" fill="url(#amethystGlow)"/>
+  <!-- 中央白色 sparkle (主晶柱顶) -->
+  <circle cx="32" cy="14" r="1.5" fill="#fff" opacity="0.9"/>
+  <!-- 内部紫色 sparkle (生命力暗示 - crit) -->
+  <path d="M 32 26 L 32.5 28 L 34.5 28.5 L 32.5 29 L 32 31 L 31.5 29 L 29.5 28.5 L 31.5 28 Z"
+        fill="#f3e5f5" opacity="0.8"/>
+</svg>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="okBlade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eceff1"/>
+      <stop offset="50%" stop-color="#b0bec5"/>
+      <stop offset="100%" stop-color="#607d8b"/>
+    </linearGradient>
+    <linearGradient id="okHandle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b5e20"/>
+      <stop offset="100%" stop-color="#0a3d0a"/>
+    </linearGradient>
+  </defs>
+  <path d="M 12,8 Q 18,12 30,28 Q 42,42 50,50 L 52,52 L 50,54 Q 42,46 30,32 Q 18,18 12,12 Z" fill="url(#okBlade)" stroke="#263238" stroke-width="0.8"/>
+  <path d="M 30,32 Q 42,46 50,54" fill="none" stroke="#cfd8dc" stroke-width="0.4" opacity="0.6"/>
+  <rect x="42" y="38" width="14" height="5" fill="url(#okHandle)" stroke="#0a3d0a" stroke-width="0.5" rx="1" transform="rotate(45 49 40.5)"/>
+  <rect x="48" y="44" width="6" height="4" fill="#bcaaa4" stroke="#1b0000" stroke-width="0.4" transform="rotate(45 51 46)"/>
+  <circle cx="52" cy="52" r="1.5" fill="#ffd700" stroke="#7c5100" stroke-width="0.4"/>
+  <line x1="51" y1="52" x2="53" y2="52" stroke="#fff176" stroke-width="0.4"/>
+  <line x1="52" y1="51" x2="52" y2="53" stroke="#fff176" stroke-width="0.4"/>
+  <circle cx="14" cy="10" r="0.7" fill="#eceff1" opacity="0.6"/>
+</svg>

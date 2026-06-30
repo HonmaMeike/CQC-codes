@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 月光石 moonstone: 椭圆月相 + 中央冷蓝光晕 (adularescence 标志) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="moonstoneG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eceff1"/>
+      <stop offset="50%" stop-color="#90a4ae"/>
+      <stop offset="100%" stop-color="#546e7a"/>
+    </linearGradient>
+    <radialGradient id="moonstoneBlue" cx="0.5" cy="0.5" r="0.45">
+      <stop offset="0%" stop-color="#e1f5fe" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#81d4fa" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#4fc3f7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonstoneRing" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="70%" stop-color="#e0e0e0" stop-opacity="0"/>
+      <stop offset="85%" stop-color="#b3e5fc" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#4fc3f7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 椭圆月相外轮廓 (略像月球) -->
+  <ellipse cx="32" cy="32" rx="24" ry="22" fill="url(#moonstoneG)" stroke="#37474f" stroke-width="1.5"/>
+  <!-- 椭圆内层 (分层深度) -->
+  <ellipse cx="32" cy="32" rx="20" ry="18" fill="#b0bec5" opacity="0.5"/>
+  <ellipse cx="32" cy="32" rx="16" ry="14" fill="#cfd8dc" opacity="0.4"/>
+  <!-- 关键: adularescence 中央冷蓝光晕 (月光石的灵魂) -->
+  <ellipse cx="32" cy="32" rx="14" ry="12" fill="url(#moonstoneBlue)"/>
+  <!-- 月牙形状 (中央) -->
+  <path d="M 26 26 Q 32 30 26 38 Q 30 34 30 32 Q 30 30 26 26 Z"
+        fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="28" cy="28" r="3" fill="#ffffff" opacity="0.9"/>
+  <circle cx="34" cy="36" r="1.5" fill="#ffffff" opacity="0.7"/>
+  <!-- 外圈微弱彩虹环 -->
+  <ellipse cx="32" cy="32" rx="22" ry="20" fill="url(#moonstoneRing)" opacity="0.7"/>
+  <!-- 边缘白色 sparkle -->
+  <circle cx="10" cy="20" r="1" fill="#fff" opacity="0.8"/>
+  <circle cx="54" cy="44" r="1" fill="#fff" opacity="0.8"/>
+  <circle cx="14" cy="46" r="0.8" fill="#e1f5fe" opacity="0.7"/>
+  <circle cx="50" cy="18" r="0.8" fill="#e1f5fe" opacity="0.7"/>
+</svg>
