@@ -41,12 +41,12 @@
 <link rel="stylesheet" href="css/settings-team-screen.css?v=100071">
 <link rel="stylesheet" href="css/misc-screens.css?v=100070">
 <link rel="stylesheet" href="css/forge-screen.css?v=100070">
-<link rel="stylesheet" href="css/talent-dungeon-pet-rebirth-fixes.css?v=100070">
+<link rel="stylesheet" href="css/talent-dungeon-pet-rebirth-fixes.css?v=100071">
 <link rel="stylesheet" href="css/v2-fixes.css?v=100070">
 <link rel="stylesheet" href="css/theme-v3.css?v=100070">
 <link rel="stylesheet" href="css/main.css?v=100071">
 <link rel="stylesheet" href="css/battle.css?v=100070">
-<link rel="stylesheet" href="css/ui.css?v=100070">
+<link rel="stylesheet" href="css/ui.css?v=100072">
 <link rel="stylesheet" href="css/tutorial-cards.css?v=100070">
 
 <style>
@@ -694,6 +694,24 @@ body {
                     <span class="settings-stat-value" style="font-size:11px;color:#888;">&copy; 2026 芦笋. All Rights Reserved.</span>
                 </div>
             </div>
+
+            <!-- 版本检查（自动同步新版本）v2.6.5+ -->
+            <div class="settings-section" id="section-update-check">
+                <h3>🔄 版本检查</h3>
+                <div class="settings-row">
+                    <div class="settings-row-info">
+                        <div class="settings-row-title">检查新版本</div>
+                        <div class="settings-stat-label">点击按钮检测服务器最新版本,自动提示刷新</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkForUpdate(true)">检查更新</button>
+                </div>
+                <div class="settings-row" style="flex-direction:column;align-items:flex-start;">
+                    <div class="settings-stat-label" style="font-size:11px;color:#888;">
+                        💡 启动后 3 秒自动检测一次,无需手动点击。<br>
+                        发现新版本会弹窗提示,点击"确定"立即刷新加载最新资源。
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -725,7 +743,7 @@ body {
             <button class="back-btn" onclick="switchScreen('main')">&larr; 返回</button>
             <h2>🐾 宠物系统</h2>
         </div>
-        <div id="pet-container" style="padding:10px;overflow-y:auto;flex:1;">
+        <div id="pet-container" style="padding:10px 10px 80px;overflow-y:auto;flex:1;">
             <!-- 由 petUI.js 渲染 -->
         </div>
     </div>
@@ -743,7 +761,7 @@ body {
     </div>
 </div>
 
-            <script src="js/utils/helpers.js?v=100057"></script>
+            <script src="js/utils/helpers.js?v=100058"></script>
 <script src="js/utils/random.js?v=100057"></script>
 <!-- 加载顺序：utils → data(配置/职业/技能/装备/宝石/怪物) → systems → view → game
      原因：data 层内部依赖（monsters/equipment 读取 ConfigLoader），所以 configLoader.js 必须先加载 -->
@@ -796,7 +814,7 @@ body {
 <script src="js/systems/battle-modes.js?v=100057"></script>
             <script src="js/systems/battleScenes.js?v=100057"></script>
             <script src="js/systems/battleLog.js?v=100057"></script>
-<script src="js/ui/mainUI.js?v=100057"></script>
+<script src="js/ui/mainUI.js?v=100058"></script>
 <script src="js/ui/teamUI.js?v=100057"></script>
             <script src="js/ui/heroUI.js?v=100057"></script>
             <script src="js/ui/inventoryUI.js?v=100057"></script>

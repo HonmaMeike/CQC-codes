@@ -208,3 +208,87 @@ window.closeModal = function() {
     var ms = document.querySelectorAll('.modal-overlay');
     for (var i = 0; i < ms.length; i++) ms[i].remove();
 };
+
+
+// ====== 版本检查 / 自动同步 ======
+//   启动时 + 设置页按钮点击时调用
+//   逻辑：fetch 服务器最新 index.html, 解析 ?v=N, 跟当前页面 ?v=N 对比
+//   不一致 → 弹"发现新版本" 提示, 用户确认后 location.reload(true) 强刷
+//   Web 限制: JS 无法自我替换; 只能"检测 + 强刷"绕过磁盘缓存
+//   配合 ?v=N 版本号 + 每次发版 +1, 老浏览器也能拉到新资源
+function checkForUpdate(showFeedback) {
+    if (showFeedback === undefined) showFeedback = true;
+
+    // 1. 收集当前页面所有 ?v= 数字
+    var currentVersions = {};
+    var resourceList = document.querySelectorAll('link[href*="?v="], script[src*="?v="]');
+    for (var i = 0; i < resourceList.length; i++) {
+        var url = resourceList[i].src || resourceList[i].href;
+        var m = url.match(/[\?\&]v=(\d+)/);
+        if (m) {
+            var file = url.split('/').pop().split('?')[0];
+            currentVersions[file] = parseInt(m[1], 10);
+        }
+    }
+    var currentMax = 0;
+    for (var k in currentVersions) {
+        if (currentVersions.hasOwnProperty(k) && currentVersions[k] > currentMax) {
+            currentMax = currentVersions[k];
+        }
+    }
+
+    // 2. fetch 服务器 index.html (no-cache 强制重新验证)
+    var fetchUrl = 'index.html?t=' + Date.now();
+    fetch(fetchUrl, { cache: 'no-cache' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text();
+        })
+        .then(function(html) {
+            // 3. 解析服务器版本
+            var serverVersions = {};
+            var re = /[\?\&]v=(\d+)/g;
+            var match;
+            while ((match = re.exec(html)) !== null) {
+                serverVersions['v_' + match[1]] = parseInt(match[1], 10);
+            }
+            var serverMax = 0;
+            for (var k2 in serverVersions) {
+                if (serverVersions.hasOwnProperty(k2) && serverVersions[k2] > serverMax) {
+                    serverMax = serverVersions[k2];
+                }
+            }
+
+            // 4. 对比
+            if (serverMax > currentMax) {
+                // 有新版本
+                if (showFeedback) {
+                    if (typeof showConfirm === 'function') {
+                        showConfirm(
+                            '🔄 发现新版本',
+                            '当前: v.' + currentMax + '<br>最新: v.' + serverMax + '<br><br>点击"确定"立即刷新加载新版。',
+                            function() { location.reload(true); }
+                        );
+                    } else if (typeof showToast === 'function') {
+                        showToast('🔄 发现新版本 v.' + serverMax + ', 请刷新页面', 'info');
+                    }
+                }
+                return { hasUpdate: true, current: currentMax, server: serverMax };
+            } else {
+                // 已是最新
+                if (showFeedback && typeof showToast === 'function') {
+                    showToast('✓ 已是最新版本 (v.' + currentMax + ')', 'success');
+                }
+                return { hasUpdate: false, current: currentMax, server: serverMax };
+            }
+        })
+        .catch(function(e) {
+            if (showFeedback && typeof showToast === 'function') {
+                showToast('✗ 检查更新失败: ' + (e.message || '网络错误'), 'error');
+            }
+            return { hasUpdate: false, error: e.message };
+        });
+}
+
+// 暴露全局
+window.checkForUpdate = checkForUpdate;

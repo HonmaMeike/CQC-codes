@@ -682,6 +682,14 @@ function initUI() {
             HomeSystem.resize();
         }
     });
+
+    // ★ 启动 3 秒后自动检查更新（CDN 缓存可能 5-10 分钟才能拉到新版本）
+    //   启动延迟 3 秒: 避免阻塞主流程 + 主页 UI 先渲染
+    setTimeout(function() {
+        if (typeof checkForUpdate === 'function') {
+            checkForUpdate(true);  // true = 弹 toast/confirm 反馈
+        }
+    }, 3000);
 }
 
 // 检查转生按钮可见性（通关第100章后显示轮回导航按钮）
