@@ -10,5 +10,23 @@
     },
     "maxUse": 1,
     "uploaded": true
+  },
+  {
+    "code": "ABCDEFG",
+    "name": "七月礼包",
+    "desc": "金币20000，抽奖石20，宠物蛋20",
+    "reward": {
+      "gold": 20000,
+      "lotteryStone": 20,
+      "reforgestone": 50,
+      "forgeDust": 1000,
+      "herb": 10,
+      "ore": 10,
+      "petFood": 200,
+      "petEggStones": 20
+    },
+    "maxUse": 1,
+    "uploaded": false,
+    "hidden": false
   }
 ]
