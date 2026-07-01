@@ -1,0 +1,19 @@
+/* ========================================================================
+   CQC · 永恒英灵 — v2 修复补丁
+   修复 v2 bottom-nav 重构后引入的回归问题
+   ======================================================================== */
+
+/* 修复 #1: "返回家园"按钮被新 bottom-nav 盖住
+   旧 bottom-nav height=56px,新 bottom-nav padding 模式 70-80px
+   旧 .return-home-btn { bottom: 70px; z-index: 95 } 被完全遮挡
+   解决: bottom 提到 90px(留出 bottom-nav 空间),z-index 提到 110(超过 bottom-nav 的 100) */
+.return-home-btn {
+    bottom: 92px !important;
+    z-index: 110 !important;
+}
+
+/* 修复 #2: screen-main 的战利品掉落实在 bottom-nav 之上(z-index 20 在 screen 内,但
+   bottom-nav 是 fixed z-index 100,可能盖住一些战斗浮层) */
+#battle-area .loot-drop {
+    z-index: 60 !important;  /* 比 bottom-nav 低,但保证 loot 动画可见 */
+}

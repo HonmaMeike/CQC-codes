@@ -1,0 +1,486 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 仓库屏 v2
+   升级 screen-inventory 所有元素到 v2 玻璃拟态风格
+   不动 HTML,只升级 CSS;保留所有 ID/class/data-* 以兼容 inventoryUI.js
+   ======================================================================== */
+
+/* ========== 1. 主 tab 行(全部/武器/防具/收藏) ========== */
+#inventory-tabs {
+    display: flex;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    background: rgba(7, 5, 13, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-soft);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    flex-shrink: 0;
+}
+
+#inventory-tabs .inv-main-tab,
+#inventory-tabs .tab-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+#inventory-tabs .inv-main-tab:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-1);
+    border-color: var(--border-mid);
+    transform: translateY(-1px);
+}
+
+#inventory-tabs .inv-main-tab.active {
+    color: var(--gold-2);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.2) 0%,
+        rgba(255, 209, 102, 0.06) 100%);
+    border-color: var(--gold-2);
+    box-shadow:
+        var(--shadow-sm),
+        0 0 12px var(--gold-glow),
+        var(--shadow-inset);
+    text-shadow: 0 0 6px var(--gold-glow);
+}
+
+#inventory-tabs .inv-main-tab.active[data-tab="favorites"] {
+    color: var(--gold-1);
+    background: linear-gradient(180deg,
+        rgba(255, 215, 0, 0.25) 0%,
+        rgba(255, 152, 0, 0.1) 100%);
+    border-color: var(--gold-1);
+    box-shadow:
+        var(--shadow-sm),
+        0 0 16px rgba(255, 215, 0, 0.6),
+        var(--shadow-inset);
+}
+
+/* ========== 2. 槽位筛选行(全/武器/副手/头盔/防具/靴) ========== */
+#inventory-slot-tabs {
+    display: flex;
+    gap: var(--sp-1);
+    padding: var(--sp-2) var(--sp-4);
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-soft);
+    background: rgba(7, 5, 13, 0.35);
+    scrollbar-width: thin;
+    flex-shrink: 0;
+}
+
+#inventory-slot-tabs .inv-slot-tab {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    color: var(--text-3);
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-medium);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    white-space: nowrap;
+}
+
+#inventory-slot-tabs .inv-slot-tab:hover {
+    color: var(--text-1);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#inventory-slot-tabs .inv-slot-tab.active {
+    color: var(--cyan-2);
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.18) 0%,
+        rgba(79, 195, 247, 0.06) 100%);
+    border-color: rgba(79, 195, 247, 0.4);
+    text-shadow: 0 0 4px var(--cyan-glow);
+}
+
+/* ========== 3. 装备网格(主要视觉) ========== */
+.inv-grid-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--sp-3) var(--sp-4);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+#inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: var(--sp-2);
+    padding-bottom: var(--sp-4);
+}
+
+/* 单个装备卡片 */
+.inv-item {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--r-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+    gap: 2px;
+}
+
+.inv-item::before {
+    /* 顶部高光 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--qc-color, transparent), transparent);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.inv-item:hover {
+    background: var(--glass-bg-hover);
+    transform: translateY(-2px) scale(1.03);
+    border-color: var(--qc-color, var(--border-mid));
+    box-shadow:
+        var(--shadow-md),
+        0 0 12px var(--qc-glow, transparent),
+        var(--shadow-inset);
+}
+
+.inv-item:active {
+    transform: scale(0.95);
+}
+
+/* 装备图标容器 */
+.inv-item .item-icon-wrap {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.inv-item .item-icon {
+    font-size: 22px;
+    line-height: 1.2;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.inv-item .item-icon-img {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* 装备名 */
+.inv-item .item-name {
+    font-size: 9.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    text-align: center;
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.2px;
+}
+
+/* 品质边框(继承 v2-components 的品质色变量) */
+.inv-item.q-common     { border-color: rgba(159, 159, 159, 0.55); }
+.inv-item.q-common:hover     { border-color: var(--q-common); box-shadow: 0 4px 12px var(--q-common-glow); }
+
+.inv-item.q-rare       { border-color: rgba(103, 253, 43, 0.65); }
+.inv-item.q-rare:hover       { border-color: var(--q-rare); box-shadow: 0 4px 14px var(--q-rare-glow); }
+
+.inv-item.q-legendary  { border-color: rgba(85, 43, 255, 0.7); }
+.inv-item.q-legendary:hover  {
+    border-color: var(--q-legendary);
+    box-shadow:
+        0 4px 14px var(--q-legendary-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.inv-item.q-miracle    { border-color: rgba(224, 64, 251, 0.75); }
+.inv-item.q-miracle:hover    {
+    border-color: var(--q-miracle);
+    box-shadow:
+        0 4px 16px var(--q-miracle-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.inv-item.q-immortal   {
+    border-color: rgba(255, 215, 0, 0.85);
+    box-shadow:
+        0 0 12px var(--q-immortal-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.inv-item.q-immortal:hover   {
+    border-color: var(--q-immortal);
+    box-shadow:
+        0 4px 20px var(--q-immortal-glow),
+        0 0 32px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* 锁定 / 收藏徽章 */
+.inv-checkbox {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 3;
+}
+
+.inv-checkbox input {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: var(--cyan-2);
+}
+
+.inv-badge {
+    position: absolute;
+    z-index: 3;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: var(--r-full);
+    font-size: 11px;
+    color: #fff;
+    font-weight: var(--fw-bold);
+    border: 1.5px solid var(--bg-deep);
+}
+
+.inv-locked-badge {
+    top: 4px;
+    right: 4px;
+    background: linear-gradient(180deg, #ff8c42, #ff6e1b);
+    box-shadow: 0 0 8px rgba(255, 140, 66, 0.6);
+}
+
+.inv-fav-badge {
+    top: 4px;
+    right: 26px;
+    background: linear-gradient(180deg, var(--gold-2), var(--gold-3));
+    box-shadow: 0 0 8px var(--gold-glow);
+    animation: favTwinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes favTwinkle {
+    0%, 100% {
+        box-shadow: 0 0 6px var(--gold-glow);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 14px var(--gold-glow), 0 0 24px var(--gold-glow-soft);
+        transform: scale(1.08);
+    }
+}
+
+/* 锁定 / 收藏状态边框 */
+.inv-item.inv-locked {
+    box-shadow:
+        inset 0 0 0 1.5px rgba(255, 140, 66, 0.55),
+        var(--shadow-sm);
+}
+
+.inv-item.inv-favorited {
+    box-shadow:
+        inset 0 0 0 1.5px var(--gold-glow),
+        var(--shadow-sm);
+}
+
+.inv-item.inv-locked.inv-favorited {
+    box-shadow:
+        inset 0 0 0 1.5px var(--gold-glow),
+        0 0 10px rgba(255, 140, 66, 0.35),
+        var(--shadow-sm);
+}
+
+/* ========== 4. 底部信息栏(数量 + 操作) ========== */
+#inventory-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: linear-gradient(180deg, rgba(7, 5, 13, 0.55), rgba(7, 5, 13, 0.85));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    /* v2 改造:操作栏挪到顶部,改 border-bottom(原 border-top)+ shadow 向下(原向上) */
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    flex-shrink: 0;
+}
+
+#inv-count {
+    color: var(--text-2);
+    font-family: var(--font-num);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subtitle);
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+#inv-actions,
+#batch-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.inv-action-btn {
+    padding: 5px 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+.inv-action-btn:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-1);
+    border-color: var(--border-mid);
+    transform: translateY(-1px);
+}
+
+.inv-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* "智能" 按钮 - 金色突出 */
+.inv-action-btn:last-child,
+.inv-action-btn[onclick*="openSmartAction"] {
+    color: var(--gold-2);
+    border-color: var(--gold-glow);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.12) 0%,
+        rgba(255, 209, 102, 0.04) 100%);
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+}
+
+.inv-action-btn:last-child:hover,
+.inv-action-btn[onclick*="openSmartAction"]:hover {
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.22) 0%,
+        rgba(255, 209, 102, 0.08) 100%);
+    border-color: var(--gold-2);
+    color: var(--gold-1);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* 批量操作按钮 - 出售 / 分解 */
+.inv-action-btn.sell-btn {
+    color: var(--gold-2);
+    border-color: var(--gold-glow);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.18) 0%,
+        rgba(255, 209, 102, 0.06) 100%);
+    box-shadow: 0 0 8px var(--gold-glow-soft), var(--shadow-inset);
+}
+
+.inv-action-btn.sell-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.28) 0%,
+        rgba(255, 209, 102, 0.1) 100%);
+    border-color: var(--gold-2);
+    color: var(--gold-1);
+    box-shadow: 0 0 14px var(--gold-glow);
+}
+
+.inv-action-btn.danger-btn {
+    color: var(--danger);
+    border-color: var(--danger-glow);
+    background: linear-gradient(180deg,
+        rgba(255, 94, 98, 0.15) 0%,
+        rgba(255, 94, 98, 0.05) 100%);
+    box-shadow: 0 0 8px var(--danger-glow), var(--shadow-inset);
+}
+
+.inv-action-btn.danger-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(255, 94, 98, 0.25) 0%,
+        rgba(255, 94, 98, 0.1) 100%);
+    border-color: var(--danger);
+    color: #fff;
+    box-shadow: 0 0 14px var(--danger-glow);
+}
+
+#batch-sel-count {
+    font-size: var(--fs-caption);
+    color: var(--text-3);
+    margin-right: var(--sp-1);
+}
+
+/* ========== 5. 入场动画 ========== */
+#screen-inventory.screen.active {
+    animation: screen-in var(--t-page) var(--ease-decelerate) both;
+}
+
+#screen-inventory .screen-header {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 80ms both;
+}
+
+#screen-inventory #inventory-tabs {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 160ms both;
+}
+
+#screen-inventory #inventory-slot-tabs {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 220ms both;
+}
+
+#screen-inventory .inv-grid-wrap {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 280ms both;
+}
+
+#screen-inventory #inventory-info {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 360ms both;
+}
+
+/* 网格项错位入场(由 JS 添加 .anim-list-in 即可,这里提供基础) */
+#inventory-grid .inv-item:nth-child(6n+1) { animation: list-item-in 360ms var(--ease-decelerate) 60ms both; }
+#inventory-grid .inv-item:nth-child(6n+2) { animation: list-item-in 360ms var(--ease-decelerate) 120ms both; }
+#inventory-grid .inv-item:nth-child(6n+3) { animation: list-item-in 360ms var(--ease-decelerate) 180ms both; }
+#inventory-grid .inv-item:nth-child(6n+4) { animation: list-item-in 360ms var(--ease-decelerate) 240ms both; }
+#inventory-grid .inv-item:nth-child(6n+5) { animation: list-item-in 360ms var(--ease-decelerate) 300ms both; }
+#inventory-grid .inv-item:nth-child(6n+6) { animation: list-item-in 360ms var(--ease-decelerate) 360ms both; }

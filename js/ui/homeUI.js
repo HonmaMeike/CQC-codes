@@ -739,26 +739,33 @@ var HomeSystem = {
 
         // 天空（黄昏渐变）★ v3.5.0 场景颜色
         var sc = this._getSceneColors();
-        var skyColors = sc.sky;
-        var sky = ctx.createLinearGradient(0, 0, 0, h * 0.6);
-        sky.addColorStop(0, skyColors[0]);
-        sky.addColorStop(0.5, skyColors[1]);
-        sky.addColorStop(1, skyColors[2]);
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, w, h);
-
-        // 远山轮廓
-        this._drawMountains(ctx, w, h);
-
-        // 草地（场景配色）
-        var grassColors = sc.grass;
         var grassTop = h * 0.55;
-        var grass = ctx.createLinearGradient(0, grassTop, 0, h);
-        grass.addColorStop(0, grassColors[0]);
-        grass.addColorStop(0.5, grassColors[1]);
-        grass.addColorStop(1, grassColors[2]);
-        ctx.fillStyle = grass;
-        ctx.fillRect(0, grassTop, w, h - grassTop);
+        var campBg = (typeof BgLoader !== 'undefined') ? BgLoader.getCamp(this.currentScene || 'meadow') : null;
+        if (campBg) {
+            // ★ 图片背景优先
+            ctx.drawImage(campBg, 0, 0, w, h);
+        } else {
+            // 旧版程序化绘制（图片未加载时兜底）
+            var skyColors = sc.sky;
+            var sky = ctx.createLinearGradient(0, 0, 0, h * 0.6);
+            sky.addColorStop(0, skyColors[0]);
+            sky.addColorStop(0.5, skyColors[1]);
+            sky.addColorStop(1, skyColors[2]);
+            ctx.fillStyle = sky;
+            ctx.fillRect(0, 0, w, h);
+
+            // 远山轮廓
+            this._drawMountains(ctx, w, h);
+
+            // 草地（场景配色）
+            var grassColors = sc.grass;
+            var grass = ctx.createLinearGradient(0, grassTop, 0, h);
+            grass.addColorStop(0, grassColors[0]);
+            grass.addColorStop(0.5, grassColors[1]);
+            grass.addColorStop(1, grassColors[2]);
+            ctx.fillStyle = grass;
+            ctx.fillRect(0, grassTop, w, h - grassTop);
+        }
 
         // 帐篷 × 2
         this._drawTent(ctx, w * 0.18, grassTop + 10, 80, 60, '#c25a3a');

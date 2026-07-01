@@ -1,0 +1,727 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 角色详情屏 v2
+   升级 screen-hero 所有元素到 v2 玻璃拟态风格
+   不动 HTML,只升级 CSS;保留所有 ID/class 以兼容 heroUI.js
+   ======================================================================== */
+
+/* ========== 1. 通用 screen-header(全屏共用) ========== */
+.screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: linear-gradient(180deg,
+        rgba(7, 5, 13, 0.78) 0%,
+        rgba(7, 5, 13, 0.42) 70%,
+        transparent 100%);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.screen-header::after {
+    content: '';
+    position: absolute;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 209, 102, 0.24) 50%,
+        transparent);
+    pointer-events: none;
+}
+
+.screen-header h2 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: var(--fs-title);
+    font-weight: var(--fw-bold);
+    color: var(--text-1);
+    letter-spacing: 1px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.back-btn {
+    padding: 6px 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+.back-btn:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-1);
+    border-color: var(--border-mid);
+    transform: translateX(-1px);
+}
+
+.back-btn:active {
+    transform: scale(0.95);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.18) 0%,
+        rgba(33, 150, 243, 0.1) 100%);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(79, 195, 247, 0.4);
+    border-radius: var(--r-md);
+    color: var(--cyan-1);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    box-shadow: var(--shadow-xs), 0 0 8px var(--cyan-glow), var(--shadow-inset);
+    transition: all var(--t-fast) var(--ease-standard);
+}
+
+.action-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.28) 0%,
+        rgba(33, 150, 243, 0.18) 100%);
+    border-color: var(--cyan-2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========== 2. 英雄选择网格(顶部水平滚动) ========== */
+#hero-select-grid {
+    display: flex;
+    gap: var(--sp-2);
+    padding: var(--sp-2) 0;
+    overflow-x: auto;
+    margin-bottom: var(--sp-3);
+    scrollbar-width: thin;
+}
+
+.hero-select-card {
+    flex-shrink: 0;
+    width: 72px;
+    height: 80px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--r-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    gap: 2px;
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+}
+
+.hero-select-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-mid);
+    transform: translateY(-2px);
+}
+
+.hero-select-card.active {
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.2) 0%,
+        rgba(255, 209, 102, 0.06) 100%);
+    border-color: var(--gold-2);
+    box-shadow:
+        var(--shadow-md),
+        0 0 12px var(--gold-glow),
+        var(--shadow-inset);
+    transform: translateY(-2px);
+}
+
+/* ========== 3. 角色卡片(头像 + 名字 + 职业 + 战力) ========== */
+#hero-profile-card {
+    background: linear-gradient(180deg,
+        rgba(38, 24, 62, 0.65) 0%,
+        rgba(28, 18, 46, 0.78) 100%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-md), var(--shadow-inset-strong);
+    overflow: hidden;
+    margin-bottom: var(--sp-3);
+    position: relative;
+}
+
+#hero-profile-card::before {
+    /* 顶部柔光 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
+    pointer-events: none;
+}
+
+#hero-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+}
+
+#hero-avatar-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-full);
+    background: linear-gradient(135deg,
+        rgba(79, 195, 247, 0.2) 0%,
+        rgba(157, 109, 255, 0.2) 100%);
+    border: 2px solid rgba(255, 209, 102, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--text-1);
+    flex-shrink: 0;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 16px rgba(255, 209, 102, 0.18);
+}
+
+#hero-avatar-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#hero-name {
+    font-size: 18px;
+    font-weight: var(--fw-bold);
+    color: var(--text-1);
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+#hero-class {
+    font-size: var(--fs-caption);
+    color: var(--cyan-2);
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+}
+
+#hero-power {
+    font-size: var(--fs-subtitle);
+    color: var(--gold-2);
+    font-weight: var(--fw-bold);
+    margin-top: 4px;
+    text-shadow: 0 0 6px var(--gold-glow);
+    font-family: var(--font-num);
+    letter-spacing: 0.3px;
+}
+
+/* 经验条 */
+#hero-exp-bar {
+    position: relative;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    margin: 0 var(--sp-4) var(--sp-3);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+#hero-exp-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,
+        var(--gold-3) 0%,
+        var(--gold-2) 50%,
+        var(--gold-1) 100%);
+    border-radius: var(--r-pill);
+    box-shadow: 0 0 8px var(--gold-glow);
+    transition: width 0.4s var(--ease-decelerate);
+}
+
+#hero-exp-bar span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-num);
+    letter-spacing: 0.3px;
+}
+
+/* ========== 4. 属性面板(14 行属性) ========== */
+#hero-stats-panel {
+    background: linear-gradient(180deg,
+        rgba(28, 18, 46, 0.5) 0%,
+        rgba(7, 5, 13, 0.6) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-3);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px var(--sp-3);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+}
+
+#hero-stats-panel .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: var(--fs-body);
+    transition: background var(--t-fast) var(--ease-standard);
+}
+
+#hero-stats-panel .stat-row:hover {
+    background: rgba(255, 209, 102, 0.04);
+}
+
+#hero-stats-panel .stat-row:nth-last-child(-n+4) {
+    border-bottom: none;
+}
+
+#hero-stats-panel .stat-label {
+    flex-shrink: 0;
+    min-width: 60px;
+    color: var(--text-3);
+    font-size: var(--fs-caption);
+}
+
+#hero-stats-panel .stat-val {
+    flex-shrink: 0;
+    min-width: 50px;
+    text-align: right;
+    color: var(--cyan-2);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-num);
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 4px var(--cyan-glow);
+}
+
+/* 战力 stat-row 特殊处理(金色) */
+#hero-stats-panel .stat-row:has(.stat-val[id="hero-power"]) .stat-val,
+#hero-stats-panel .stat-row:has(#stat-dmgBonus) .stat-val {
+    color: var(--gold-2);
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+}
+
+/* 进度条(5 个基础属性) */
+.stat-bar-bg {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    flex: 1;
+    min-width: 40px;
+    max-width: 80px;
+    margin-left: var(--sp-2);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.stat-bar-fill {
+    height: 100%;
+    border-radius: var(--r-pill);
+    transition: width 0.4s var(--ease-decelerate);
+    background: linear-gradient(90deg, var(--cyan-3), var(--cyan-2));
+    width: 0%;
+    box-shadow: 0 0 6px currentColor;
+}
+
+/* 5 个属性进度条的颜色(保留原有逻辑) */
+#hero-stats-panel .stat-row:nth-child(1) .stat-bar-fill {
+    background: linear-gradient(90deg, #ff5252, #ff1744);
+    color: #ff5252;
+}
+#hero-stats-panel .stat-row:nth-child(2) .stat-bar-fill {
+    background: linear-gradient(90deg, var(--success), #2e7d32);
+    color: var(--success);
+}
+#hero-stats-panel .stat-row:nth-child(3) .stat-bar-fill {
+    background: linear-gradient(90deg, #f44336, #b71c1c);
+    color: #f44336;
+}
+#hero-stats-panel .stat-row:nth-child(4) .stat-bar-fill {
+    background: linear-gradient(90deg, var(--cyan-3), #0288d1);
+    color: var(--cyan-2);
+}
+
+/* ========== 5. 装备面板(5 个装备环) ========== */
+#hero-equip-panel {
+    margin-bottom: var(--sp-3);
+    background: linear-gradient(180deg,
+        rgba(28, 18, 46, 0.5) 0%,
+        rgba(7, 5, 13, 0.6) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-3);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+}
+
+#hero-equip-panel h3 {
+    font-size: var(--fs-subtitle);
+    color: var(--text-1);
+    margin: 0 0 var(--sp-2);
+    padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--border-soft);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.3px;
+}
+
+#equip-slots-ring {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2);
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.ring-slot {
+    width: 76px;
+    height: 76px;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    position: relative;
+    backdrop-filter: blur(4px);
+    box-shadow: var(--shadow-inset);
+    gap: 2px;
+}
+
+.ring-slot:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-glow);
+    box-shadow:
+        0 4px 16px rgba(255, 209, 102, 0.2),
+        0 0 12px var(--gold-glow-soft),
+        var(--shadow-inset);
+}
+
+.ring-slot .slot-ring-icon {
+    font-size: 22px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.ring-slot .slot-ring-label {
+    font-size: 9px;
+    color: var(--text-3);
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.ring-slot .slot-ring-level {
+    font-size: 9px;
+    color: var(--gold-2);
+    font-weight: var(--fw-bold);
+    min-height: 11px;
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+}
+
+/* 已装备槽位:继承品质色光晕 */
+.ring-slot.filled {
+    border-color: var(--slot-color, var(--gold-glow));
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.1) 0%,
+        rgba(28, 18, 46, 0.4) 100%);
+    box-shadow:
+        0 0 12px var(--slot-color, var(--gold-glow)),
+        var(--shadow-inset);
+}
+
+.ring-slot.empty {
+    opacity: 0.6;
+}
+
+.ring-slot.empty:hover {
+    opacity: 0.9;
+}
+
+/* 中央角色立绘 */
+#ring-center-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r-full);
+    background: linear-gradient(135deg,
+        rgba(79, 195, 247, 0.18) 0%,
+        rgba(157, 109, 255, 0.18) 100%);
+    border: 2px solid var(--gold-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 24px rgba(255, 209, 102, 0.2);
+    margin: 0 var(--sp-2);
+}
+
+#ring-avatar-icon {
+    font-size: 36px;
+    color: var(--text-1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* 套装信息 */
+#hero-set-info {
+    margin-top: var(--sp-2);
+    display: none;
+    text-align: center;
+    padding: var(--sp-2) var(--sp-3);
+    background: linear-gradient(180deg,
+        rgba(192, 132, 252, 0.15) 0%,
+        rgba(157, 109, 255, 0.06) 100%);
+    border: 1px solid var(--purple-glow);
+    border-radius: var(--r-md);
+    color: var(--purple-1);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    text-shadow: 0 0 4px var(--purple-glow);
+}
+
+/* ========== 6. 技能面板 ========== */
+#hero-skills-panel {
+    margin-top: 0;
+    padding: var(--sp-3) var(--sp-4);
+    background: linear-gradient(180deg,
+        rgba(28, 18, 46, 0.5) 0%,
+        rgba(7, 5, 13, 0.6) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+}
+
+#hero-skills-panel h3 {
+    font-size: var(--fs-subtitle);
+    color: var(--text-1);
+    margin: 0 0 var(--sp-2);
+    padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--border-soft);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.3px;
+}
+
+#hero-skills-panel .skill-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-2);
+    padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+#hero-skills-panel .skill-header-row h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+#hero-skills-panel .skill-points-display {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 2px 10px;
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.18) 0%,
+        rgba(255, 209, 102, 0.06) 100%);
+    border: 1px solid var(--gold-glow);
+    border-radius: var(--r-pill);
+    box-shadow: 0 0 8px var(--gold-glow-soft), var(--shadow-inset);
+}
+
+#hero-skills-panel .skill-points-display span {
+    color: var(--gold-2) !important;
+    font-size: var(--fs-body) !important;
+    font-weight: var(--fw-bold) !important;
+    text-shadow: 0 0 6px var(--gold-glow);
+    font-family: var(--font-num);
+}
+
+/* 单条技能(由 heroUI.js 渲染的 .skill-row / .skill-card) */
+.skill-row,
+.skill-card {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-2);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    margin-bottom: var(--sp-1);
+    transition: all var(--t-fast) var(--ease-standard);
+}
+
+.skill-row:hover,
+.skill-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-mid);
+    transform: translateX(2px);
+}
+
+.skill-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-md);
+    background: linear-gradient(135deg,
+        rgba(157, 109, 255, 0.18) 0%,
+        rgba(79, 195, 247, 0.12) 100%);
+    border: 1px solid var(--purple-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px var(--purple-glow-soft), var(--shadow-inset);
+    text-align: center;
+    line-height: 1;
+}
+
+.skill-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.skill-info .skill-name {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-bold);
+    color: var(--text-1);
+}
+
+.skill-info .skill-level {
+    font-size: var(--fs-caption);
+    color: var(--cyan-2);
+    text-shadow: 0 0 4px var(--cyan-glow);
+    font-weight: var(--fw-semibold);
+    font-family: var(--font-num);
+    margin-top: 2px;
+}
+
+.skill-info .skill-desc {
+    font-size: var(--fs-mini);
+    color: var(--text-3);
+    margin-top: 2px;
+    line-height: 1.4;
+}
+
+.skill-info .skill-effect {
+    font-size: var(--fs-mini);
+    color: var(--gold-2);
+    margin-top: 2px;
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+    font-weight: var(--fw-medium);
+}
+
+/* 技能升级按钮 */
+.skill-upgrade-btn {
+    padding: 4px 10px;
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.18) 0%,
+        rgba(33, 150, 243, 0.1) 100%);
+    border: 1px solid rgba(79, 195, 247, 0.4);
+    border-radius: var(--r-sm);
+    color: var(--cyan-1);
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    box-shadow: 0 0 6px var(--cyan-glow), var(--shadow-inset);
+    flex-shrink: 0;
+}
+
+.skill-upgrade-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.3) 0%,
+        rgba(33, 150, 243, 0.2) 100%);
+    border-color: var(--cyan-2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.skill-upgrade-btn:active {
+    transform: scale(0.92);
+}
+
+.skill-upgrade-btn.disabled {
+    border-color: var(--border-mid);
+    color: var(--text-4);
+    cursor: not-allowed;
+    background: transparent;
+    box-shadow: none;
+}
+
+.skill-max {
+    font-size: var(--fs-caption);
+    color: var(--gold-2);
+    font-weight: var(--fw-bold);
+    text-shadow: 0 0 4px var(--gold-glow);
+    flex-shrink: 0;
+    padding: 4px 10px;
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.18),
+        rgba(255, 209, 102, 0.06));
+    border: 1px solid var(--gold-glow);
+    border-radius: var(--r-sm);
+}
+
+/* ========== 7. 入场动画 ========== */
+#screen-hero.screen.active {
+    animation: screen-in var(--t-page) var(--ease-decelerate) both;
+}
+
+#screen-hero .screen-header {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 80ms both;
+}
+
+#screen-hero #hero-select-grid {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 160ms both;
+}
+
+#screen-hero #hero-profile-card {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 240ms both;
+}
+
+#screen-hero #hero-stats-panel {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 320ms both;
+}
+
+#screen-hero #hero-equip-panel {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 400ms both;
+}
+
+#screen-hero #hero-skills-panel {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 480ms both;
+}

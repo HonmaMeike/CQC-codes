@@ -1,0 +1,308 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 宝石工坊 v2
+   实际类名(从 gemUI.js grep):
+     .gem-item            宝石列表项
+     .gem-icon-img        宝石图标
+     .gem-slot            镶嵌槽
+     .gem-slot-icon       槽内图标
+     .gem-slot.filled     已镶嵌
+     .gem-slot.empty      空槽
+     .forge-item          锻造列表项
+     .quality-filter-btn  品质/类型筛选
+     .quality-filter-btn.active
+     .item-name           通用(宝石名用 inline style 设色)
+     .item-desc           通用(描述)
+     .item-info           通用(信息容器)
+   ======================================================================== */
+
+/* ========== 1. 容器(forge-content / gem-content) ========== */
+#forge-content,
+#gem-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--sp-3) var(--sp-4) var(--sp-12);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+#forge-content > div,
+#gem-content > div {
+    /* 顶层分区容器(JS 渲染) */
+    margin-bottom: var(--sp-4);
+}
+
+/* ========== 2. 宝石列表项 / 锻造项 ========== */
+.gem-item,
+.forge-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    background: linear-gradient(180deg,
+        rgba(38, 24, 62, 0.5) 0%,
+        rgba(28, 18, 46, 0.65) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    margin-bottom: var(--sp-2);
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+    transition: all var(--t-fast) var(--ease-standard);
+    cursor: pointer;
+}
+
+.gem-item:hover,
+.forge-item:hover {
+    background: linear-gradient(180deg,
+        rgba(48, 30, 76, 0.6) 0%,
+        rgba(38, 24, 62, 0.78) 100%);
+    border-color: var(--border-mid);
+    transform: translateX(2px);
+    box-shadow:
+        var(--shadow-md),
+        var(--shadow-inset);
+}
+
+.gem-item .item-info,
+.forge-item .item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 宝石名(用 inline style 设颜色,不要覆盖)*/
+.gem-item .item-name,
+.forge-item .item-name {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-bold);
+    /* 颜色由 inline style 控制(宝石类型色) */
+    text-shadow: 0 0 4px currentColor;
+}
+
+.gem-item .item-desc,
+.forge-item .item-desc {
+    font-size: var(--fs-caption);
+    color: var(--text-3);
+    margin-top: 2px;
+    line-height: 1.4;
+}
+
+/* ========== 3. 宝石图标 ========== */
+.gem-icon-img {
+    width: 44px;
+    height: 44px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    flex-shrink: 0;
+    border-radius: var(--r-md);
+    background: linear-gradient(135deg,
+        rgba(157, 109, 255, 0.18) 0%,
+        rgba(79, 195, 247, 0.12) 100%);
+    border: 1px solid var(--purple-glow);
+    box-shadow:
+        0 0 8px var(--purple-glow-soft),
+        var(--shadow-inset);
+    padding: 2px;
+    object-fit: contain;
+}
+
+/* ========== 4. 镶嵌槽(已镶 / 空) ========== */
+.gem-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 4px 10px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-medium);
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+.gem-slot.filled {
+    border: 1px solid var(--purple-glow);
+    background: linear-gradient(180deg,
+        rgba(157, 109, 255, 0.18) 0%,
+        rgba(110, 62, 219, 0.1) 100%);
+    color: var(--text-1);
+    box-shadow:
+        0 0 6px var(--purple-glow-soft),
+        var(--shadow-inset);
+}
+
+.gem-slot.filled:hover {
+    background: linear-gradient(180deg,
+        rgba(157, 109, 255, 0.28) 0%,
+        rgba(110, 62, 219, 0.18) 100%);
+    border-color: var(--purple-2);
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 10px var(--purple-glow),
+        var(--shadow-inset);
+}
+
+.gem-slot.empty {
+    border: 1px dashed var(--border-mid);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-4);
+}
+
+.gem-slot.empty:hover {
+    border-color: var(--gold-glow);
+    border-style: solid;
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.08) 0%,
+        rgba(255, 209, 102, 0.02) 100%);
+    color: var(--gold-2);
+}
+
+.gem-slot-icon {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    vertical-align: middle;
+    border-radius: var(--r-xs);
+}
+
+/* ========== 5. 品质/类型筛选按钮 ========== */
+.quality-filter-btn {
+    padding: 4px 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+.quality-filter-btn:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-mid);
+    color: var(--text-1);
+    transform: translateY(-1px);
+}
+
+.quality-filter-btn.active {
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.22) 0%,
+        rgba(255, 209, 102, 0.08) 100%);
+    border-color: var(--gold-2);
+    color: var(--gold-2) !important;  /* 覆盖 inline style 颜色 */
+    box-shadow:
+        0 0 10px var(--gold-glow),
+        var(--shadow-inset);
+    text-shadow: 0 0 6px var(--gold-glow);
+}
+
+/* ========== 6. 一键合成按钮 ========== */
+.btn-gold[onclick*="autoSynthesizeAll"],
+.btn-gold[onclick*="autoSynthesize"] {
+    margin: var(--sp-3) 0;
+    padding: var(--sp-3) var(--sp-6) !important;
+    font-size: var(--fs-subtitle) !important;
+    width: 100%;
+    box-shadow:
+        0 0 16px var(--gold-glow),
+        var(--shadow-inset-strong) !important;
+    animation: cta-pulse 2.8s ease-in-out infinite;
+}
+
+/* ========== 7. gem-select-list(宝石选择列表) ========== */
+#gem-select-list {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: var(--sp-2);
+    background: rgba(7, 5, 13, 0.4);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-md);
+    margin: var(--sp-2) 0;
+}
+
+/* ========== 8. 共鸣 / 融合 等其他区块(JS 渲染的内容容器) ========== */
+.gem-content-section,
+.gem-resonance-section,
+.gem-fusion-section {
+    background: linear-gradient(180deg,
+        rgba(38, 24, 62, 0.5) 0%,
+        rgba(28, 18, 46, 0.65) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-3);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    position: relative;
+}
+
+.gem-content-section h3,
+.gem-resonance-section h3,
+.gem-fusion-section h3 {
+    margin: 0 0 var(--sp-3) 0;
+    padding: 0 0 var(--sp-2);
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-bold);
+    color: var(--gold-2);
+    text-shadow: 0 0 6px var(--gold-glow-soft);
+    border-bottom: 1px solid var(--border-soft);
+    letter-spacing: 0.5px;
+}
+
+/* 共鸣条(假设有 .resonance-bar / .resonance-fill) */
+.resonance-bar {
+    height: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    margin: var(--sp-2) 0;
+}
+
+.resonance-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+        var(--purple-2) 0%,
+        var(--cyan-2) 50%,
+        var(--gold-2) 100%);
+    border-radius: var(--r-pill);
+    box-shadow: 0 0 8px var(--purple-glow);
+    transition: width 0.4s var(--ease-decelerate);
+}
+
+/* ========== 9. 入场动画 ========== */
+#screen-forge.screen.active {
+    animation: screen-in var(--t-page) var(--ease-decelerate) both;
+}
+
+#screen-forge .screen-header {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 80ms both;
+}
+
+#screen-forge #forge-tabs {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 160ms both;
+}
+
+#screen-forge #forge-content {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 240ms both;
+}
+
+#screen-forge #forge-content > *:nth-child(1) {
+    animation: glass-in var(--t-normal) var(--ease-decelerate) 320ms both;
+}
+#screen-forge #forge-content > *:nth-child(2) {
+    animation: glass-in var(--t-normal) var(--ease-decelerate) 400ms both;
+}
+#screen-forge #forge-content > *:nth-child(3) {
+    animation: glass-in var(--t-normal) var(--ease-decelerate) 480ms both;
+}
+
+#screen-forge .gem-item:nth-child(odd) {
+    animation: list-item-in 320ms var(--ease-decelerate) both;
+}
+#screen-forge .gem-item:nth-child(even) {
+    animation: list-item-in 320ms var(--ease-decelerate) 60ms both;
+}

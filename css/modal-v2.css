@@ -1,0 +1,180 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 弹窗系统 v2
+   补全 modal-overlay / modal-content 的定位与 z-index
+   升级到 v2 玻璃拟态风格
+   ======================================================================== */
+
+/* ========== 1. Modal Overlay(全屏遮罩 + 居中容器) ========== */
+.modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;     /* 高于 bottom-nav(100)和 toast(5000+)和 offline-reward(5000) */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: var(--sp-4) !important;
+    /* 视觉(由 theme-v3.css 提供 backdrop-filter,这里加深一点) */
+    background: rgba(7, 5, 13, 0.72) !important;
+    backdrop-filter: blur(14px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+    /* 入场动画 */
+    animation: modal-overlay-in var(--t-normal) var(--ease-decelerate) both;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* ========== 2. Modal Content(玻璃拟态卡片) ========== */
+.modal-content {
+    position: relative !important;
+    max-width: calc(100vw - var(--sp-8)) !important;
+    max-height: calc(100vh - var(--sp-12)) !important;
+    overflow-y: auto !important;
+    /* 玻璃拟态基底 */
+    background:
+        linear-gradient(180deg,
+            rgba(38, 24, 62, 0.85) 0%,
+            rgba(28, 18, 46, 0.92) 100%) !important;
+    backdrop-filter: blur(var(--glass-blur-strong)) saturate(150%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(150%);
+    border: 1px solid rgba(255, 209, 102, 0.18) !important;
+    border-radius: var(--r-xl) !important;
+    box-shadow:
+        var(--shadow-xl),
+        var(--shadow-inset-strong),
+        0 0 48px rgba(255, 209, 102, 0.08) !important;
+    color: var(--text-1);
+    /* 入场动画 */
+    animation: modal-pop var(--t-normal) var(--ease-spring);
+    /* 滚动条 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: var(--r-pill);
+}
+
+/* ========== 3. Modal 标题区 ========== */
+.modal-content h3 {
+    margin: 0 0 var(--sp-4) 0;
+    padding: var(--sp-4) var(--sp-5) var(--sp-3);
+    font-size: var(--fs-title);
+    font-weight: var(--fw-bold);
+    color: var(--gold-2);
+    text-shadow: 0 0 8px var(--gold-glow-soft);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-soft);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.06) 0%,
+        transparent 100%);
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+}
+
+/* ========== 4. Modal 内部 padding(如果有 inline 内容) ========== */
+.modal-content > div,
+.modal-content > p {
+    padding: 0 var(--sp-5);
+}
+
+.modal-content > p,
+.modal-content > div > p {
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    color: var(--text-2);
+    margin: var(--sp-2) 0;
+}
+
+/* 强提示文字(返回家园的红字提示) */
+.modal-content span[style*="color:#ff7766"],
+.modal-content span[style*="color:#ff5e62"] {
+    color: var(--danger) !important;
+    font-weight: var(--fw-semibold);
+}
+
+/* ========== 5. Modal Footer(确认/取消按钮) ========== */
+.modal-content > div[style*="display:flex"] {
+    /* 按钮区 */
+    padding: var(--sp-4) var(--sp-5) var(--sp-5);
+    margin-top: var(--sp-3);
+    border-top: 1px solid var(--border-soft);
+    gap: var(--sp-3);
+}
+
+/* ========== 6. Modal Close 按钮 ========== */
+.modal-close {
+    position: absolute !important;
+    top: var(--sp-3) !important;
+    right: var(--sp-3) !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--glass-border) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(8px);
+    border-radius: var(--r-full) !important;
+    color: var(--text-3) !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    transition: all var(--t-fast) var(--ease-standard) !important;
+    z-index: 2;
+}
+
+.modal-close:hover {
+    background: rgba(255, 94, 98, 0.2) !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+    transform: rotate(90deg);
+}
+
+/* ========== 7. 特定 Modal 样式微调 ========== */
+
+/* 离线奖励 modal(已有 z-index: 5000,保持,但用 modal-content 升级) */
+.offline-reward-overlay .modal-content,
+.offline-reward-overlay > div {
+    border-color: rgba(255, 209, 102, 0.3) !important;
+    box-shadow:
+        var(--shadow-xl),
+        0 0 64px rgba(255, 209, 102, 0.15) !important;
+}
+
+/* 调试密码 modal(已有 z-index 10000) */
+#debug-pwd-modal,
+#debug-panel-modal {
+    /* inline style 已经设了 z-index:10000+ 覆盖默认 9999,无需额外处理 */
+}
+
+/* 宠物抽奖动画(已有 z-index:99999) */
+#pet-anim-overlay {
+    /* inline style z-index:99999 已覆盖 */
+}
+
+/* 怪物图鉴(已有 z-index:9999/10000) */
+.codex-overlay,
+.monster-codex-detail {
+    /* inline style z-index 覆盖默认 9999 */
+}
+
+/* ========== 8. 动画关键帧 ========== */
+@keyframes modal-overlay-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes modal-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(8px);
+    }
+    60% {
+        transform: scale(1.02) translateY(-2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

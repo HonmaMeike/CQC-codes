@@ -1,0 +1,343 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 通用屏 v2 (settings / team)
+   升级 settings(76KB 内嵌 HTML)和 team(33KB 内嵌) 到 v2 玻璃拟态
+   ======================================================================== */
+
+/* ========================================================================
+   1. 设置屏 (screen-settings)
+   ======================================================================== */
+
+#settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--sp-3) var(--sp-4) var(--sp-12);
+    scrollbar-width: thin;
+}
+
+.settings-section {
+    background: linear-gradient(180deg,
+        rgba(38, 24, 62, 0.5) 0%,
+        rgba(28, 18, 46, 0.65) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-4);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    position: relative;
+}
+
+.settings-section::before {
+    /* 顶部高光 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+    pointer-events: none;
+}
+
+.settings-section h3 {
+    margin: 0 0 var(--sp-3) 0;
+    padding: 0 0 var(--sp-2);
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-bold);
+    color: var(--gold-2);
+    text-shadow: 0 0 6px var(--gold-glow-soft);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background var(--t-fast) var(--ease-standard);
+}
+
+.settings-row:hover {
+    background: rgba(255, 209, 102, 0.03);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.settings-row-title {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    color: var(--text-1);
+    margin-bottom: 2px;
+}
+
+.settings-row-title[style*="color:#4fc3f7"] {
+    color: var(--cyan-2) !important;
+    text-shadow: 0 0 4px var(--cyan-glow);
+}
+
+.settings-row-desc {
+    font-size: var(--fs-caption);
+    color: var(--text-3);
+    line-height: 1.4;
+}
+
+/* 设置按钮(继承 v2 .btn .btn-primary,但有些是 inline style)*/
+.settings-row .btn,
+.settings-section .btn {
+    flex-shrink: 0;
+}
+
+.settings-section select,
+.settings-section input[type="text"],
+.settings-section input[type="number"],
+.settings-section input[type="password"] {
+    padding: 6px 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-body);
+    min-width: 120px;
+    box-shadow: var(--shadow-xs), var(--shadow-inset);
+}
+
+.settings-section select:focus,
+.settings-section input:focus {
+    outline: none;
+    border-color: var(--gold-2);
+    box-shadow: 0 0 8px var(--gold-glow-soft);
+}
+
+/* 资源显示(设置里也有 .resource .gold) */
+#settings-content .resource {
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.12) 0%,
+        rgba(28, 18, 46, 0.5) 100%);
+    border: 1px solid var(--gold-glow);
+    color: var(--gold-2);
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+    box-shadow: 0 0 8px var(--gold-glow-soft), var(--shadow-inset);
+}
+
+/* 子区块(开发者工具 / 调试) */
+#settings-content .settings-subsection {
+    margin-top: var(--sp-3);
+    padding: var(--sp-3);
+    background: rgba(7, 5, 13, 0.5);
+    border: 1px dashed var(--border-mid);
+    border-radius: var(--r-md);
+}
+
+/* 调试密码 / 神秘面板 用 inline style 的特殊按钮 — 给一个合理 baseline */
+#settings-content button[style*="background:linear-gradient"] {
+    /* 不要覆盖 inline style — 但保证不破坏 */
+}
+
+/* ========================================================================
+   2. 队伍配置 (screen-team)
+   ======================================================================== */
+
+#formation-container {
+    flex: 0 0 auto;
+    padding: var(--sp-4);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.formation-section {
+    background: linear-gradient(180deg,
+        rgba(38, 24, 62, 0.5) 0%,
+        rgba(28, 18, 46, 0.65) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-4);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    position: relative;
+}
+
+.formation-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
+    pointer-events: none;
+}
+
+.section-label {
+    display: block;
+    margin-bottom: var(--sp-3);
+    padding: 0 0 var(--sp-2);
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-bold);
+    color: var(--gold-2);
+    text-shadow: 0 0 6px var(--gold-glow-soft);
+    letter-spacing: 0.5px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.formation-back-row {
+    display: flex;
+    gap: var(--sp-2);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.team-slot {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 2px dashed var(--border-mid);
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-inset);
+    overflow: hidden;
+}
+
+.team-slot:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--gold-glow);
+    transform: translateY(-2px);
+    box-shadow:
+        var(--shadow-md),
+        0 0 12px var(--gold-glow-soft),
+        var(--shadow-inset);
+}
+
+.team-slot:active {
+    transform: scale(0.96);
+}
+
+.team-slot-front {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.team-slot-back {
+    flex: 1;
+    min-width: 100px;
+    max-width: 130px;
+}
+
+.team-slot .slot-content {
+    width: 100%;
+    height: 100%;
+    padding: var(--sp-3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.team-slot .slot-placeholder {
+    color: var(--text-4);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.3px;
+}
+
+/* 已上阵角色(JS 注入 .hero-icon / .hero-name / .hero-level) */
+.team-slot .hero-icon {
+    font-size: 32px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.team-slot .hero-name {
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-bold);
+    color: var(--text-1);
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.team-slot .hero-level {
+    font-size: var(--fs-mini);
+    color: var(--cyan-2);
+    font-weight: var(--fw-semibold);
+    margin-top: 2px;
+    text-shadow: 0 0 4px var(--cyan-glow);
+}
+
+.team-slot .hero-role-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin-top: 4px;
+    font-size: var(--fs-mini);
+    color: var(--gold-2);
+    background: rgba(255, 209, 102, 0.15);
+    border: 1px solid var(--gold-glow);
+    border-radius: var(--r-pill);
+    text-shadow: 0 0 4px var(--gold-glow-soft);
+}
+
+/* 已上阵(有角色)的 team-slot — 由 JS 加 class .filled */
+.team-slot.filled {
+    border-style: solid;
+    border-color: var(--gold-glow);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.08) 0%,
+        rgba(28, 18, 46, 0.5) 100%);
+    box-shadow:
+        0 0 12px var(--gold-glow-soft),
+        var(--shadow-inset);
+}
+
+/* ========================================================================
+   入场动画
+   ======================================================================== */
+
+#screen-settings.screen.active,
+#screen-team.screen.active {
+    animation: screen-in var(--t-page) var(--ease-decelerate) both;
+}
+
+#screen-settings .screen-header,
+#screen-team .screen-header {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 80ms both;
+}
+
+#screen-settings .settings-section:nth-child(1),
+#screen-team .formation-section:nth-child(1) {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 160ms both;
+}
+
+#screen-settings .settings-section:nth-child(2),
+#screen-team .formation-section:nth-child(2) {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 240ms both;
+}
+
+#screen-settings .settings-section:nth-child(3) {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 320ms both;
+}
+
+#screen-settings .settings-section:nth-child(4) {
+    animation: glass-in-up var(--t-normal) var(--ease-decelerate) 400ms both;
+}

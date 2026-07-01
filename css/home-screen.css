@@ -1,0 +1,294 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 家园屏幕 v2
+   深色玻璃拟态 + 草原晚霞氛围
+   ======================================================================== */
+
+/* ========== 家园屏幕容器 ========== */
+#screen-home {
+    background:
+        /* 顶部深紫星空 */
+        radial-gradient(ellipse at 50% 0%, rgba(110, 62, 219, 0.22) 0%, transparent 55%),
+        /* 底部暖色晚霞 */
+        radial-gradient(ellipse at 50% 100%, rgba(255, 140, 66, 0.12) 0%, transparent 50%),
+        /* 整体深空底 */
+        linear-gradient(180deg,
+            #07050d 0%,
+            #1a0d2e 25%,
+            #2d1a3e 55%,
+            #1f0e2a 80%,
+            #0a0510 100%);
+    background-attachment: fixed;
+}
+
+/* canvas 上方的暗紫渐变 overlay(拉齐色调) */
+#screen-home::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background:
+        /* 顶部柔光 */
+        radial-gradient(ellipse 80% 30% at 50% 0%,
+            rgba(110, 62, 219, 0.18) 0%,
+            transparent 70%),
+        /* 底部柔光 */
+        radial-gradient(ellipse 100% 25% at 50% 100%,
+            rgba(255, 140, 66, 0.08) 0%,
+            transparent 70%);
+    mix-blend-mode: normal;
+}
+
+/* canvas 内的暖色调 overlay(让画面更暗更紫) */
+.home-canvas-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+        rgba(28, 18, 46, 0.12) 0%,
+        rgba(28, 18, 46, 0) 30%,
+        rgba(28, 18, 46, 0) 70%,
+        rgba(7, 5, 13, 0.35) 100%);
+}
+
+/* ========== 顶部信息栏(覆盖 main.css 的 .home-header) ========== */
+#screen-home .home-header {
+    /* 顶部柔光背景已由 .top-bar 提供,这里清掉旧样式 */
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+/* 草原营地标题(由 homeUI.js 动态填充) */
+#home-scene-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex: 1;
+    min-width: 0;
+}
+
+/* 标题左侧的金色竖条(替代原 emoji 帐篷) */
+.title-accent {
+    width: 3px;
+    height: 22px;
+    background: linear-gradient(180deg,
+        var(--gold-1) 0%,
+        var(--gold-2) 50%,
+        var(--gold-4) 100%);
+    border-radius: var(--r-pill);
+    box-shadow:
+        0 0 6px var(--gold-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+#home-scene-tabs .scene-tab {
+    /* 单个场景 tab 按钮 */
+    padding: 4px 10px;
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    color: var(--text-3);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+#home-scene-tabs .scene-tab:hover {
+    color: var(--text-1);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#home-scene-tabs .scene-tab.active {
+    color: var(--gold-2);
+    background: linear-gradient(180deg,
+        rgba(255, 209, 102, 0.18),
+        rgba(255, 209, 102, 0.06));
+    border-color: var(--gold-glow);
+    box-shadow: 0 0 12px var(--gold-glow-soft), var(--shadow-inset);
+    text-shadow: 0 0 6px var(--gold-glow);
+}
+
+#home-scene-tabs .scene-tab .scene-icon {
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* ========== 资源行(原 .home-stats) ========== */
+.home-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.home-stats .resource-pill {
+    /* 紧凑模式(只显示图标 + 数字) */
+    padding: 5px 9px;
+}
+
+.home-stats .resource-pill .res-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========== canvas 容器(草原场景) ========== */
+.home-canvas-wrap {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    /* 让 canvas 自然延伸到顶部 bottom-nav 之间 */
+    /* 上下各加一道柔光,增加层次 */
+    box-shadow:
+        inset 0 30px 40px -20px rgba(0, 0, 0, 0.4),
+        inset 0 -30px 40px -20px rgba(0, 0, 0, 0.4);
+}
+
+.home-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* canvas 内的元素由 HomeSystem.draw() 绘制,这里只控制布局 */
+}
+
+/* 提示条(覆盖在 canvas 上) */
+.home-tip {
+    /* 用 .tip-banner 组件样式,这里只调位置 */
+    pointer-events: none;
+}
+
+/* ========== AI 助手浮动按钮 ========== */
+.ai-assistant-fab {
+    position: absolute;
+    top: 70px;
+    left: var(--sp-3);
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 6px 12px 6px 8px;
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.18) 0%,
+        rgba(33, 150, 243, 0.12) 100%);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(79, 195, 247, 0.4);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-md), 0 0 16px var(--cyan-glow), var(--shadow-inset);
+    color: var(--cyan-1);
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-bold);
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+    animation: ai-fab-pulse 3.6s ease-in-out infinite;
+}
+
+.ai-assistant-fab:hover {
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.28) 0%,
+        rgba(33, 150, 243, 0.20) 100%);
+    border-color: var(--cyan-2);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg), 0 0 20px var(--cyan-glow), var(--shadow-inset);
+}
+
+.ai-assistant-fab:active {
+    transform: scale(0.95);
+}
+
+.ai-assistant-fab .ai-icon {
+    font-size: 16px;
+    line-height: 1;
+    filter: drop-shadow(0 0 4px var(--cyan-glow));
+}
+
+.ai-assistant-fab .ai-text {
+    text-shadow: 0 0 6px var(--cyan-glow);
+}
+
+@keyframes ai-fab-pulse {
+    0%, 100% {
+        box-shadow: var(--shadow-md), 0 0 12px var(--cyan-glow), var(--shadow-inset);
+    }
+    50% {
+        box-shadow: var(--shadow-md), 0 0 20px var(--cyan-glow), 0 0 32px rgba(79, 195, 247, 0.2), var(--shadow-inset);
+    }
+}
+
+/* ========== 商人 NPC ========== */
+.home-merchant-btn {
+    /* 用 .npc-btn 组件样式,只调位置 */
+    right: var(--sp-3);
+    bottom: calc(var(--sp-4) + 70px);
+    /* 70px 是 tip-banner 大致高度 */
+    z-index: 35;
+}
+
+/* ========== 家园 canvas 内的"焦点怪"标签强化(可选) ========== */
+/* HomeSystem.draw() 在 canvas 里画了圆形头像 + 名字标签,
+   DOM 层无法直接控制 canvas 内容,但可以在外面加光晕层 */
+.home-canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 30%,
+        rgba(255, 209, 102, 0.04) 0%,
+        transparent 60%);
+    z-index: 1;
+}
+
+/* canvas 元素需要置顶 */
+.home-canvas-wrap canvas {
+    position: relative;
+    z-index: 2;
+}
+
+/* 提示/商人 NPC 也需要在 canvas 之上 */
+.home-tip,
+.home-merchant-btn,
+.ai-assistant-fab {
+    z-index: 30;
+}
+
+/* ========== 家园屏幕入场动画 ========== */
+#screen-home.screen.active {
+    animation: home-in 600ms var(--ease-decelerate) both;
+}
+
+@keyframes home-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 顶部信息栏从下滑入 */
+#screen-home .top-bar {
+    animation: glass-in 500ms var(--ease-decelerate) 100ms both;
+}
+
+/* AI 助手延迟入场 */
+#screen-home .ai-assistant-fab {
+    animation: ai-fab-pulse 3.6s ease-in-out infinite 600ms,
+               glass-in 500ms var(--ease-decelerate) 400ms both;
+}
+
+/* 商人延迟入场 */
+#screen-home .home-merchant-btn {
+    animation: glass-in 500ms var(--ease-decelerate) 600ms both,
+               float-y 4.2s ease-in-out infinite 1.1s;
+}
+
+/* 提示条延迟入场 */
+#screen-home .home-tip {
+    animation: tip-in 600ms var(--ease-decelerate) 800ms both;
+}

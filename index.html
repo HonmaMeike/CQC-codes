@@ -11,14 +11,43 @@
 <meta name="format-detection" content="telephone=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>永恒英灵 · CQC</title>
-<!-- 加载顺序：theme(设计语言) → main(布局) → battle(战斗) → ui(业务)
-     原因：业务界面 ui.css 中的 .btn/卡片等需要继承 theme.css 的变量与基类 -->
-<link rel="stylesheet" href="css/theme.css?v=100050">
-<link rel="stylesheet" href="css/theme-v3.css?v=100050">
-<link rel="stylesheet" href="css/tutorial-cards.css?v=100050">
-<link rel="stylesheet" href="css/main.css?v=100050">
-<link rel="stylesheet" href="css/battle.css?v=100050">
-<link rel="stylesheet" href="css/ui.css?v=100050">
+<!-- 加载顺序（v2 设计系统 — 原神/星穹铁道 深色玻璃拟态）:
+     1. theme.css            设计变量（颜色/字体/间距/圆角/阴影/动效）
+     2. v2-components.css    组件库（玻璃卡片/按钮/资源胶囊/品质边框/CTA）
+     3. v2-animations.css    动效系统（入场/呼吸/流光/浮动/闪烁）
+     4. home-screen.css      家园屏专用
+     5. bottom-nav.css       全局底部 tab 栏
+     6. modal-v2.css         弹窗系统 v2
+     7. battle-screen.css    战斗主屏 v2
+     8. hero-screen.css      角色详情屏 v2
+     9. inventory-screen.css 仓库屏 v2
+     10. settings-team-screen.css 设置 + 队伍配置 v2
+     11. misc-screens.css    天赋/宝石/副本/宠物/转生 v2
+     11.5 forge-screen.css  宝石工坊 v2(覆盖 misc-screens 里的错误类名)
+     11.6 talent-dungeon-pet-rebirth-fixes.css  4 屏类名修正(覆盖 misc-screens 错的部分)
+     12. v2-fixes.css        v2 重构后的回归补丁
+     13. theme-v3.css        modal-overlay/modal-content/btn 系统基础样式
+     14. main.css / battle.css / ui.css / tutorial-cards.css  保留兼容
+  -->
+<link rel="stylesheet" href="css/theme.css?v=100070">
+<link rel="stylesheet" href="css/v2-components.css?v=100070">
+<link rel="stylesheet" href="css/v2-animations.css?v=100070">
+<link rel="stylesheet" href="css/home-screen.css?v=100070">
+<link rel="stylesheet" href="css/bottom-nav.css?v=100070">
+<link rel="stylesheet" href="css/modal-v2.css?v=100070">
+<link rel="stylesheet" href="css/battle-screen.css?v=100070">
+<link rel="stylesheet" href="css/hero-screen.css?v=100070">
+<link rel="stylesheet" href="css/inventory-screen.css?v=100070">
+<link rel="stylesheet" href="css/settings-team-screen.css?v=100071">
+<link rel="stylesheet" href="css/misc-screens.css?v=100070">
+<link rel="stylesheet" href="css/forge-screen.css?v=100070">
+<link rel="stylesheet" href="css/talent-dungeon-pet-rebirth-fixes.css?v=100070">
+<link rel="stylesheet" href="css/v2-fixes.css?v=100070">
+<link rel="stylesheet" href="css/theme-v3.css?v=100070">
+<link rel="stylesheet" href="css/main.css?v=100071">
+<link rel="stylesheet" href="css/battle.css?v=100070">
+<link rel="stylesheet" href="css/ui.css?v=100070">
+<link rel="stylesheet" href="css/tutorial-cards.css?v=100070">
 
 <style>
 @font-face {
@@ -27,7 +56,7 @@
     font-display: swap;
 }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, sans-serif, EmojiFallback;
+    font-family: var(--font-cjk, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, sans-serif, EmojiFallback);
 }
 </style>
 </head>
@@ -35,13 +64,17 @@ body {
 <div id="app">
     <!-- 主界面（战斗屏） -->
     <div id="screen-main" class="screen">
-        <!-- 顶部信息栏 -->
+        <!-- 顶部信息栏（两行布局：场景+战斗 / 资源） -->
         <div id="top-bar">
-            <div id="stage-info" onclick="showStageSelect()">第 1 章 - 新手草原</div>
-            <div id="team-power-main">战力: 0</div>
-            <div id="resource-bar">
-                <div class="resource gold"><span class="icon">&#9733;</span><span id="gold-display">0</span></div>
-                <div class="resource gem"><span class="icon">&#9670;</span><span id="gem-display">0</span></div>
+            <div class="top-row">
+                <div id="stage-info" class="scene-pill" onclick="showStageSelect()">第 1 章 - 新手草原</div>
+                <div class="top-right">
+                    <span id="team-power-main">战力: 0</span>
+                    <button id="btn-top-battle" class="battle-pill" onclick="enterBattleFromHome()"><img class="btn-icon" src="assets/images/icons/ic_battle.png" alt=""> 战斗</button>
+                </div>
+            </div>
+            <div class="bottom-row" id="resource-bar">
+                <div class="resource gold"><img class="res-icon" src="assets/images/icons/ic_coin.png" alt=""><span id="gold-display">0</span></div>
             </div>
         </div>
 
@@ -95,71 +128,93 @@ body {
         </div>
     </div>
 
-    <!-- 家园界面（HOME_1.3 新增：默认进入界面，草原营地 + 自由活动 + 友好怪物） -->
+    <!-- 家园界面 (v2 视觉升级) — 默认进入界面,草原营地 + 友好怪物 -->
     <div id="screen-home" class="screen active">
-        <div class="home-header">
-            <div class="home-title-wrap" style="flex:1;min-width:0;">
-                <span class="home-title-icon" style="font-size:16px;">🏕</span>
-                <span id="home-scene-tabs" class="home-scene-tabs" style="flex-shrink:0;"></span>
+        <!-- 顶部信息栏:左标题 | 中资源 | 右主 CTA -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <span class="title-accent"></span>
+                <div class="title-stack">
+                    <span class="title-main" id="home-scene-tabs" style="font-size:15px;"></span>
+                    <span class="title-sub">HOME · 田园时光</span>
+                </div>
             </div>
-            <div class="home-stats" style="display:flex;align-items:center;gap:8px;font-size:11px;flex-shrink:0;">
-                <span class="resource gold" style="font-size:11px;"><span class="icon">★</span><span id="home-gold-display">0</span></span>
-                <span class="resource gem" style="font-size:11px;"><span class="icon">♦</span><span id="home-gem-count">0</span></span>
-                <span class="resource stamina" style="font-size:11px;" title="体力"><span class="icon">⚡</span><span id="home-stamina-display">60</span></span>
+            <div class="top-bar-center home-stats">
+                <span class="resource-pill gold compact" title="金币">
+                    <img class="res-icon" src="assets/images/icons/ic_coin.png" alt="">
+                    <span id="home-gold-display" class="res-value">0</span>
+                </span>
+                <span class="resource-pill stamina compact" title="体力">
+                    <img class="res-icon" src="assets/images/icons/ic_flame.png" alt="">
+                    <span id="home-stamina-display" class="res-value">60</span>
+                </span>
             </div>
-            <button class="btn" style="padding:4px 8px;font-size:12px;border:none;background:none;" onclick="switchScreen('settings')" title="设置">⚙</button>
-            <button id="btn-enter-battle" class="btn btn-gold home-btn-enter" onclick="enterBattleFromHome()">⚔ 战斗</button>
+            <div class="top-bar-right">
+                <button class="icon-btn" onclick="switchScreen('settings')" title="设置">
+                    <img class="btn-icon" src="assets/images/icons/ic_settings.png" alt="">
+                </button>
+                <button id="btn-enter-battle" class="cta-battle" onclick="enterBattleFromHome()">
+                    <img class="btn-icon" src="assets/images/icons/ic_battle.png" alt="">
+                    <span>战斗</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- AI 小精灵浮动按钮(左上) -->
+        <div class="ai-assistant-fab" onclick="openAIAssistant()" title="AI 小精灵">
+            <span class="ai-icon">🧠</span>
+            <span class="ai-text">AI</span>
         </div>
-        <!-- AI 小精灵悬浮按钮（左上天空区域） -->
-        <div style="position:absolute;top:52px;left:12px;z-index:10;display:flex;align-items:center;gap:4px;cursor:pointer;background:rgba(33,150,243,0.15);border:1px solid rgba(33,150,243,0.3);border-radius:16px;padding:4px 10px;backdrop-filter:blur(2px);" onclick="openAIAssistant()" title="AI 小精灵">
-            <span style="font-size:14px;">🧠</span>
-            <span style="font-size:9px;color:#64b5f6;">AI</span>
-        </div>
+
+        <!-- 草原场景(HomeSystem.draw 渲染) -->
         <div class="home-canvas-wrap">
             <canvas id="home-canvas"></canvas>
-            <div class="home-tip">🌿 家园中所有怪物都是友好的 · 准备好后点击右上角"进入战斗"</div>
         </div>
-        <!-- 商人 NPC -->
-        <div id="home-merchant" class="home-merchant-btn" onclick="openMerchant()" title="商人">
-            <span>🧑‍🌾</span>
-            <span class="home-merchant-label">商人</span>
+
+        <!-- 底部提示条 -->
+        <div class="tip-banner home-tip">🌿 家园中所有怪物都是友好的 · 准备好后点击右上角"进入战斗"</div>
+
+        <!-- 商人 NPC(右下) -->
+        <div id="home-merchant" class="npc-btn home-merchant-btn" onclick="openMerchant()" title="商人">
+            <span class="npc-emoji">🧑‍🌾</span>
+            <span class="npc-label">商人</span>
         </div>
     </div>
 
     <!-- 底部导航栏（全局常驻，跨屏幕可见） -->
     <div id="bottom-nav">
         <div class="nav-btn active" data-screen="main">
-            <span class="nav-icon-wrap"><span class="nav-icon">⚔</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_battle.png" alt="战斗"></span>
             <span class="nav-label">战斗</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="hero">
-            <span class="nav-icon-wrap"><span class="nav-icon">😊</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_character.png" alt="角色"></span>
             <span class="nav-label">角色</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="inventory">
-            <span class="nav-icon-wrap"><span class="nav-icon">📦</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_inventory.png" alt="仓库"></span>
             <span class="nav-label">仓库</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="talent">
-            <span class="nav-icon-wrap"><span class="nav-icon">📋</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_talent.png" alt="天赋"></span>
             <span class="nav-label">天赋</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="forge">
-            <span class="nav-icon-wrap"><span class="nav-icon">💎</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_gem.png" alt="宝石"></span>
             <span class="nav-label">宝石</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="dungeon">
-            <span class="nav-icon-wrap"><span class="nav-icon">⚜</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_dungeon.png" alt="副本"></span>
             <span class="nav-label">副本</span>
             <span class="nav-underline"></span>
         </div>
         <div class="nav-btn" data-screen="pet">
-            <span class="nav-icon-wrap"><span class="nav-icon">🐾</span></span>
+            <span class="nav-icon-wrap"><img class="nav-icon-img" src="assets/images/icons/ic_pet.png" alt="宠物"></span>
             <span class="nav-label">宠物</span>
             <span class="nav-underline"></span>
         </div>
@@ -306,9 +361,7 @@ body {
             <button class="inv-slot-tab" data-slot="armor" onclick="switchSlotFilter('armor')">🎽 衣</button>
             <button class="inv-slot-tab" data-slot="boots" onclick="switchSlotFilter('boots')">👢 鞋</button>
         </div>
-                <div class="inv-grid-wrap" id="inv-grid-wrap">
-                    <div id="inventory-grid"></div>
-                </div>
+        <!-- v2 升级: 操作栏挪到顶部(原本在底部,容易滑出屏幕看不见) -->
         <div id="inventory-info">
             <span id="inv-count">0/200</span>
             <div id="inv-actions">
@@ -322,6 +375,9 @@ body {
                 <button class="inv-action-btn danger-btn" id="batch-decompose-btn" style="display:none;" onclick="confirmBatchDecompose()">分解选中</button>
             </div>
         </div>
+                <div class="inv-grid-wrap" id="inv-grid-wrap">
+                    <div id="inventory-grid"></div>
+                </div>
     </div>
 
     <!-- 天赋页界面 -->
@@ -687,107 +743,108 @@ body {
     </div>
 </div>
 
-            <script src="js/utils/helpers.js?v=100050"></script>
-<script src="js/utils/random.js?v=100050"></script>
+            <script src="js/utils/helpers.js?v=100057"></script>
+<script src="js/utils/random.js?v=100057"></script>
 <!-- 加载顺序：utils → data(配置/职业/技能/装备/宝石/怪物) → systems → view → game
      原因：data 层内部依赖（monsters/equipment 读取 ConfigLoader），所以 configLoader.js 必须先加载 -->
 <!-- 配置加载器 (3.0.0+ 新增：热重载 + 类型校验，单一数据源) -->
-            <script src="js/data/configLoader.js?v=100050"></script>
-<script src="js/data/classes.js?v=100050"></script>
-<script src="js/data/skills.js?v=100050"></script>
-            <script src="js/data/equipIcons.js?v=100050"></script>
-<script src="js/data/equipment.js?v=100050"></script>
-            <script src="js/data/gems.js?v=100050"></script>
-<script src="js/data/monsters.js?v=100050"></script>
-<script src="js/data/talents.js?v=100050"></script>
-<script src="js/data/bonds.js?v=100050"></script>
-<script src="js/data/statusEffects.js?v=100050"></script>
-<script src="js/data/enemySkills.js?v=100050"></script>
-<script src="js/data/towerConfig.js?v=100050"></script>
-            <script src="js/data/lotteryConfig.js?v=100050"></script>
-<script src="js/data/petLotteryConfig.js?v=100050"></script>
+            <script src="js/data/configLoader.js?v=100057"></script>
+<script src="js/data/classes.js?v=100057"></script>
+<script src="js/data/skills.js?v=100057"></script>
+            <script src="js/data/equipIcons.js?v=100057"></script>
+<script src="js/data/equipment.js?v=100057"></script>
+            <script src="js/data/gems.js?v=100057"></script>
+<script src="js/data/monsters.js?v=100057"></script>
+<script src="js/data/talents.js?v=100057"></script>
+<script src="js/data/bonds.js?v=100057"></script>
+<script src="js/data/statusEffects.js?v=100057"></script>
+<script src="js/data/enemySkills.js?v=100057"></script>
+<script src="js/data/towerConfig.js?v=100057"></script>
+            <script src="js/data/lotteryConfig.js?v=100057"></script>
+<script src="js/data/petLotteryConfig.js?v=100057"></script>
 <!-- 新手教程数据 -->
-<script src="js/data/tutorialSteps.js?v=100050"></script>
-<script src="js/systems/lottery.js?v=100050"></script>
-<script src="lib/vconsole.min.js?v=100050"></script>
-<script src="lib/pixi.min.js?v=100050"></script>
-<script src="js/systems/aiAssistant.js?v=100050"></script>
-<script src="js/systems/pixiFx.js?v=100050"></script>
-<script src="js/systems/skillEffects.js?v=100050"></script>
-<script src="js/systems/skeleton.js?v=100050"></script>
-            <script src="js/systems/classSkeletons.js?v=100050"></script>
-            <script src="js/systems/cartoon.js?v=100050"></script>
-<script src="js/systems/spriteOverrides.js?v=100050"></script>
-<script src="js/systems/sprites.js?v=100050"></script>
-<script src="js/systems/audioManager.js?v=100050"></script>
-<script src="js/systems/iconRenderer.js?v=100050"></script>
-<script src="js/systems/save.js?v=100050"></script>
-            <script src="js/systems/loot.js?v=100050"></script>
-            <script src="js/systems/forge.js?v=100050"></script>
-<script src="js/systems/gemSystem.js?v=100050"></script>
-<script src="js/data/petIconData.js?v=100050"></script>
-<script src="js/ui/petUI.js?v=100050"></script>
-<script src="js/ui/petLotteryUI.js?v=100050"></script>
-<script src="js/systems/cloudSave.js?v=100050"></script>
-<script src="js/systems/GameState.js?v=100050"></script>
-            <script src="js/data/gameHistory.js?v=100050"></script>
-<script src="js/data/dungeonBalance.js?v=100050"></script>
-<script src="js/systems/battle-config.js?v=100050"></script>
-<script src="js/systems/battle-utils.js?v=100050"></script>
-<script src="js/systems/battle-ext.js?v=100050"></script>
-<script src="js/systems/battle.js?v=100050"></script>
-<script src="js/systems/battle-modes.js?v=100050"></script>
-            <script src="js/systems/battleScenes.js?v=100050"></script>
-            <script src="js/systems/battleLog.js?v=100050"></script>
-<script src="js/ui/mainUI.js?v=100050"></script>
-<script src="js/ui/teamUI.js?v=100050"></script>
-            <script src="js/ui/heroUI.js?v=100050"></script>
-            <script src="js/ui/inventoryUI.js?v=100050"></script>
-            <script src="js/ui/reforgeUI.js?v=100050"></script>
-            <script src="js/ui/talentUI.js?v=100050"></script>
-            <script src="js/ui/gemUI.js?v=100050"></script>
-<script src="js/ui/skillUI.js?v=100050"></script>
-            <script src="js/ui/forgeUI.js?v=100050"></script>
-<script src="js/ui/settingsUI.js?v=100050"></script>
-<script src="js/ui/aiAssistantUI.js?v=100050"></script>
-<script src="js/ui/monsterCodexUI.js?v=100050"></script>
-<script src="js/ui/equipCodexUI.js?v=100050"></script>
-<script src="js/ui/achievementUI.js?v=100050"></script>
-            <script src="js/ui/dungeonUI.js?v=100050"></script>
-<script src="js/ui/lotteryUI.js?v=100050"></script>
+<script src="js/data/tutorialSteps.js?v=100057"></script>
+<script src="js/systems/lottery.js?v=100057"></script>
+<script src="lib/vconsole.min.js?v=100057"></script>
+<script src="lib/pixi.min.js?v=100057"></script>
+<script src="js/systems/aiAssistant.js?v=100057"></script>
+<script src="js/systems/pixiFx.js?v=100057"></script>
+<script src="js/systems/skillEffects.js?v=100057"></script>
+<script src="js/systems/skeleton.js?v=100057"></script>
+            <script src="js/systems/classSkeletons.js?v=100057"></script>
+            <script src="js/systems/cartoon.js?v=100057"></script>
+<script src="js/systems/spriteOverrides.js?v=100057"></script>
+<script src="js/systems/sprites.js?v=100057"></script>
+<script src="js/systems/audioManager.js?v=100057"></script>
+<script src="js/systems/iconRenderer.js?v=100057"></script>
+<script src="js/systems/save.js?v=100057"></script>
+            <script src="js/systems/loot.js?v=100057"></script>
+            <script src="js/systems/forge.js?v=100057"></script>
+<script src="js/systems/gemSystem.js?v=100057"></script>
+<script src="js/data/petIconData.js?v=100057"></script>
+<script src="js/ui/petUI.js?v=100070"></script>
+<script src="js/ui/petLotteryUI.js?v=100057"></script>
+<script src="js/systems/cloudSave.js?v=100057"></script>
+<script src="js/systems/GameState.js?v=100057"></script>
+            <script src="js/data/gameHistory.js?v=100057"></script>
+<script src="js/data/dungeonBalance.js?v=100057"></script>
+<script src="js/systems/battle-config.js?v=100057"></script>
+<script src="js/systems/battle-utils.js?v=100057"></script>
+<script src="js/systems/battle-ext.js?v=100057"></script>
+<script src="js/systems/battle.js?v=100057"></script>
+<script src="js/systems/bgLoader.js?v=100057"></script>
+<script src="js/systems/battle-modes.js?v=100057"></script>
+            <script src="js/systems/battleScenes.js?v=100057"></script>
+            <script src="js/systems/battleLog.js?v=100057"></script>
+<script src="js/ui/mainUI.js?v=100057"></script>
+<script src="js/ui/teamUI.js?v=100057"></script>
+            <script src="js/ui/heroUI.js?v=100057"></script>
+            <script src="js/ui/inventoryUI.js?v=100057"></script>
+            <script src="js/ui/reforgeUI.js?v=100057"></script>
+            <script src="js/ui/talentUI.js?v=100057"></script>
+            <script src="js/ui/gemUI.js?v=100057"></script>
+<script src="js/ui/skillUI.js?v=100057"></script>
+            <script src="js/ui/forgeUI.js?v=100057"></script>
+<script src="js/ui/settingsUI.js?v=100057"></script>
+<script src="js/ui/aiAssistantUI.js?v=100057"></script>
+<script src="js/ui/monsterCodexUI.js?v=100057"></script>
+<script src="js/ui/equipCodexUI.js?v=100057"></script>
+<script src="js/ui/achievementUI.js?v=100057"></script>
+            <script src="js/ui/dungeonUI.js?v=100057"></script>
+<script src="js/ui/lotteryUI.js?v=100057"></script>
 <!-- 新手教程系统 -->
-<script src="js/ui/tutorialUI.js?v=100050"></script>
-<script src="js/systems/rebirthManager.js?v=100050"></script>
-<script src="js/ui/rebirthUI.js?v=100050"></script>
+<script src="js/ui/tutorialUI.js?v=100057"></script>
+<script src="js/systems/rebirthManager.js?v=100057"></script>
+<script src="js/ui/rebirthUI.js?v=100057"></script>
 <!-- 家园 + 配置锁定（HOME_1.x 新增：草原营地 + 通用战斗状态拦截工具） -->
-<script src="js/ui/lockHelper.js?v=100050"></script>
-<script src="js/ui/campUI.js?v=100050"></script>
-<script src="js/ui/homeUI.js?v=100050"></script>
+<script src="js/ui/lockHelper.js?v=100057"></script>
+<script src="js/ui/campUI.js?v=100057"></script>
+<script src="js/ui/homeUI.js?v=100057"></script>
             <!-- 统一体力管理 (2.2.0+ 新增：StaminaManager 单例) -->
-<script src="js/systems/StaminaManager.js?v=100050"></script>
-<script src="js/view/ViewBase.js?v=100050"></script>
-<script src="js/view/HeroView.js?v=100050"></script>
-<script src="js/view/EquipView.js?v=100050"></script>
-<script src="js/view/GemView.js?v=100050"></script>
-<script src="js/view/MonsterView.js?v=100050"></script>
-<script src="js/view/SkillView.js?v=100050"></script>
-<script src="js/view/GameView.js?v=100050"></script>
+<script src="js/systems/StaminaManager.js?v=100057"></script>
+<script src="js/view/ViewBase.js?v=100057"></script>
+<script src="js/view/HeroView.js?v=100057"></script>
+<script src="js/view/EquipView.js?v=100057"></script>
+<script src="js/view/GemView.js?v=100057"></script>
+<script src="js/view/MonsterView.js?v=100057"></script>
+<script src="js/view/SkillView.js?v=100057"></script>
+<script src="js/view/GameView.js?v=100057"></script>
 <!-- 统一品质数据源 (2.1.0+ 新增：双轨并行，helpers.js 旧函数委托) -->
-<script src="js/data/quality.js?v=100050"></script>
+<script src="js/data/quality.js?v=100057"></script>
 <!-- 成就系统 (v1.0 新增) -->
-<script src="js/data/achievements.js?v=100050"></script>
-<script src="js/systems/achievementManager.js?v=100050"></script>
+<script src="js/data/achievements.js?v=100057"></script>
+<script src="js/systems/achievementManager.js?v=100057"></script>
 <!-- 统一数据访问器 (2.2.0+ 新增：getXxxData(id) 单例) -->
 <!-- 统一公式中心 (2.1.0+ 新增：双轨并行，旧函数加 @deprecated 注释保留回退) -->
-<script src="js/formulas/Formulas.js?v=100050"></script>
-<script src="js/data/crafting.js?v=100050"></script>
-<script src="js/data/dailyRotation.js?v=100050"></script>
-<script src="js/data/dailyQuests.js?v=100050"></script>
-<script src="js/data/external_codes.js?v=100050"></script>
-<script src="js/systems/updateChecker.js?v=100050"></script>
-    <script src="js/data/redeemCodes.js?v=100050"></script>
-<script src="js/data/storyText.js?v=100050"></script>
-            <script src="js/data/pets.js?v=100050"></script>
-<script src="js/game.js?v=100050"></script>
+<script src="js/formulas/Formulas.js?v=100058"></script>
+<script src="js/data/crafting.js?v=100057"></script>
+<script src="js/data/dailyRotation.js?v=100057"></script>
+<script src="js/data/dailyQuests.js?v=100057"></script>
+<script src="js/data/external_codes.js?v=100057"></script>
+<script src="js/systems/updateChecker.js?v=100057"></script>
+    <script src="js/data/redeemCodes.js?v=100057"></script>
+<script src="js/data/storyText.js?v=100057"></script>
+            <script src="js/data/pets.js?v=100057"></script>
+<script src="js/game.js?v=100057"></script>
 </body>
 </html>

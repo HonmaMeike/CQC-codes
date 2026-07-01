@@ -502,7 +502,6 @@ var AdBridge = {
 function updateResources() {
     if (!gameState) return;
     document.getElementById('gold-display').textContent = Math.floor(gameState.gold || 0);
-    document.getElementById('gem-display').textContent = gameState.magicCore || 0;
     if (document.getElementById('talent-gold')) {
         document.getElementById('talent-gold').textContent = Math.floor(gameState.gold || 0);
     }

@@ -1,0 +1,212 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 动效系统 v2
+   微动效让"大厂感"出来。所有动画走 GPU 友好属性(transform/opacity)。
+   ======================================================================== */
+
+/* ========== 1. 屏幕入场 ========== */
+@keyframes screen-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes screen-out {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(1.01); }
+}
+
+/* ========== 2. 玻璃卡片入场(从下浮入) ========== */
+@keyframes glass-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+        filter: blur(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes glass-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== 3. 主 CTA 呼吸 + 流光 ========== */
+@keyframes cta-pulse {
+    0%, 100% {
+        box-shadow:
+            var(--shadow-glow-gold),
+            var(--shadow-inset-strong),
+            var(--shadow-md);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow:
+            0 0 24px var(--gold-glow),
+            0 0 48px var(--gold-glow-soft),
+            0 0 80px rgba(255, 209, 102, 0.15),
+            var(--shadow-inset-strong),
+            var(--shadow-md);
+        transform: scale(1.015);
+    }
+}
+
+@keyframes cta-shimmer {
+    0% { left: -100%; }
+    60%, 100% { left: 100%; }
+}
+
+/* ========== 4. 浮动动画(家园怪物 / 资源) ========== */
+@keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+}
+
+@keyframes float-y-slow {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+}
+
+@keyframes float-y-fast {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+
+/* ========== 5. 发光呼吸(场景装饰 / 稀有怪物) ========== */
+@keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px var(--qc-glow, var(--gold-glow))); }
+    50%      { filter: drop-shadow(0 0 16px var(--qc-glow, var(--gold-glow))); }
+}
+
+@keyframes glow-pulse-strong {
+    0%, 100% { filter: drop-shadow(0 0 8px var(--qc-glow, var(--gold-glow))); }
+    50%      { filter: drop-shadow(0 0 24px var(--qc-glow, var(--gold-glow))); }
+}
+
+/* ========== 6. 旋转(资源图标 / 装饰) ========== */
+@keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ========== 7. 摇摆(植物 / 旗帜) ========== */
+@keyframes sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50%      { transform: rotate(2deg); }
+}
+
+@keyframes sway-strong {
+    0%, 100% { transform: rotate(-4deg); }
+    50%      { transform: rotate(4deg); }
+}
+
+/* ========== 8. 闪烁(星星 / 篝火粒子) ========== */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 0.85; transform: scale(1) translateY(0); }
+    25%      { opacity: 1;    transform: scale(1.05) translateY(-1px); }
+    50%      { opacity: 0.7;  transform: scale(0.95) translateY(0); }
+    75%      { opacity: 1;    transform: scale(1.08) translateY(-2px); }
+}
+
+/* ========== 9. 提示条入场 ========== */
+@keyframes tip-in {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ========== 10. 数字滚动 ========== */
+@keyframes num-pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.2); color: var(--gold-1); text-shadow: 0 0 12px var(--gold-glow); }
+    100% { transform: scale(1); }
+}
+
+@keyframes num-roll-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== 11. Tab 切换指示器 ========== */
+@keyframes tab-indicator-in {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+}
+
+/* ========== 12. 列表项错位入场 ========== */
+@keyframes list-item-in {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ========== 13. Modal 弹出 ========== */
+@keyframes modal-pop {
+    0%   { opacity: 0; transform: scale(0.92) translateY(8px); }
+    60%  { transform: scale(1.02) translateY(-2px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes modal-overlay-in {
+    from { opacity: 0; backdrop-filter: blur(0); }
+    to   { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+/* ========== 14. 火焰 / 篝火 ========== */
+@keyframes fire-flicker {
+    0%, 100% { transform: scale(1) translateY(0) rotate(0deg); opacity: 0.9; }
+    25%      { transform: scale(1.05, 1.1) translateY(-1px) rotate(1deg); opacity: 1; }
+    50%      { transform: scale(0.97, 1.05) translateY(0) rotate(-1deg); opacity: 0.85; }
+    75%      { transform: scale(1.04, 1.08) translateY(-2px) rotate(0.5deg); opacity: 1; }
+}
+
+/* ========== 15. 应用规则 ========== */
+.anim-float        { animation: float-y 3.2s ease-in-out infinite; }
+.anim-float-slow   { animation: float-y-slow 4.5s ease-in-out infinite; }
+.anim-float-fast   { animation: float-y-fast 2.2s ease-in-out infinite; }
+.anim-glow         { animation: glow-pulse 2.8s ease-in-out infinite; }
+.anim-glow-strong  { animation: glow-pulse-strong 2.4s ease-in-out infinite; }
+.anim-twinkle      { animation: twinkle 1.8s ease-in-out infinite; }
+.anim-flicker      { animation: flicker 0.6s ease-in-out infinite; }
+.anim-fire         { animation: fire-flicker 0.4s ease-in-out infinite; }
+.anim-sway         { animation: sway 3.6s ease-in-out infinite; }
+.anim-sway-strong  { animation: sway-strong 2.4s ease-in-out infinite; }
+.anim-spin         { animation: spin 8s linear infinite; }
+.anim-spin-fast    { animation: spin 4s linear infinite; }
+.anim-pop          { animation: num-pop 380ms var(--ease-spring); }
+.anim-roll-in      { animation: num-roll-in 320ms var(--ease-decelerate); }
+.anim-list-in      { animation: list-item-in 360ms var(--ease-decelerate) both; }
+.anim-glass-in     { animation: glass-in 480ms var(--ease-decelerate) both; }
+.anim-modal-pop    { animation: modal-pop 360ms var(--ease-spring); }
+
+/* 错位延迟(列表入场用) */
+.anim-delay-1 { animation-delay: 60ms; }
+.anim-delay-2 { animation-delay: 120ms; }
+.anim-delay-3 { animation-delay: 180ms; }
+.anim-delay-4 { animation-delay: 240ms; }
+.anim-delay-5 { animation-delay: 300ms; }
+
+/* 尊重用户偏好:减少动效 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

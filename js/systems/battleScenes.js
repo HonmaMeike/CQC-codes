@@ -1456,6 +1456,18 @@ drawSceneBackground: function(ctx, w, h) {
     var groundY = h * 0.68;
     var stageName = (typeof getStageName === 'function') ? getStageName(stage) : '未知';
     var sceneType = this._stageSceneMap[stageName] || 'grassland';
+
+    // ★ 图片背景优先：如果 BgLoader 已加载对应图片，直接贴图 + 动态特效
+    if (typeof BgLoader !== 'undefined') {
+        var bgImg = BgLoader.get(sceneType);
+        if (bgImg) {
+            ctx.drawImage(bgImg, 0, 0, w, h);
+            this._drawSceneEffects(ctx, w, h, groundY, stage, sceneType);
+            return;
+        }
+    }
+
+    // 旧版程序化绘制（图片未加载时兜底）
     switch (sceneType) {
         case 'forest': this._drawSceneForest(ctx, w, h, groundY, stage); break;
         case 'graveyard': this._drawSceneGraveyard(ctx, w, h, groundY, stage); break;

@@ -1,0 +1,558 @@
+/* ========================================================================
+   CQC · 永恒英灵 — 组件库 v2
+   基于 theme.css 的设计变量,提供可复用的 UI 组件
+   原神/星穹铁道式深色玻璃拟态
+
+   加载顺序: theme.css → 本文件 → v2-animations.css
+   ======================================================================== */
+
+/* ========== 1. 玻璃卡片 ========== */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    transition:
+        background var(--t-normal) var(--ease-standard),
+        border-color var(--t-normal) var(--ease-standard),
+        transform var(--t-fast) var(--ease-standard),
+        box-shadow var(--t-normal) var(--ease-standard);
+}
+
+.glass-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-mid);
+}
+
+.glass-card.elevated {
+    background: var(--glass-bg-elevated);
+    box-shadow: var(--shadow-lg), var(--shadow-inset-strong);
+}
+
+.glass-card.gold {
+    border-color: var(--glass-border-hot);
+    box-shadow: var(--shadow-md), var(--shadow-inset), 0 0 16px var(--gold-glow-soft);
+}
+
+/* ========== 2. 按钮系统 ========== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-5);
+    font-family: inherit;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    line-height: 1;
+    color: var(--text-1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+    cursor: pointer;
+    user-select: none;
+    transition:
+        transform var(--t-fast) var(--ease-spring),
+        background var(--t-fast) var(--ease-standard),
+        border-color var(--t-fast) var(--ease-standard),
+        box-shadow var(--t-normal) var(--ease-standard);
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: saturate(0.5);
+}
+
+/* 主按钮 — 金色发光(召唤感) */
+.btn-primary,
+.btn-gold {
+    color: var(--gold-text);
+    background: linear-gradient(180deg, var(--gold-2) 0%, var(--gold-3) 60%, var(--gold-4) 100%);
+    border: 1px solid var(--gold-3);
+    box-shadow:
+        var(--shadow-glow-gold),
+        var(--shadow-inset-strong);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    font-weight: var(--fw-bold);
+}
+
+.btn-primary:hover,
+.btn-gold:hover {
+    background: linear-gradient(180deg, var(--gold-1) 0%, var(--gold-2) 60%, var(--gold-3) 100%);
+    box-shadow:
+        0 0 24px var(--gold-glow),
+        0 0 48px var(--gold-glow-soft),
+        var(--shadow-inset-strong);
+}
+
+.btn-primary:active,
+.btn-gold:active {
+    background: linear-gradient(180deg, var(--gold-3), var(--gold-4));
+}
+
+/* 次按钮 — 紫色玻璃 */
+.btn-secondary,
+.btn-purple {
+    color: var(--purple-1);
+    background: linear-gradient(180deg,
+        rgba(157, 109, 255, 0.22) 0%,
+        rgba(110, 62, 219, 0.18) 100%);
+    border: 1px solid rgba(157, 109, 255, 0.4);
+    box-shadow: var(--shadow-sm), var(--shadow-glow-purple), var(--shadow-inset);
+}
+
+.btn-secondary:hover,
+.btn-purple:hover {
+    background: linear-gradient(180deg,
+        rgba(157, 109, 255, 0.32) 0%,
+        rgba(110, 62, 219, 0.26) 100%);
+    border-color: var(--purple-2);
+}
+
+/* 幽灵按钮 */
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-mid);
+    color: var(--text-2);
+    backdrop-filter: none;
+    box-shadow: none;
+}
+
+.btn-ghost:hover {
+    background: var(--glass-bg);
+    color: var(--text-1);
+}
+
+/* 危险按钮 */
+.btn-danger {
+    color: #fff;
+    background: linear-gradient(180deg, #ff6b6e 0%, #d94548 100%);
+    border: 1px solid #c9383b;
+    box-shadow: var(--shadow-sm), 0 0 12px var(--danger-glow), var(--shadow-inset);
+}
+
+/* 尺寸 */
+.btn-sm {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-caption);
+    border-radius: var(--r-sm);
+}
+.btn-lg {
+    padding: var(--sp-4) var(--sp-8);
+    font-size: var(--fs-subtitle);
+    border-radius: var(--r-lg);
+}
+
+/* 图标按钮(圆形) */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--text-2);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+}
+
+.icon-btn:hover {
+    background: var(--glass-bg-hover);
+    color: var(--text-1);
+    border-color: var(--border-mid);
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+}
+
+.icon-btn img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.9;
+    /* 不压暗,让金色边框自然显示 */
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+/* ========== 3. 资源胶囊(Resource Pill) ========== */
+.resource-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+    transition: all var(--t-fast) var(--ease-standard);
+    cursor: default;
+}
+
+.resource-pill:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-mid);
+}
+
+.resource-pill .res-icon {
+    width: 18px;
+    height: 18px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    flex-shrink: 0;
+}
+
+.resource-pill .res-value {
+    font-family: var(--font-num);
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-semibold);
+    color: var(--text-1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3px;
+}
+
+.resource-pill.gold .res-value { color: var(--gold-2); text-shadow: 0 0 6px var(--gold-glow-soft); }
+.resource-pill.stamina .res-value { color: var(--res-stamina); text-shadow: 0 0 6px var(--res-stamina-glow); }
+.resource-pill.mana .res-value { color: var(--res-mana); text-shadow: 0 0 6px var(--res-mana-glow); }
+.resource-pill.gem .res-value { color: var(--res-gem); text-shadow: 0 0 6px var(--res-gem-glow); }
+
+/* 紧凑胶囊(仅图标) */
+.resource-pill.compact {
+    padding: 6px 8px;
+    gap: 6px;
+}
+.resource-pill.compact .res-value { font-size: var(--fs-caption); }
+
+/* ========== 4. 6 档品质边框(对齐项目 quality.js) ========== */
+.q-common    { --qc-color: var(--q-common);     --qc-glow: var(--q-common-glow); }
+.q-uncommon  { --qc-color: var(--q-uncommon);   --qc-glow: var(--q-uncommon-glow); }
+.q-rare      { --qc-color: var(--q-rare);       --qc-glow: var(--q-rare-glow); }
+.q-epic      { --qc-color: var(--q-epic);       --qc-glow: var(--q-epic-glow); }
+.q-legendary { --qc-color: var(--q-legendary);  --qc-glow: var(--q-legendary-glow); }
+.q-miracle   { --qc-color: var(--q-miracle);    --qc-glow: var(--q-miracle-glow); }
+.q-immortal  { --qc-color: var(--q-immortal);   --qc-glow: var(--q-immortal-glow); }
+
+/* 品质文字色 */
+.q-common .item-name,
+.item-name.q-common    { color: var(--q-common); }
+.q-uncommon .item-name,
+.item-name.q-uncommon  { color: var(--q-uncommon); }
+.q-rare .item-name,
+.item-name.q-rare      { color: var(--q-rare); }
+.q-epic .item-name,
+.item-name.q-epic      { color: var(--q-epic); }
+.q-legendary .item-name,
+.item-name.q-legendary {
+    color: var(--q-legendary);
+    text-shadow: 0 0 8px var(--q-legendary-glow);
+    font-weight: var(--fw-bold);
+}
+.q-miracle .item-name,
+.item-name.q-miracle {
+    color: var(--q-miracle);
+    text-shadow: 0 0 8px var(--q-miracle-glow);
+    font-weight: var(--fw-bold);
+}
+.q-immortal .item-name,
+.item-name.q-immortal {
+    color: var(--q-immortal);
+    text-shadow: 0 0 10px var(--q-immortal-glow);
+    font-weight: var(--fw-bold);
+}
+
+/* 品质边框(物品卡片用) */
+.q-border {
+    position: relative;
+    border: 1.5px solid var(--qc-color, var(--border-mid));
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.3) inset,
+        0 0 12px var(--qc-glow, transparent);
+}
+
+/* 品质标签 */
+.q-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.5px;
+    color: var(--text-1);
+    background: var(--qc-color, var(--text-3));
+    border-radius: var(--r-xs);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== 5. 顶部信息栏(Top Bar) ========== */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    /* 顶部柔光背景:让场景在下方隐约可见,但信息更易读 */
+    background: linear-gradient(180deg,
+        rgba(7, 5, 13, 0.78) 0%,
+        rgba(7, 5, 13, 0.42) 70%,
+        transparent 100%);
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    position: relative;
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.top-bar::after {
+    content: '';
+    position: absolute;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--border-mid) 30%,
+        var(--border-mid) 70%,
+        transparent);
+    pointer-events: none;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex: 1;
+    min-width: 0;
+}
+
+.top-bar-center {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex-shrink: 0;
+}
+
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex-shrink: 0;
+}
+
+/* ========== 6. 标题栈(Title Stack) ========== */
+.title-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.title-stack .title-main {
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-bold);
+    color: var(--text-1);
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title-stack .title-sub {
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-medium);
+    color: var(--text-3);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ========== 7. 主 CTA(进入战斗) ========== */
+.cta-battle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-6);
+    color: var(--gold-text);
+    background: linear-gradient(180deg,
+        var(--gold-2) 0%,
+        var(--gold-3) 50%,
+        var(--gold-4) 100%);
+    border: 1.5px solid var(--gold-1);
+    border-radius: var(--r-pill);
+    font-size: var(--fs-subtitle);
+    font-weight: var(--fw-bold);
+    letter-spacing: 2px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow:
+        var(--shadow-glow-gold),
+        var(--shadow-inset-strong),
+        var(--shadow-md);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--t-normal) var(--ease-standard);
+    animation: cta-pulse 2.8s ease-in-out infinite;
+}
+
+.cta-battle::before {
+    /* 流光效果 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    animation: cta-shimmer 3.2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.cta-battle:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 24px var(--gold-glow),
+        0 0 48px var(--gold-glow-soft),
+        var(--shadow-inset-strong),
+        var(--shadow-lg);
+}
+
+.cta-battle:active {
+    transform: scale(0.96) translateY(0);
+}
+
+.cta-battle .btn-icon {
+    width: 22px;
+    height: 22px;
+    /* 图标本身是金色剑 + 紫色宝石底,不要压暗 — 用 drop-shadow 让金色边框发亮 */
+    filter: drop-shadow(0 0 3px rgba(255, 209, 102, 0.5));
+}
+
+/* ========== 8. 浮动按钮(FAB) ========== */
+.fab {
+    position: absolute;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease-standard);
+}
+
+.fab:hover {
+    background: var(--glass-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg), var(--shadow-inset);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+.fab.ai {
+    color: var(--cyan-2);
+    border-color: rgba(79, 195, 247, 0.4);
+    box-shadow: var(--shadow-sm), 0 0 12px var(--cyan-glow), var(--shadow-inset);
+}
+
+.fab.ai:hover {
+    background: rgba(79, 195, 247, 0.18);
+    border-color: var(--cyan-2);
+    box-shadow: var(--shadow-md), 0 0 16px var(--cyan-glow), var(--shadow-inset);
+}
+
+/* ========== 9. 提示条(Tip Banner) ========== */
+.tip-banner {
+    position: absolute;
+    left: 50%;
+    bottom: var(--sp-4);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-4);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-md), var(--shadow-inset);
+    color: var(--text-2);
+    font-size: var(--fs-caption);
+    z-index: 30;
+    max-width: calc(100% - var(--sp-8));
+    animation: tip-in 600ms var(--ease-decelerate) 200ms both;
+}
+
+/* ========== 10. NPC 按钮(商人等) ========== */
+.npc-btn {
+    position: absolute;
+    z-index: 35;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--sp-2);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform var(--t-fast) var(--ease-spring);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.npc-btn:hover {
+    transform: translateY(-2px) scale(1.04);
+}
+
+.npc-btn:active {
+    transform: scale(0.95);
+}
+
+.npc-btn .npc-emoji {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.npc-btn .npc-label {
+    padding: 2px 8px;
+    font-size: var(--fs-mini);
+    font-weight: var(--fw-semibold);
+    color: var(--text-1);
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-pill);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    margin-top: -4px;
+}

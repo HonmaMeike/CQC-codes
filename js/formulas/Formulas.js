@@ -344,7 +344,7 @@
         var atkGrowth = 1 + 19 * 0.12; // 3.28
         var defGrowth = 1 + 19 * 0.10; // 2.9
         // BOSS 基础属性
-        var baseHP  = Math.floor(180 * stageBaseMult * hpGrowth  * 30);   // HP×30
+        var baseHP  = Math.floor(180 * stageBaseMult * hpGrowth  * 22);   // HP×22 (原 30, 压 25% 让推荐战力更接近实际)
         var baseATK = Math.floor(2   * stageBaseMult * atkGrowth * 3.5);  // ATK×3.5
         var baseDEF = Math.floor(3   * stageBaseMult * defGrowth * 3);    // DEF×3
         var baseSPD = 60; // BOSS 速度固定
@@ -355,7 +355,7 @@
                       + baseSPD * POWER_WEIGHTS.spd;
         // 推荐单人：4 人满员 + 战斗余量（实际战斗 30-40s，挑战有差异）
         // 系数 0.4 = 1/4 人均分 + 约 50% 余量 给控制 / 魔法
-        return Math.floor(bossPower * 0.40);
+        return Math.floor(bossPower * 0.30);
     }
 
     // ====================================================================

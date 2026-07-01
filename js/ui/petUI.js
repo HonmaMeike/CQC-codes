@@ -140,7 +140,7 @@ function renderIncubatorSlots() {
                 var remSec = Math.ceil(remMs / 1000);
                 html += '<div style="font-size:22px;">\u23f3</div>';
                 html += '<div style="font-size:9px;color:#ff9800;">' + tierName + '\u86cb</div>';
-                html += '<div style="font-size:10px;color:#ffd700;font-weight:bold;">' + (remMin >= 1 ? remMin + '\u5206' : remSec + '\u79d2') + '</div>';
+                html += '<div class="incubation-time" data-slot="' + si + '" style="font-size:10px;color:#ffd700;font-weight:bold;">' + (remMin >= 1 ? remMin + '\u5206' : remSec + '\u79d2') + '</div>';
             } else {
                 html += '<div style="font-size:22px;">\u2705</div>';
                 html += '<div style="font-size:9px;color:#4caf50;">' + tierName + '\u86cb</div>';
@@ -985,29 +985,47 @@ function updatePetResources() {
     if (countEl && GameState.get("pets")) countEl.textContent = GameState.get("pets").length;
 }
 
-// ========== 孵化倒计时定时器 ==========
+// ========== 孵化倒计时定时器(v2.6.x 优化:只更新倒计时文字,不再整个 showPetScreen) ==========
 var _petIncubationTimer = null;
 
 function startPetIncubationTimer() {
     if (_petIncubationTimer) return;
-    _petIncubationTimer = setInterval(function() {
-        var container = document.getElementById('pet-container');
-        if (!container || container.style.display === 'none') return;
+    _petIncubationTimer = setInterval(updateIncubationTimers, 1000);
+}
 
-        var now = Date.now();
-        var needRefresh = false;
-        if (gameState && GameState.get("petIncubators")) {
-            for (var si = 0; si < GameState.get("petIncubators").length; si++) {
-                var slot = GameState.get("petIncubators")[si];
-                if (slot.tier && slot.hatchTime > 0) {
-                    needRefresh = true;
-                }
+// 局部更新所有孵化槽的倒计时文字 — 不再整体重渲染
+function updateIncubationTimers() {
+    if (!gameState || !GameState.get("petIncubators")) return;
+    var container = document.getElementById('pet-container');
+    if (!container || container.style.display === 'none') return;
+
+    var now = Date.now();
+    var anyActive = false;
+    var anyJustFinished = false;
+    for (var si = 0; si < GameState.get("petIncubators").length; si++) {
+        var slot = GameState.get("petIncubators")[si];
+        if (!slot || !slot.tier || !(slot.hatchTime > 0)) continue;
+        if (now < slot.hatchTime) {
+            anyActive = true;
+            var timeEl = container.querySelector('.incubation-time[data-slot="' + si + '"]');
+            if (timeEl) {
+                var remMs = slot.hatchTime - now;
+                var remMin = Math.ceil(remMs / 60000);
+                var remSec = Math.ceil(remMs / 1000);
+                timeEl.textContent = remMin >= 1 ? remMin + '分' : remSec + '秒';
             }
+        } else {
+            // 倒计时刚结束 — 状态从"孵化中"变成"可领取",需要重渲染一次孵化槽
+            anyJustFinished = true;
         }
-        if (needRefresh) {
-            showPetScreen();
-        }
-    }, 1000);
+    }
+    if (anyJustFinished) {
+        // 倒计时结束,刷新整个容器让"可领取"按钮出现
+        showPetScreen();
+    } else if (!anyActive) {
+        // 没有任何孵化任务了,关掉 timer 释放资源
+        stopPetIncubationTimer();
+    }
 }
 
 function stopPetIncubationTimer() {
