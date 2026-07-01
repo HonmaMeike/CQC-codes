@@ -66,6 +66,11 @@ BattleManager.startTowerBattle = function(floor) {
     this.startBattle();
 };
 
+// 爬塔楼层类型标记（供战斗内渲染/特效使用）
+BattleManager._setTowerFloorType = function(type) {
+    this._towerFloorType = type || 'normal';
+};
+
 // 爬塔通关奖励
 BattleManager.towerReward = function(floor) {
     if (typeof calcTowerReward !== 'function') return;
@@ -143,26 +148,41 @@ BattleManager.startDemonKingBattle = function() {
 
     this._mainBattlePaused = false;
     this.startBattle();
+    // ★ 锁死波次参数
+    this.waveSpawnCount = 0;
+    this.maxEnemies = 0;
+    this.waveState = 'active';
+    this.restTimer = 0;
+    this.spawnTimer = Infinity;
     this._spawnDemonKing();
 };
 
 // 生成魔王BOSS
 BattleManager._spawnDemonKing = function() {
     try {
-        var boss = createMonsterInstance('eternal_dragon');
-        if (boss) {
-            boss.name = (BattleConfig && BattleConfig.DEMON_KING_BOSS_NAME) || '世界之主·芦笋';
-            boss.maxHp = 99999999; boss.hp = 99999999;
-            boss.atk = 5000; boss.def = 200;
-            boss.isBoss = true; boss.isDemonKing = true;
-            boss.elite = true;
-            boss.alive = true;
-            this.enemies = [boss];
-            if (this.renderer && this.renderer.addEnemy) this.renderer.addEnemy(boss);
-            this.addBattleLog('👹 魔王 ' + boss.name + ' 降临！', 'boss');
-            if (typeof PixiFx !== 'undefined' && PixiFx.addParticles) {
-                PixiFx.addParticles('boss_appear', { x: 0.5, y: 0.3 });
-            }
+        var w = this.battleWidth || 480;
+        var h = this.battleHeight || 400;
+        var x = w * 0.72;
+        var y = h * 0.42;
+        var INF_HP = 999999999;
+        // 手动创建魔王（不经过怪物池，避免参数错误导致失败）
+        var boss = {
+            id: 'demon_king_' + Date.now(),
+            name: (BattleConfig && BattleConfig.DEMON_KING_BOSS_NAME) || '世界之主·芦笋',
+            monsterKey: 'bamboo_shoot_boss',
+            x: x, y: y,
+            alive: true, isBoss: true, isDemonKing: true, elite: true,
+            renderScale: 2.5,
+            maxHp: INF_HP, hp: INF_HP,
+            atk: 200, def: 100, spd: 80,
+            skills: ['bash', 'fire_breath'],
+            skillCd: {}
+        };
+        this.enemies = [boss];
+        if (this.renderer && this.renderer.addEnemy) this.renderer.addEnemy(boss);
+        this.addBattleLog('👹 魔王 ' + boss.name + ' 降临！', 'boss');
+        if (typeof PixiFx !== 'undefined' && PixiFx.addParticles) {
+            PixiFx.addParticles('boss_appear', { x: 0.5, y: 0.3 });
         }
     } catch(e) { /* battle-ext */ console.warn('[DemonKing] BOSS出场异常:', e&&e.message); }
 };
@@ -238,6 +258,8 @@ BattleManager.demonKingReward = function() {
     document.body.appendChild(card);
 };
 
+})();
+
 // 全局：关闭魔王奖励卡片
 function closeDemonKingRewardCard() {
     var c = document.getElementById('demonking-reward-card');
@@ -245,5 +267,3 @@ function closeDemonKingRewardCard() {
     if (typeof closeDungeonBattleModal === 'function') try { closeDungeonBattleModal(); } catch(e) {}
     if (typeof switchScreen === 'function') switchScreen('dungeon');
 }
-
-})();

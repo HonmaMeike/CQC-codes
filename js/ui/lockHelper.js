@@ -69,3 +69,38 @@ function _checkInBattle(actionName) {
 function canExitHome() {
     return !isInBattle() || isBattlePaused();
 }
+
+// ★ BUG 修复 (v2.6.5): isDungeon=true 残留时清理
+//   原 enterGoldDungeon / enterDustDungeon / enterDemonKingDungeon / enterTower 4 个副本入口
+//   顺序都是 "if (typeof _checkInBattle === 'function' && !_checkInBattle(...)) return;"
+//   在前, 之后才调 BattleManager.exitDungeon() 清理 isDungeon 残留。
+//   _checkInBattle (lockHelper.js:42) 看到 isDungeon=true 会直接 return false 拦下,
+//   永远走不到 exitDungeon 清理 → 副本卡死进不去。
+//   正确顺序: 入口第一行先 cleanDungeonState() 清理残留, 再 _checkInBattle 守卫。
+// ★ v2.6.5 二次修复: isDungeon 残留可能是 true / undefined / null (异常 reset 后不是干净 false)
+//   !BattleManager.isDungeon === !undefined === true, 旧版会直接 return false 跳过清理
+//   改成 === false 严格判断, 异常状态都进 exitDungeon + 兜底重置
+function cleanDungeonState() {
+    if (typeof BattleManager === 'undefined' || !BattleManager) return false;
+    // ★ 严格判断:只有 === false 才算"干净",其他(true/undefined/null)都要清理
+    if (BattleManager.isDungeon === false) return false;
+    // 异常残留:调 exitDungeon 清理
+    if (typeof BattleManager.exitDungeon === 'function') {
+        try {
+            BattleManager.exitDungeon();
+        } catch (e) {
+            if (typeof console !== 'undefined' && console.error) {
+                console.error('[lockHelper] exitDungeon failed:', e);
+            }
+        }
+    }
+    // ★ 兜底:不管 exitDungeon 成功/失败,强制重置 isDungeon = false
+    //   覆盖 isDungeon 残留为 undefined/null 的边界情况(exitDungeon 内部第一行设 false 后,后续 throw 不会回退)
+    if (BattleManager.isDungeon) {
+        BattleManager.isDungeon = false;
+        if (typeof console !== 'undefined' && console.warn) {
+            console.warn('[lockHelper] 强制重置 isDungeon = false (exitDungeon 未清理)');
+        }
+    }
+    return true;
+}

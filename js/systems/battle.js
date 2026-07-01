@@ -69,6 +69,9 @@ var BattleManager = {
         var h = rect.height || (targetCanvas.parentElement ? targetCanvas.parentElement.getBoundingClientRect().height : 0);
         if (w <= 0) w = targetCanvas.width || 800;
         if (h <= 0) h = targetCanvas.height || 400;
+        // ★ 防御：强制确保最小尺寸，防止 0×0 canvas 黑屏
+        if (w < 200) w = targetCanvas.width || 480;
+        if (h < 200) h = targetCanvas.height || 360;
         targetCanvas.width = w * dpr;
         targetCanvas.height = h * dpr;
         this.battleWidth = w;
@@ -114,20 +117,17 @@ var BattleManager = {
 
     // 从副本继续主战场战斗（玩家点"继续战斗"按钮时调用）
     resumeMainBattle: function() {
-        if (this._mainBattlePaused) {
-            this._mainBattlePaused = false;
-            // 恢复主战场 canvas 引用
-            this.restoreMainCanvas();
-            // 隐藏主战场的"继续战斗"按钮
-            var resumeBtn = document.getElementById('btn-resume-main-battle');
-            if (resumeBtn) resumeBtn.style.display = 'none';
-            // ★ v2.6.2: 兜底 — 如果 exitDungeon 当时没成功 reinit（如 dungeon modal 是被外部关掉的），
-            //   这里强制把 PixiFx 切回主战场 canvas，避免主战场战斗跑起来时粒子全打到隐藏 canvas 上。
-            var mainPixi = document.getElementById('pixi-overlay-canvas');
-            if (mainPixi && typeof PixiFx !== 'undefined' && PixiFx.initialized && PixiFx.app && PixiFx.app.view && PixiFx.app.view !== mainPixi) {
-                this._reinitPixiFx(mainPixi, this.battleWidth || this._mainBattleWidth || 600, this.battleHeight || this._mainBattleHeight || 400);
-            }
-            // 重启主战场
+        // ★ 强制恢复：不管 _mainBattlePaused 状态，确保主战场能重新运行
+        this._mainBattlePaused = false;
+        this.restoreMainCanvas();
+        var resumeBtn = document.getElementById('btn-resume-main-battle');
+        if (resumeBtn) resumeBtn.style.display = 'none';
+        var mainPixi = document.getElementById('pixi-overlay-canvas');
+        if (mainPixi && typeof PixiFx !== 'undefined' && PixiFx.initialized && PixiFx.app && PixiFx.app.view && PixiFx.app.view !== mainPixi) {
+            this._reinitPixiFx(mainPixi, this.battleWidth || this._mainBattleWidth || 600, this.battleHeight || this._mainBattleHeight || 400);
+        }
+        // 如果战斗已停止，重新启动
+        if (!this.isRunning) {
             this.waveState = 'resting';
             this.restTimer = 1000;
             this.startBattle();
@@ -4778,40 +4778,16 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
             a.skillCd = {};
         }
 
-        // 根据副本类型和难度设置波次参数（v3 平衡：奖励/效率曲线平滑化）
-        var enemyCount, enemyMult;
-
-        // 金币/重铸石/宝石副本使用标准怪物，但属性按难度缩放
-        //   v3.3 动态化：怪物数量与属性倍率都随 maxStage 实时调整
-        //   详细公式见 js/data/dungeonBalance.js：
-        //     resCounts = base[lv] + ⌊maxStage × countGrowth[lv]⌋
-        //     resMults  = base[lv] + ⌊maxStage × multGrowth[lv]⌋
-        //   maxStage=1 时与旧版完全一致；maxStage=10 时挑战性显著提升。
-        if (type === 'gold' || type === 'stone' || type === 'gem') {
-            // ★ BUG#2 修复：副本难度以"已通关最大章节 maxStage"为准，不受玩家手动切章影响
-            // 避免低章节挑战高难副本的作弊行为
-            var maxStage = Math.max(1, GameState.get('maxStage') || GameState.get('stage') || 1);
-            var dbStage = Math.max(1, Math.floor(maxStage * 0.6));
-            this.stage = dbStage;
+        // ★ 调用副本注册的配置函数
+        var configFn = this._dungeonConfigs[type];
+        if (configFn) {
+            configFn.call(this, level);
+        } else {
+            // 兜底默认值
+            this.stage = 1;
             this.waveNumber = 1;
-            // v3.3 动态化：使用 dungeonBalance.js 全局函数
-            enemyCount = getDungeonEnemyCount(level, maxStage);
-            enemyMult  = getDungeonEnemyMult(level, maxStage);
-            this.waveSpawnCount = enemyCount;
-        } else if (type === 'equip') {
-            // ★ BUG#3 修复：装备副本难度调整
-            // 一级本 难度×2 (倍军 25→50)
-            // 二级本 难度×4 (倍军 70→280)
-            // 三级本 难度×8 (倍军 130→1040)
-            // ★ BUG#2 修复同步：装备副本以玩家已通关最大章节为基准
-            var maxStageEquip = Math.max(1, GameState.get('maxStage') || GameState.get('stage') || 1);
-            this.stage = maxStageEquip;
-            this.waveNumber = 1;
-            var eqCounts = [18, 32, 40];
-            var eqMults = [50, 280, 1040];  // ×2/×4/×8 平衡调整
-            enemyCount = eqCounts[level - 1] || 18;
-            enemyMult = eqMults[level - 1] || 50;
-            this.waveSpawnCount = enemyCount;
+            this.waveSpawnCount = 3;
+            this.dungeonEnemyMult = 1;
         }
 
         // 设置UI标题
@@ -4822,7 +4798,7 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
         this.addBattleLog('✦ 进入 ' + title + ' Lv.' + level + '，消耗 ' + this.getDungeonStaminaCost(type, level) + ' 体力', 'reward');
 
         // 标记副本敌人强度系数
-        this.dungeonEnemyMult = enemyMult;
+        this.dungeonEnemyMult = this.dungeonEnemyMult || 1;
 
         this.startBattle();
     },
@@ -4835,7 +4811,7 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
         return 5;
     },
 
-    // 副本通关奖励
+    // 副本通关奖励（各副本通过 _dungeonRewards 注册差异化逻辑）
     dungeonReward: function() {
         GameState.set('dailyDungeons', (GameState.get('dailyDungeons') || 0) + 1);
         var type = this.dungeonType;
@@ -4844,72 +4820,17 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
         var title = typeNames[type] || '副本';
         var goldReward = 0, stoneReward = 0, gemCount = 0, gemLevel = 1, equipCount = 0;
 
-        // 副本通关奖励（v3.3 随 maxStage 动态调整）
-        //   金币/重铸石/宝石都按当前通关最大章节实时缩放
-        //   公式：奖励 = base[lv] × (1 + maxStage × scale[lv])
-        //   详见 js/data/dungeonBalance.js
-        var dungeonRewardMaxStage = Math.max(1, GameState.get('maxStage') || GameState.get('stage') || 1);
-        var rewardMult = 1;
-
-        if (type === 'gold') {
-            // v3.3 动态化: getDungeonGoldReward() 返回金库= base×(1+maxStage×scale)
-            //   举例 Lv.5 @ maxStage=1:  60000×3.2 = 192000金
-            //   举例 Lv.5 @ maxStage=10: 60000×23 = 1380000金
-            var goldReward = getDungeonGoldReward(level, dungeonRewardMaxStage);
-            GameState.mutate('gold', function(g) { return (g || 0) + goldReward; });
-            this.addBattleLog('✦ ' + title + ' Lv.' + level + ' 通关！获得金币 +' + goldReward, 'reward');
-            showToast(title + ' Lv.' + level + ' 通关！金币+' + goldReward, 'success');
-        } else if (type === 'stone') {
-            // v3.3 动态化: getDungeonStoneReward() 按 1颗重铸石 ≈1000金币同步设计
-            var stoneReward = getDungeonStoneReward(level, dungeonRewardMaxStage);
-            GameState.mutate('reforgestone', function(v) { return (v || 0) + stoneReward; });
-            this.addBattleLog('✦ ' + title + ' Lv.' + level + ' 通关！获得重铸石 +' + stoneReward, 'reward');
-            showToast(title + ' Lv.' + level + ' 通关！重铸石+' + stoneReward, 'success');
-        } else if (type === 'gem') {
-            // v3.3 动态化: 宝石数量与等级都随 maxStage 动态调整
-            //   getDungeonGemCount() = base[lv] × (1 + maxStage × countScale[lv])
-            //   getDungeonGemLevel() = base[lv] + ⌊maxStage × levelScale[lv]⌋ （上限5）
-            var gemCount = getDungeonGemCount(level, dungeonRewardMaxStage);
-            var gemLevel = getDungeonGemLevel(level, dungeonRewardMaxStage);
-            for (var gi = 0; gi < gemCount; gi++) {
-                var gemType = randPick(GEM_TYPES);
-                var gemDrop = { gemTypeId: gemType.id, level: gemLevel, count: 1 };
-                addGemToInventory(gemDrop);
+        // ★ 调用副本注册的奖励函数
+        var rewardFn = this._dungeonRewards[type];
+        if (rewardFn) {
+            var result = rewardFn.call(this, level);
+            if (result) {
+                goldReward = result.gold || 0;
+                stoneReward = result.stone || 0;
+                gemCount = result.gemCount || 0;
+                gemLevel = result.gemLevel || 1;
+                equipCount = result.equipCount || 0;
             }
-            this.addBattleLog('✦ ' + title + ' Lv.' + level + ' 通关！获得 ' + gemCount + ' 颗 Lv.' + gemLevel + ' 宝石', 'reward');
-            showToast(title + ' Lv.' + level + ' 通关！获得' + gemCount + '颗宝石', 'success');
-        } else if (type === 'equip') {
-            // 平衡后: Lv.1 紫 3-5件 70%紫 30%橙 | Lv.2 橙 3-5件 80%橙 20%金 | Lv.3 金 2-3件
-            var equipCount = 0;
-            if (level === 1) {
-                // 紫色 3-5 件（原 2-5）
-                equipCount = 3 + Math.floor(Math.random() * 3);
-                for (var ei = 0; ei < equipCount; ei++) {
-                    // 品质: 蓝 50% / 紫 30% / 橙 20%
-                    var eqRoll1 = Math.random();
-                    var eqQuality = eqRoll1 < 0.5 ? 2 : (eqRoll1 < 0.8 ? 3 : 4);
-                    this._addDungeonEquip(eqQuality);
-                }
-            } else if (level === 2) {
-                // 橙色 3-5 件，20% 金（原 1%）
-                equipCount = 3 + Math.floor(Math.random() * 3);
-                for (var ei = 0; ei < equipCount; ei++) {
-                    // 品质: 紫 50% / 橙 45% / 金 5%
-                    var eqRoll2 = Math.random();
-                    var eqQuality = eqRoll2 < 0.5 ? 3 : (eqRoll2 < 0.95 ? 4 : 5);
-                    this._addDungeonEquip(eqQuality);
-                }
-            } else if (level === 3) {
-                // 金色 2-3 件（原 1-2）
-                equipCount = 2 + Math.floor(Math.random() * 2);
-                for (var ei = 0; ei < equipCount; ei++) {
-                    // 品质: 橙 85% / 金 15%
-                    var eqQuality = Math.random() < 0.85 ? 4 : 5;
-                    this._addDungeonEquip(eqQuality);
-                }
-            }
-            this.addBattleLog('✦ ' + title + ' Lv.' + level + ' 通关！获得 ' + equipCount + ' 件装备', 'reward');
-            showToast(title + ' Lv.' + level + ' 通关！获得' + equipCount + '件装备', 'success');
         }
 
         updateResources();
@@ -5084,7 +5005,7 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
 
     // ======================== 爬塔·无尽 v4.0 ========================
     // 取代旧的 4 副本系统（金币/重铸石/宝石/装备）
-    // 流程：startTowerBattle(floor) → onWaveComplete → towerReward + exitTower
+    // 流程：由 battle-ext.js 的 startTowerBattle / startDemonKingBattle 接管
 
     // 标记当前正在爬塔
     isTower: false,
@@ -5190,235 +5111,10 @@ _playSkillBigEffectImpl: function(caster, target, skillId, tx, ty) {
         this.spawnEnemy();
     },
 
-    // ====== 魔王副本：无限血量 + 限时 + 伤害累积 ======
-    startDemonKingBattle: function() {
-        if (this.isDungeon) { console.warn('[Battle] 已在副本中,忽略'); return; }
-        if (this.isRunning) { this.stopBattle(); }
+    // ====== 魔王副本：由 battle-ext.js 接管 ======
+    // ====== 爬塔·无尽：由 battle-ext.js 接管 ======
 
-        // 保存主战场状态
-        this.savedNormalState = {
-            waveNumber: this.waveNumber, stage: this.stage,
-            waveSpawnCount: this.waveSpawnCount, waveSpawned: this.waveSpawned,
-            waveState: this.waveState, restTimer: this.restTimer,
-            deathTimerInit: this.deathTimerInit, autoBattle: this.autoBattle,
-            waitingNextChapter: this.waitingNextChapter, enemies: this.enemies.slice()
-        };
-
-        this.isDungeon = true;
-        this.dungeonType = 'demonking';
-        this.dungeonLevel = 1;
-
-        // 魔王战斗状态
-        this.demonKingDamage = 0;
-        this.demonKingTimer = 60000;  // 60秒
-        this.demonKingStartTime = Date.now();
-
-        // 切换 canvas
-        var dungeonCanvas = document.getElementById('dungeon-battle-canvas');
-        if (dungeonCanvas) {
-            this.switchCanvas(dungeonCanvas);
-            var self = this;
-            requestAnimationFrame(function() { try { self.resize(); } catch(e) { /* systems/battle.js */ console.warn("⚠ [catch]",e&&e.message); } });
-        }
-        this._mainBattlePaused = true;
-        this.isRunning = false;
-
-        // 友方满状态
-        for (var di = 0; di < this.allies.length; di++) {
-            var a = this.allies[di];
-            a.alive = true; a.hp = a.maxHp; a.mp = a.maxMp;
-            a.statusEffects = []; a.buffs = []; a.atkTimer = 0; a.skillCd = {};
-        }
-
-        // 刷新 ally 属性
-        var teamHeroes = getTeamHeroes();
-        this.setTeam(teamHeroes);
-
-        // 设置战斗参数
-        this.stage = 6;  // 使用竹林场景
-        this.waveNumber = 1;
-        this.enemies = [];
-        this.waveSpawned = 0;
-        this.waveState = 'active';
-        this.restTimer = 0;
-        this.deathTimerInit = false;
-        this.maxEnemies = 1;
-        this.waveSpawnCount = 1;
-        this.spawnInterval = 999999;  // 不再生成新怪
-        this.spawnTimer = 0;
-
-        // 更新标题
-        var headerEl = document.querySelector('.dungeon-battle-name');
-        if (headerEl) headerEl.textContent = '魔王·竹林深处';
-        document.getElementById('wave-status').textContent = '⏱ 60秒限时挑战';
-        document.getElementById('wave-number').textContent = '魔王战';
-        this.addBattleLog('👹 魔王降临！竹林深处，无限血量的试炼开始！', 'boss');
-        this.addBattleLog('⏱ 限时60秒，造成尽可能多的伤害吧！', 'info');
-
-        // 入场特效
-        this.shakeCanvas(10, 400);
-        this.flashScreen('#ff1744', 300, 0.3);
-
-        // 启动战斗（startBattle 会清空 enemies，所以先生成战斗循环再 spawn 魔王）
-        this.startBattle();
-        this.autoBattle = true;
-
-        // ★ startBattle 会重置 enemies/waveState/spawnInterval
-        //   必须在 startBattle 之后设置，否则被覆盖
-        this.enemies = [];
-        this.waveState = 'active';
-        this.restTimer = 0;
-        this.spawnInterval = 999999;
-        this.maxEnemies = 1;
-        this.waveSpawnCount = 1;
-        this.spawnTimer = 0;
-        this.waveSpawned = 0;
-        this._spawnDemonKing();
-    },
-
-    // 生成魔王
-    _spawnDemonKing: function() {
-        var w = this.battleWidth || 480;
-        var h = this.battleHeight || 400;
-        var x = w * 0.72;
-        var y = h * 0.42;
-        var INF_HP = 999999999;
-        // 手动创建魔王（不经过怪物池随机）
-        var boss = {
-            id: 'demon_king_' + Date.now(),
-            name: '世界之主·芦笋',
-            monsterKey: 'bamboo_shoot_boss',
-            x: x, y: y,
-            alive: true, isBoss: true, elite: true,
-            renderScale: 2.5,
-            maxHp: INF_HP, hp: INF_HP,
-            atk: 80,   // 低攻击，避免秒杀
-            def: 40,   // 中低防御
-            spd: 35, atkTimer: 0,
-            target: this.allies[0] || null
-        };
-        boss.skeleton = (typeof buildMonsterSkeleton === 'function')
-            ? buildMonsterSkeleton(boss, { scale: 2.5 })
-            : null;
-        this.enemies.push(boss);
-        this.addBattleLog('👹 ' + boss.name + ' 出现了！血量：∞', 'boss');
-        // BOSS 出场特效
-        // ★ v7.4.1 修复:之前写错函数名 PixiFx.addParticle(单数),正确是 addParticles(复数)。
-        //   导致 TypeError,_spawnDemonKing 中断,modal 标题没改 + startBattle 没跑 + gameLoop 没启动 → canvas 黑屏。
-        //   同时简化:一次 addParticles 调用生成 30 个粒子,比循环 30 次 addParticles 性能更好(单次 PIXI 批量渲染)。
-        if (typeof PixiFx !== 'undefined' && PixiFx.initialized) {
-            try {
-                PixiFx.addParticles(x, y, '#ff1744', 30, {
-                    sizeMin: 2, sizeMax: 6,
-                    lifeMin: 600, lifeMax: 1400,
-                    speed: 4, upBias: 1.5
-                });
-            } catch (e) {
-                if (typeof console !== 'undefined' && console.warn) console.warn('[DemonKing] BOSS 出场粒子异常:', e);
-            }
-        }
-        this.addEffect(x, y, 'nova', '#ff1744', 2.5);
-        this.addEffect(x, y, 'nova', '#7b1fa2', 2.0);
-    },
-
-    // 魔王奖励计算 + 结算卡片弹窗
-    demonKingReward: function() {
-        var dmg = this.demonKingDamage || 0;
-        var record = GameState.get('demonKingRecord') || 0;
-        var newRecord = dmg > record;
-
-        if (newRecord) {
-            GameState.set('demonKingRecord', dmg);
-        }
-
-        // 成就追踪：魔王击杀
-        GameState.mutate('demonKingKills', function(v) { return (v || 0) + 1; });
-
-        // ★ 幂率平滑曲线：全奖励从0到上限连续增长，10亿拿满
-        //   10000伤害时: 抽奖石1+宝石1+蛋石1+升级石1+重铸石10
-        //   gold = 500 + (100万-500) × ratio^0.66
-        //   dust = 200 + (20万-200) × ratio^0.565
-        //   石头 = 上限 × ratio^指数
-        var ratio = Math.max(0.000001, dmg / 1000000000);
-        var gold = Math.min(1000000, Math.floor(500 + 999500 * Math.pow(ratio, 0.66)));
-        var dust = Math.min(200000, Math.floor(200 + 199800 * Math.pow(ratio, 0.565)));
-        var lottery = Math.min(1000, Math.floor(1000 * Math.pow(ratio, 0.60)));
-        var gems = Math.min(1000, Math.floor(1000 * Math.pow(ratio, 0.60)));
-        var eggs = Math.min(1000, Math.floor(1000 * Math.pow(ratio, 0.60)));
-        var upgrade = Math.min(1000, Math.floor(1000 * Math.pow(ratio, 0.60)));
-        var reforgestone = Math.min(5000, Math.floor(5000 * Math.pow(ratio, 0.54)));
-        var gemLevel = Math.min(5, 1 + Math.floor(4 * Math.pow(ratio, 0.7)));
-
-        // 发放奖励
-        GameState.mutate('gold', function(g) { return (g || 0) + gold; });
-        GameState.mutate('forgeDust', function(d) { return (d || 0) + dust; });
-        if (lottery > 0) GameState.mutate('lotteryStone', function(v) { return (v || 0) + lottery; });
-        if (eggs > 0) GameState.mutate('petEggStones', function(v) { return (v || 0) + eggs; });
-        if (upgrade > 0) GameState.mutate('upgradeStone', function(v) { return (v || 0) + upgrade; });
-        if (reforgestone > 0) GameState.mutate('reforgestone', function(v) { return (v || 0) + reforgestone; });
-        if (gems > 0) {
-            for (var gi = 0; gi < gems; gi++) {
-                var gt = randPick(GEM_TYPES);
-                if (typeof addGemToInventory === 'function') {
-                    addGemToInventory({ gemTypeId: gt.id, level: gemLevel, count: 1 });
-                }
-            }
-        }
-
-        // 计算战斗时长
-        var elapsed = Math.floor(((Date.now() - (this.demonKingStartTime || Date.now())) / 1000));
-        if (elapsed < 1) elapsed = 1;
-        var minutes = Math.floor(elapsed / 60);
-        var seconds = elapsed % 60;
-        var timeStr = minutes > 0 ? (minutes + '分' + seconds + '秒') : (seconds + '秒');
-
-        var fn = (typeof formatNumber === 'function') ? formatNumber : function(x) { return x; };
-        var recStr = newRecord ? '<div style="color:#ffd700;font-size:14px;margin-top:6px;">🏆 新纪录！</div>' : '';
-
-        // 构建奖励行
-        var rewardRows = '';
-        if (gold > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">💰</span><span class="dkr-name">金币</span><span class="dkr-val">+' + fn(gold) + '</span></div>';
-        if (dust > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">💠</span><span class="dkr-name">锻造粉尘</span><span class="dkr-val">+' + fn(dust) + '</span></div>';
-        if (lottery > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">🎫</span><span class="dkr-name">抽奖石</span><span class="dkr-val">+' + lottery + '</span></div>';
-        if (gems > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">💎</span><span class="dkr-name">Lv.' + gemLevel + ' 宝石</span><span class="dkr-val">×' + gems + '</span></div>';
-        if (eggs > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">🥚</span><span class="dkr-name">宠物蛋石</span><span class="dkr-val">+' + eggs + '</span></div>';
-        if (upgrade > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">🔷</span><span class="dkr-name">升级石</span><span class="dkr-val">+' + upgrade + '</span></div>';
-        if (reforgestone > 0) rewardRows += '<div class="dkr-row"><span class="dkr-icon">◇</span><span class="dkr-name">重铸石</span><span class="dkr-val">+' + reforgestone + '</span></div>';
-
-        // 结算卡片
-        var card = document.createElement('div');
-        card.id = 'demonking-reward-card';
-        card.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);';
-        card.innerHTML =
-            '<div style="background:linear-gradient(180deg,#1a0a20,#0d0510);border:2px solid rgba(244,67,54,0.5);border-radius:20px;padding:24px 20px;width:88vw;max-width:380px;text-align:center;box-shadow:0 0 60px rgba(244,67,54,0.3);animation:dkCardIn 0.4s cubic-bezier(0.34,1.56,0.64,1);">' +
-                '<div style="font-size:40px;margin-bottom:4px;">👹</div>' +
-                '<div style="font-size:20px;font-weight:900;color:#ff5252;margin-bottom:4px;">魔王战 · 结算</div>' +
-                '<div style="font-size:12px;color:#888;margin-bottom:14px;">世界之主·芦笋</div>' +
-                '<div style="display:flex;justify-content:center;gap:24px;margin-bottom:14px;">' +
-                    '<div style="text-align:center;"><div style="font-size:10px;color:#888;">持续时间</div><div style="font-size:15px;color:#ffd700;font-weight:bold;">' + timeStr + '</div></div>' +
-                    '<div style="text-align:center;"><div style="font-size:10px;color:#888;">累计伤害</div><div style="font-size:15px;color:#ff5252;font-weight:bold;">' + fn(dmg) + '</div></div>' +
-                '</div>' +
-                recStr +
-                '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;margin:10px 0;text-align:left;">' +
-                    rewardRows +
-                '</div>' +
-                '<button onclick="var c=document.getElementById(\'demonking-reward-card\');if(c)c.remove();if(typeof switchScreen===\'function\')switchScreen(\'dungeon\');if(typeof showDungeonScreen===\'function\')showDungeonScreen();" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#d32f2f,#7b1fa2);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;">✅ 确认领取</button>' +
-            '</div>';
-
-        // 注入动画CSS
-        if (!document.getElementById('dk-card-style')) {
-            var style = document.createElement('style');
-            style.id = 'dk-card-style';
-            style.textContent = '@keyframes dkCardIn{0%{opacity:0;transform:scale(0.7) translateY(40px)}100%{opacity:1;transform:scale(1) translateY(0)}}.dkr-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}.dkr-row:last-child{border-bottom:none}.dkr-icon{font-size:16px;width:24px;text-align:center}.dkr-name{flex:1;font-size:13px;color:#ccc}.dkr-val{font-size:13px;font-weight:bold;color:#ffd700}';
-            document.head.appendChild(style);
-        }
-
-        document.body.appendChild(card);
-        updateResources();
-        updateMainTeamPower();
-    },
-
-    // 入场特效：按楼层类型决定
+    // ========== 副本战斗 modal 关闭 ==========
     _showFloorIntro: function(floor, floorType) {
         // 1) 通用：层号横幅
         this._showFloorBanner(floor, floorType);

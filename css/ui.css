@@ -2583,11 +2583,11 @@
     max-width: 560px;
     height: 70vh;
     max-height: 480px;
-    z-index: 9000;
+    z-index: 10000;
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
     box-sizing: border-box;

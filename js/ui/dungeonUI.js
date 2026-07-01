@@ -127,6 +127,18 @@ function showDungeonScreen() {
         '</div>';
     container.appendChild(towerCard);
 
+    // ===== 楼层规则说明（放在爬塔卡下面） =====
+    var rulesCard = document.createElement('div');
+    rulesCard.className = 'tower-rules-card';
+    rulesCard.innerHTML =
+        '<div class="trc-title">📜 楼层规则</div>' +
+        '<div class="trc-row"><span class="trc-tag tag-normal">普通</span><span class="trc-desc">少量金币</span></div>' +
+        '<div class="trc-row"><span class="trc-tag tag-elite">精英</span><span class="trc-desc">每 5 层：金币 + 重铸石 + 2 抽奖石 + 2 宠物蛋石 + 30% 概率 Lv.1 宝石</span></div>' +
+        '<div class="trc-row"><span class="trc-tag tag-boss">BOSS</span><span class="trc-desc">每 10 层：金币 + 重铸石 + 10 抽奖石 + 5 宠物蛋石 + 1 升级石 + 2 宝石</span></div>' +
+        '<div class="trc-divider"></div>' +
+        '<div class="trc-note">难度每层 +5% / BOSS 必出网友怪 / 精英 50% 网友怪</div>';
+    container.appendChild(rulesCard);
+
     // ===== 卡 2: 抽奖大厅 =====
     var lotteryCard = document.createElement('div');
     lotteryCard.className = 'lottery-entry-card';
@@ -194,17 +206,6 @@ function showDungeonScreen() {
         '<button class="btn\" style="width:100%;background:linear-gradient(135deg,#7b1fa2,#6a1b9a);color:#fff;border:none;padding:10px;font-size:13px;font-weight:bold;border-radius:8px;\" onclick="enterDustDungeon()">💠 进入粉尘副本（8 体力）</button>';
     container.appendChild(dustCard);
 
-    // ===== 楼层规则说明 =====
-    var rulesCard = document.createElement('div');
-    rulesCard.className = 'tower-rules-card';
-    rulesCard.innerHTML =
-        '<div class="trc-title">📜 楼层规则</div>' +
-        '<div class="trc-row"><span class="trc-tag tag-normal">普通</span><span class="trc-desc">少量金币</span></div>' +
-        '<div class="trc-row"><span class="trc-tag tag-elite">精英</span><span class="trc-desc">每 5 层：金币 + 重铸石 + 2 抽奖石 + 2 宠物蛋石 + 30% 概率 Lv.1 宝石</span></div>' +
-        '<div class="trc-row"><span class="trc-tag tag-boss">BOSS</span><span class="trc-desc">每 10 层：金币 + 重铸石 + 10 抽奖石 + 5 宠物蛋石 + 1 升级石 + 2 宝石</span></div>' +
-        '<div class="trc-note">难度每层 +5% / BOSS 必出网友怪 / 精英 50% 网友怪</div>';
-    container.appendChild(rulesCard);
-
     // ===== 卡 5: 魔王副本（每日1次）=====
     var today = new Date().toDateString();
     var lastDate = (gameState && GameState.get('lastDemonKingDate')) || '';
@@ -249,6 +250,8 @@ function showDungeonScreen() {
 // ========== 爬塔入口 ==========
 function enterTower(floor) {
     if (!gameState) return;
+    // ★ v2.6.5 修复副本卡死: 入口第一行先清理 isDungeon 残留,再守卫(原顺序守卫拦下,永远走不到清理)
+    if (typeof cleanDungeonState === 'function') cleanDungeonState();
     if (typeof _checkInBattle === 'function' && !_checkInBattle('爬塔')) return;
     var cost = getTowerStaminaCost();
     if ((GameState.get('stamina') || 0) < cost) {
@@ -317,9 +320,19 @@ function openDungeonBattleModal(type, level) {
     // 让 canvas 自适应 modal 尺寸（★ v7.4.1: 删掉重复代码块）
     var wrap = modal.querySelector('.dungeon-battle-canvas-wrap');
     var canvas = document.getElementById('dungeon-battle-canvas');
-    if (wrap && canvas) {
-        canvas.width = wrap.clientWidth || 600;
-        canvas.height = wrap.clientHeight || 400;
+    // ★ 防御性修复：延时一帧确保 layout 完成后再读取尺寸
+    var setCanvasSize = function() {
+        if (wrap && canvas) {
+            var cw = wrap.clientWidth || wrap.getBoundingClientRect().width || 600;
+            var ch = wrap.clientHeight || wrap.getBoundingClientRect().height || 400;
+            canvas.width = Math.max(cw, 200);
+            canvas.height = Math.max(ch, 200);
+        }
+    };
+    setCanvasSize();
+    // 下一帧再确保一次（应对初始 layout 未完成）
+    if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(function() { setCanvasSize(); });
     }
     // v2.6.2: 初始化 PixiJS overlay canvas（爬塔/副本也吃 WebGL 粒子/特效/弹道）
     // 统一走 BattleManager._reinitPixiFx（destroy + init + 重绑尺寸），保证单例切换 canvas 不会有残留 ticker
@@ -398,12 +411,12 @@ function enterDungeon(type, level) {
 
 // ========== 金币副本 ==========
 // ★ v7.4.1: 加 _checkInBattle 守卫 + 防御性清理 isDungeon 残留
+// ★ v2.6.5 修复: 顺序调换 — 入口第一行先 cleanDungeonState() 清理,再 _checkInBattle 守卫
+//   (原顺序守卫拦下, 永远走不到 exitDungeon 清理 → isDungeon 卡死进不去副本)
 function enterGoldDungeon() {
     if (!gameState) return;
+    if (typeof cleanDungeonState === 'function') cleanDungeonState();
     if (typeof _checkInBattle === 'function' && !_checkInBattle('进入金币副本')) return;
-    if (typeof BattleManager !== 'undefined' && BattleManager.isDungeon && typeof BattleManager.exitDungeon === 'function') {
-        BattleManager.exitDungeon();
-    }
     if ((GameState.get('stamina') || 0) < 5) {
         if (typeof showToast === 'function') showToast('体力不足！需要 5 体力', 'warning');
         return;
@@ -440,10 +453,9 @@ function getMaxHeroPower() {
 function enterDustDungeon() {
     if (!gameState) return;
     // ★ v7.4.1: 加 _checkInBattle 守卫 + 防御性清理 isDungeon 残留
+    // ★ v2.6.5 修复: 顺序调换 — 入口第一行先 cleanDungeonState() 清理,再 _checkInBattle 守卫
+    if (typeof cleanDungeonState === 'function') cleanDungeonState();
     if (typeof _checkInBattle === 'function' && !_checkInBattle('进入粉尘重铸石副本')) return;
-    if (typeof BattleManager !== 'undefined' && BattleManager.isDungeon && typeof BattleManager.exitDungeon === 'function') {
-        BattleManager.exitDungeon();
-    }
     if ((GameState.get('stamina') || 0) < 8) {
         if (typeof showToast === 'function') showToast('体力不足！需要 8 体力', 'warning');
         return;
@@ -464,14 +476,11 @@ function enterDustDungeon() {
 //   3. 启动失败时回滚体力 + 不设日期（之前白扣 20 体力 + 浪费今日次数）
 function enterDemonKingDungeon() {
     if (!gameState) return;
+    // ★ v2.6.5 修复副本卡死: 入口第一行先 cleanDungeonState() 清理 isDungeon 残留
+    //   顺序调换 (原 _checkInBattle 守卫在前 → isDungeon=true 残留时拦下, 永远走不到 exitDungeon 清理)
+    if (typeof cleanDungeonState === 'function') cleanDungeonState();
     // ★ BUG4 修复：通用 _checkInBattle 守卫（enterGoldDungeon/enterDustDungeon 同款）
     if (typeof _checkInBattle === 'function' && !_checkInBattle('挑战魔王副本')) return;
-    // ★ BUG4 修复：防御性清理 isDungeon 残留
-    //   之前 stopBattle 不重置 isDungeon，用户从其他副本按返回键退出后 isDungeon 残留为 true
-    //   startDemonKingBattle 第一行 `if (this.isDungeon) return;` 会直接命中 → modal 开了但 gameLoop 没启动
-    if (typeof BattleManager !== 'undefined' && BattleManager.isDungeon && typeof BattleManager.exitDungeon === 'function') {
-        BattleManager.exitDungeon();
-    }
 
     var today = new Date().toDateString();
     var lastDate = (GameState.get('lastDemonKingDate')) || '';

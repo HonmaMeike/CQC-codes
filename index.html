@@ -29,25 +29,25 @@
      13. theme-v3.css        modal-overlay/modal-content/btn 系统基础样式
      14. main.css / battle.css / ui.css / tutorial-cards.css  保留兼容
   -->
-<link rel="stylesheet" href="css/theme.css?v=100070">
-<link rel="stylesheet" href="css/v2-components.css?v=100070">
-<link rel="stylesheet" href="css/v2-animations.css?v=100070">
-<link rel="stylesheet" href="css/home-screen.css?v=100070">
-<link rel="stylesheet" href="css/bottom-nav.css?v=100070">
-<link rel="stylesheet" href="css/modal-v2.css?v=100070">
-<link rel="stylesheet" href="css/battle-screen.css?v=100070">
-<link rel="stylesheet" href="css/hero-screen.css?v=100070">
-<link rel="stylesheet" href="css/inventory-screen.css?v=100070">
-<link rel="stylesheet" href="css/settings-team-screen.css?v=100071">
-<link rel="stylesheet" href="css/misc-screens.css?v=100070">
-<link rel="stylesheet" href="css/forge-screen.css?v=100070">
-<link rel="stylesheet" href="css/talent-dungeon-pet-rebirth-fixes.css?v=100071">
-<link rel="stylesheet" href="css/v2-fixes.css?v=100070">
-<link rel="stylesheet" href="css/theme-v3.css?v=100070">
-<link rel="stylesheet" href="css/main.css?v=100071">
-<link rel="stylesheet" href="css/battle.css?v=100070">
-<link rel="stylesheet" href="css/ui.css?v=100072">
-<link rel="stylesheet" href="css/tutorial-cards.css?v=100070">
+<link rel="stylesheet" href="css/theme.css?v=100106">
+<link rel="stylesheet" href="css/v2-components.css?v=100106">
+<link rel="stylesheet" href="css/v2-animations.css?v=100106">
+<link rel="stylesheet" href="css/home-screen.css?v=100106">
+<link rel="stylesheet" href="css/bottom-nav.css?v=100106">
+<link rel="stylesheet" href="css/modal-v2.css?v=100106">
+<link rel="stylesheet" href="css/battle-screen.css?v=100106">
+<link rel="stylesheet" href="css/hero-screen.css?v=100106">
+<link rel="stylesheet" href="css/inventory-screen.css?v=100106">
+<link rel="stylesheet" href="css/settings-team-screen.css?v=100106">
+<link rel="stylesheet" href="css/misc-screens.css?v=100106">
+<link rel="stylesheet" href="css/forge-screen.css?v=100106">
+<link rel="stylesheet" href="css/talent-dungeon-pet-rebirth-fixes.css?v=100106">
+<link rel="stylesheet" href="css/v2-fixes.css?v=100106">
+<link rel="stylesheet" href="css/theme-v3.css?v=100106">
+<link rel="stylesheet" href="css/main.css?v=100106">
+<link rel="stylesheet" href="css/battle.css?v=100106">
+<link rel="stylesheet" href="css/ui.css?v=100106">
+<link rel="stylesheet" href="css/tutorial-cards.css?v=100106">
 
 <style>
 @font-face {
@@ -761,108 +761,113 @@ body {
     </div>
 </div>
 
-            <script src="js/utils/helpers.js?v=100058"></script>
-<script src="js/utils/random.js?v=100057"></script>
+            <script src="js/utils/helpers.js?v=100106"></script>
+<script src="js/utils/random.js?v=100106"></script>
 <!-- 加载顺序：utils → data(配置/职业/技能/装备/宝石/怪物) → systems → view → game
      原因：data 层内部依赖（monsters/equipment 读取 ConfigLoader），所以 configLoader.js 必须先加载 -->
 <!-- 配置加载器 (3.0.0+ 新增：热重载 + 类型校验，单一数据源) -->
-            <script src="js/data/configLoader.js?v=100057"></script>
-<script src="js/data/classes.js?v=100057"></script>
-<script src="js/data/skills.js?v=100057"></script>
-            <script src="js/data/equipIcons.js?v=100057"></script>
-<script src="js/data/equipment.js?v=100057"></script>
-            <script src="js/data/gems.js?v=100057"></script>
-<script src="js/data/monsters.js?v=100057"></script>
-<script src="js/data/talents.js?v=100057"></script>
-<script src="js/data/bonds.js?v=100057"></script>
-<script src="js/data/statusEffects.js?v=100057"></script>
-<script src="js/data/enemySkills.js?v=100057"></script>
-<script src="js/data/towerConfig.js?v=100057"></script>
-            <script src="js/data/lotteryConfig.js?v=100057"></script>
-<script src="js/data/petLotteryConfig.js?v=100057"></script>
+            <script src="js/data/configLoader.js?v=100106"></script>
+<script src="js/data/classes.js?v=100106"></script>
+<script src="js/data/skills.js?v=100106"></script>
+            <script src="js/data/equipIcons.js?v=100106"></script>
+<script src="js/data/equipment.js?v=100106"></script>
+<script src="js/data/monsters.js?v=100106"></script>
+<script src="js/data/bonds.js?v=100106"></script>
+<script src="js/data/statusEffects.js?v=100106"></script>
+<script src="js/data/enemySkills.js?v=100106"></script>
+<script src="js/data/towerConfig.js?v=100106"></script>
+            <script src="js/data/lotteryConfig.js?v=100106"></script>
+<script src="js/data/petLotteryConfig.js?v=100106"></script>
 <!-- 新手教程数据 -->
-<script src="js/data/tutorialSteps.js?v=100057"></script>
-<script src="js/systems/lottery.js?v=100057"></script>
-<script src="lib/vconsole.min.js?v=100057"></script>
-<script src="lib/pixi.min.js?v=100057"></script>
-<script src="js/systems/aiAssistant.js?v=100057"></script>
-<script src="js/systems/pixiFx.js?v=100057"></script>
-<script src="js/systems/skillEffects.js?v=100057"></script>
-<script src="js/systems/skeleton.js?v=100057"></script>
-            <script src="js/systems/classSkeletons.js?v=100057"></script>
-            <script src="js/systems/cartoon.js?v=100057"></script>
-<script src="js/systems/spriteOverrides.js?v=100057"></script>
-<script src="js/systems/sprites.js?v=100057"></script>
-<script src="js/systems/audioManager.js?v=100057"></script>
-<script src="js/systems/iconRenderer.js?v=100057"></script>
-<script src="js/systems/save.js?v=100057"></script>
-            <script src="js/systems/loot.js?v=100057"></script>
-            <script src="js/systems/forge.js?v=100057"></script>
-<script src="js/systems/gemSystem.js?v=100057"></script>
-<script src="js/data/petIconData.js?v=100057"></script>
-<script src="js/ui/petUI.js?v=100070"></script>
-<script src="js/ui/petLotteryUI.js?v=100057"></script>
-<script src="js/systems/cloudSave.js?v=100057"></script>
-<script src="js/systems/GameState.js?v=100057"></script>
-            <script src="js/data/gameHistory.js?v=100057"></script>
-<script src="js/data/dungeonBalance.js?v=100057"></script>
-<script src="js/systems/battle-config.js?v=100057"></script>
-<script src="js/systems/battle-utils.js?v=100057"></script>
-<script src="js/systems/battle-ext.js?v=100057"></script>
-<script src="js/systems/battle.js?v=100057"></script>
-<script src="js/systems/bgLoader.js?v=100057"></script>
-<script src="js/systems/battle-modes.js?v=100057"></script>
-            <script src="js/systems/battleScenes.js?v=100057"></script>
-            <script src="js/systems/battleLog.js?v=100057"></script>
-<script src="js/ui/mainUI.js?v=100058"></script>
-<script src="js/ui/teamUI.js?v=100057"></script>
-            <script src="js/ui/heroUI.js?v=100057"></script>
-            <script src="js/ui/inventoryUI.js?v=100057"></script>
-            <script src="js/ui/reforgeUI.js?v=100057"></script>
-            <script src="js/ui/talentUI.js?v=100057"></script>
-            <script src="js/ui/gemUI.js?v=100057"></script>
-<script src="js/ui/skillUI.js?v=100057"></script>
-            <script src="js/ui/forgeUI.js?v=100057"></script>
-<script src="js/ui/settingsUI.js?v=100057"></script>
-<script src="js/ui/aiAssistantUI.js?v=100057"></script>
-<script src="js/ui/monsterCodexUI.js?v=100057"></script>
-<script src="js/ui/equipCodexUI.js?v=100057"></script>
-<script src="js/ui/achievementUI.js?v=100057"></script>
-            <script src="js/ui/dungeonUI.js?v=100057"></script>
-<script src="js/ui/lotteryUI.js?v=100057"></script>
+<script src="js/data/tutorialSteps.js?v=100106"></script>
+<script src="lib/vconsole.min.js?v=100106"></script>
+<script src="lib/pixi.min.js?v=100106"></script>
+<script src="js/data/petIconData.js?v=100106"></script>
+<script src="js/ui/petUI.js?v=100106"></script>
+<script src="js/ui/petLotteryUI.js?v=100106"></script>
+            <script src="js/data/gameHistory.js?v=100106"></script>
+<script src="js/data/dungeonBalance.js?v=100106"></script>
+<script src="js/systems/GameState.js?v=100106"></script>
+<script src="js/systems/audioManager.js?v=100106"></script>
+<script src="js/systems/save.js?v=100106"></script>
+<script src="js/systems/pixiFx.js?v=100106"></script>
+<script src="js/systems/sprites.js?v=100106"></script>
+<script src="js/systems/spriteOverrides.js?v=100106"></script>
+<script src="js/systems/iconRenderer.js?v=100106"></script>
+<script src="js/systems/classSkeletons.js?v=100106"></script>
+<script src="js/systems/skeleton.js?v=100106"></script>
+<script src="js/systems/skillEffects.js?v=100106"></script>
+<script src="js/systems/cartoon.js?v=100106"></script>
+<script src="js/systems/loot.js?v=100106"></script>
+<script src="js/systems/forge.js?v=100106"></script>
+<script src="js/systems/gemSystem.js?v=100106"></script>
+<script src="js/systems/lottery.js?v=100106"></script>
+<script src="js/systems/cloudSave.js?v=100106"></script>
+<script src="js/systems/rebirthManager.js?v=100106"></script>
+<script src="js/systems/StaminaManager.js?v=100106"></script>
+<script src="js/systems/achievementManager.js?v=100106"></script>
+<script src="js/systems/aiAssistant.js?v=100106"></script>
+<script src="js/systems/updateChecker.js?v=100106"></script>
+            <script src="js/systems/battle-config.js?v=100106"></script>
+            <script src="js/systems/battle-utils.js?v=100106"></script>
+            <script src="js/systems/battle.js?v=100106"></script>
+            <script src="js/systems/battle-dungeon-gold.js?v=100106"></script>
+            <script src="js/systems/battle-dungeon-stone.js?v=100106"></script>
+            <script src="js/systems/battle-dungeon-gem.js?v=100106"></script>
+            <script src="js/systems/battle-dungeon-equip.js?v=100106"></script>
+            <script src="js/systems/battle-ext.js?v=100106"></script>
+<script src="js/systems/bgLoader.js?v=100106"></script>
+            <script src="js/systems/battle-modes.js?v=100106"></script>
+            <script src="js/systems/battleScenes.js?v=100106"></script>
+            <script src="js/systems/battleLog.js?v=100106"></script>
+<script src="js/ui/mainUI.js?v=100106"></script>
+<script src="js/ui/talentUI.js?v=100106"></script>
+<script src="js/ui/talentUI.js?v=100106"></script>
+<script src="js/ui/teamUI.js?v=100106"></script>
+            <script src="js/ui/heroUI.js?v=100106"></script>
+            <script src="js/ui/inventoryUI.js?v=100106"></script>
+            <script src="js/ui/reforgeUI.js?v=100106"></script>
+            <script src="js/ui/gemUI.js?v=100106"></script>
+<script src="js/ui/skillUI.js?v=100106"></script>
+            <script src="js/ui/forgeUI.js?v=100106"></script>
+<script src="js/ui/settingsUI.js?v=100106"></script>
+<script src="js/ui/aiAssistantUI.js?v=100106"></script>
+<script src="js/data/gems.js?v=100106"></script>
+<script src="js/data/talents.js?v=100106"></script>
+<script src="js/ui/monsterCodexUI.js?v=100106"></script>
+<script src="js/ui/equipCodexUI.js?v=100106"></script>
+<script src="js/ui/achievementUI.js?v=100106"></script>
+            <script src="js/ui/dungeonUI.js?v=100075"></script>
+<script src="js/ui/lotteryUI.js?v=100106"></script>
 <!-- 新手教程系统 -->
-<script src="js/ui/tutorialUI.js?v=100057"></script>
-<script src="js/systems/rebirthManager.js?v=100057"></script>
-<script src="js/ui/rebirthUI.js?v=100057"></script>
+<script src="js/ui/tutorialUI.js?v=100106"></script>
+<script src="js/ui/rebirthUI.js?v=100106"></script>
 <!-- 家园 + 配置锁定（HOME_1.x 新增：草原营地 + 通用战斗状态拦截工具） -->
-<script src="js/ui/lockHelper.js?v=100057"></script>
-<script src="js/ui/campUI.js?v=100057"></script>
-<script src="js/ui/homeUI.js?v=100057"></script>
+<script src="js/ui/lockHelper.js?v=100076"></script>
+<script src="js/ui/campUI.js?v=100106"></script>
+<script src="js/ui/homeUI.js?v=100106"></script>
             <!-- 统一体力管理 (2.2.0+ 新增：StaminaManager 单例) -->
-<script src="js/systems/StaminaManager.js?v=100057"></script>
-<script src="js/view/ViewBase.js?v=100057"></script>
-<script src="js/view/HeroView.js?v=100057"></script>
-<script src="js/view/EquipView.js?v=100057"></script>
-<script src="js/view/GemView.js?v=100057"></script>
-<script src="js/view/MonsterView.js?v=100057"></script>
-<script src="js/view/SkillView.js?v=100057"></script>
-<script src="js/view/GameView.js?v=100057"></script>
+<script src="js/view/ViewBase.js?v=100106"></script>
+<script src="js/view/HeroView.js?v=100106"></script>
+<script src="js/view/EquipView.js?v=100106"></script>
+<script src="js/view/GemView.js?v=100106"></script>
+<script src="js/view/MonsterView.js?v=100106"></script>
+<script src="js/view/SkillView.js?v=100106"></script>
+<script src="js/view/GameView.js?v=100106"></script>
 <!-- 统一品质数据源 (2.1.0+ 新增：双轨并行，helpers.js 旧函数委托) -->
-<script src="js/data/quality.js?v=100057"></script>
+<script src="js/data/quality.js?v=100106"></script>
 <!-- 成就系统 (v1.0 新增) -->
-<script src="js/data/achievements.js?v=100057"></script>
-<script src="js/systems/achievementManager.js?v=100057"></script>
+<script src="js/data/achievements.js?v=100106"></script>
 <!-- 统一数据访问器 (2.2.0+ 新增：getXxxData(id) 单例) -->
 <!-- 统一公式中心 (2.1.0+ 新增：双轨并行，旧函数加 @deprecated 注释保留回退) -->
-<script src="js/formulas/Formulas.js?v=100058"></script>
-<script src="js/data/crafting.js?v=100057"></script>
-<script src="js/data/dailyRotation.js?v=100057"></script>
-<script src="js/data/dailyQuests.js?v=100057"></script>
-<script src="js/data/external_codes.js?v=100057"></script>
-<script src="js/systems/updateChecker.js?v=100057"></script>
-    <script src="js/data/redeemCodes.js?v=100057"></script>
-<script src="js/data/storyText.js?v=100057"></script>
-            <script src="js/data/pets.js?v=100057"></script>
-<script src="js/game.js?v=100057"></script>
+<script src="js/formulas/Formulas.js?v=100106"></script>
+<script src="js/data/crafting.js?v=100106"></script>
+<script src="js/data/dailyRotation.js?v=100106"></script>
+<script src="js/data/dailyQuests.js?v=100106"></script>
+<script src="js/data/external_codes.js?v=100106"></script>
+    <script src="js/data/redeemCodes.js?v=100106"></script>
+<script src="js/data/storyText.js?v=100106"></script>
+            <script src="js/data/pets.js?v=100106"></script>
+<script src="js/game.js?v=100106"></script>
 </body>
 </html>
